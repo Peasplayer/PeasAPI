@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Version>1.0.0</Version>
+        <GameVersion>2021.6.15s</GameVersion>
+        <Description>Mod template for Reactor</Description>
+        <Authors>Peasplayer</Authors>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <Target Name="Copy" AfterTargets="Build">
+        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFiles="$(AmongUs)/BepInEx/plugins/$(AssemblyName)-$(GameVersion).dll" />
+    </Target>
+
+    <ItemGroup>
+        <Reference Include="$(AmongUs)\BepInEx\core\*.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="$(AmongUs)\BepInEx\unhollowed\*.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Remove="$(AmongUs)\BepInEx\unhollowed\netstandard.dll;$(AmongUs)\BepInEx\unhollowed\Newtonsoft.Json.dll" />
+
+        <Reference Include="$(AmongUs)\BepInEx\plugins\Reactor-$(GameVersion).dll" />
+    </ItemGroup>
+</Project>
