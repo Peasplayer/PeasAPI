@@ -17,7 +17,7 @@ namespace PeasAPI
             {
                 if (VersionText != null)
                     __instance.text.text += VersionText;
-                __instance.text.text += $"<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework";
+                __instance.text.text += $"\n<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework";
                 __instance.transform.position -= new Vector3(0, 0.5f, 0);
                 
                 AccountManager.Instance.accountTab.gameObject.SetActive(false);
@@ -38,7 +38,7 @@ namespace PeasAPI
 
                 __instance.transform.position -= new Vector3(0, 0.5f, 0);
                 __instance.text.text +=
-                    $"<color=#ff0000ff>PeasAPI";
+                    $"\n<color=#ff0000ff>PeasAPI";
             }
         }
     }
