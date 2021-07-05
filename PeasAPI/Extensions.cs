@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using PeasAPI.Roles;
+using UnityEngine;
 
 namespace PeasAPI
 {
@@ -26,6 +27,19 @@ namespace PeasAPI
                     return player;
             }
             return null;
+        }
+
+        public static string GetTextColor(this Color color)
+        {
+            var r = Mathf.RoundToInt(color.r * 255f).ToString("X2");
+            
+            var g = Mathf.RoundToInt(color.g * 255f).ToString("X2");
+            
+            var b = Mathf.RoundToInt(color.b * 255f).ToString("X2");
+            
+            var a = Mathf.RoundToInt(color.a * 255f).ToString("X2");
+
+            return $"<color=#{r}{g}{b}{a}>";
         }
 
         #region Roles

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using BepInEx.IL2CPP;
 using PeasAPI;
 using Rewired;
@@ -14,6 +15,8 @@ namespace PeasAPI.Roles
         public virtual string Name { get; } = "Role";
 
         public virtual string Description { get; } = "Do something";
+        
+        public virtual string TaskText { get; } = null;
 
         public virtual Color Color { get; } = Color.white;
 
@@ -84,6 +87,9 @@ namespace PeasAPI.Roles
         {
             Id = RoleManager.GetRoleId();
             RoleManager.RegisterRole(this);
+
+            if (TaskText == null)
+                TaskText = Description;
         }
     }
 }

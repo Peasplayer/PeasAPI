@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
-using Il2CppSystem;
-using PeasAPI;
+using Reactor.Extensions;
+using TMPro;
 using UnhollowerBaseLib;
+using UnityEngine;
+using Object = Il2CppSystem.Object;
 
 namespace PeasAPI.Roles
 {
@@ -48,7 +50,8 @@ namespace PeasAPI.Roles
                             {
                                 for (int i = 1; i <= role.Limit && RoleManager.Impostors.Count >= 1; i++)
                                 {
-                                    var member = RoleManager.Impostors[PeasApi.Random.Next(0, RoleManager.Impostors.Count)];
+                                    var member =
+                                        RoleManager.Impostors[PeasApi.Random.Next(0, RoleManager.Impostors.Count)];
                                     member.GetPlayer().RpcSetRole(role);
                                     RoleManager.Impostors.Remove(member);
                                 }
@@ -188,7 +191,7 @@ namespace PeasAPI.Roles
                 }
             }
         }
-        
+
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
         public static class MeetingUpdatePatch
         {
@@ -201,6 +204,30 @@ namespace PeasAPI.Roles
                         role._OnMeetingUpdate(__instance);
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__83), nameof(PlayerControl._CoSetTasks_d__83.MoveNext))]
+        public static class PlayerControlSetTasks
+        {
+            public static void Postfix(PlayerControl._CoSetTasks_d__83 __instance)
+            {
+                if (__instance == null) 
+                    return;
+                
+                var player = __instance.__4__this;
+                var role = player.GetRole();
+
+                if (role == null) 
+                    return;
+                
+                if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId) 
+                    return;
+                
+                var task = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
+                task.transform.SetParent(player.transform, false);
+                task.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText}</color>";
+                player.myTasks.Insert(0, task);
             }
         }
     }

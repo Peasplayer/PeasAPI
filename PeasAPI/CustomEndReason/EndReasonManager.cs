@@ -104,22 +104,26 @@ namespace PeasAPI.CustomEndReason
             {
                 if (TempData.EndReason != CustomGameOverReason)
                     return;
-
+                
                 __instance.DisconnectStinger = Stinger switch
                 {
                     "crew" => __instance.CrewStinger,
                     "impostor" => __instance.ImpostorStinger,
                     _ => __instance.DisconnectStinger
                 };
-
+                
                 __instance.WinText.text = "Defeat";
+                __instance.WinText.color = Palette.ImpostorRed;
+                
                 foreach (var winner in Winners)
                 {
                     if (winner.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
                         __instance.WinText.text = "Victory";
+                        __instance.WinText.color = Palette.Blue;
+                    }
                 }
-
-                __instance.WinText.color = Color;
+                
                 __instance.BackgroundBar.material.color = Color;
             }
 
