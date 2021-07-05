@@ -6,8 +6,14 @@ namespace PeasAPI
 {
     public class Watermark
     {
+        /// <summary>
+        /// Text that gets added to the version text
+        /// </summary>
         public static string VersionText { get; set; } = null;
 
+        /// <summary>
+        /// Text that gets added to the ping text
+        /// </summary>
         public static string PingText { get; set; } = null;
         
         [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]

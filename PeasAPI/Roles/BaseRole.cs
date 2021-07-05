@@ -12,18 +12,39 @@ namespace PeasAPI.Roles
     {
         public byte Id { get; } = byte.MaxValue;
 
+        /// <summary>
+        /// The name of the Role. Will displayed at the intro, ejection and task list
+        /// </summary>
         public virtual string Name { get; } = "Role";
 
+        /// <summary>
+        /// The description of the Role. Will displayed at the intro
+        /// </summary>
         public virtual string Description { get; } = "Do something";
         
+        /// <summary>
+        /// The description of the Role at the task list
+        /// </summary>
         public virtual string TaskText { get; } = null;
 
+        /// <summary>
+        /// The color of the Role. Will displayed at the intro, name, task list, game end
+        /// </summary>
         public virtual Color Color { get; } = Color.white;
 
+        /// <summary>
+        /// Who can see the identity of the player with the Role
+        /// </summary>
         public virtual Visibility Visibility { get; } = Visibility.NoOne;
 
+        /// <summary>
+        /// Who the player with the Role is in a team
+        /// </summary>
         public virtual Team Team { get; } = Team.Alone;
 
+        /// <summary>
+        /// How many player should get the Role
+        /// </summary>
         public virtual int Limit { get; set; } = 0;
 
         public List<byte> Members = new List<byte>();
@@ -33,6 +54,9 @@ namespace PeasAPI.Roles
             OnGameStart();
         }
 
+        /// <summary>
+        /// Gets called when the game starts
+        /// </summary>
         public virtual void OnGameStart()
         {
         }
@@ -63,6 +87,9 @@ namespace PeasAPI.Roles
             OnUpdate();
         }
 
+        /// <summary>
+        /// Gets called every frame
+        /// </summary>
         public virtual void OnUpdate()
         {
         }
@@ -79,6 +106,9 @@ namespace PeasAPI.Roles
             OnMeetingUpdate(__instance);
         }
 
+        /// <summary>
+        /// Gets called every frame when a meeting is active. The meeting gets passed on
+        /// </summary>
         public virtual void OnMeetingUpdate(MeetingHud meeting)
         {
         }

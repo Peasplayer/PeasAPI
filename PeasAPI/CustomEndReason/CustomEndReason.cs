@@ -7,14 +7,9 @@ namespace PeasAPI.CustomEndReason
 {
     public class CustomEndReason
     {
-        public byte Id { get; internal set; }
-
-        public virtual Color Color { get; }
-
-        public virtual IEnumerable<PlayerControl> Winners { get; }
-
-        public virtual string Stinger => null;
-
+        /// <summary>
+        /// Ends the game with the specified values
+        /// </summary>
         public CustomEndReason(Color color, List<byte> _winners, string stinger)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
@@ -40,6 +35,9 @@ namespace PeasAPI.CustomEndReason
             ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
         }
 
+        /// <summary>
+        /// Ends the game with the team of the <see cref="player"/> as winners
+        /// </summary>
         public CustomEndReason(PlayerControl player)
         {
             var role = player.GetRole();

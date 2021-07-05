@@ -6,6 +6,9 @@ namespace PeasAPI
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Gets a <see cref="PlayerControl"/> from it's id
+        /// </summary>
         public static PlayerControl GetPlayer(this byte id)
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
@@ -19,6 +22,9 @@ namespace PeasAPI
             return null;
         }
         
+        /// <summary>
+        /// Gets a <see cref="GameData.PlayerInfo"/> from it's id
+        /// </summary>
         public static GameData.PlayerInfo GetPlayerInfo(this byte id)
         {
             foreach (GameData.PlayerInfo player in GameData.Instance.AllPlayers)
@@ -29,6 +35,9 @@ namespace PeasAPI
             return null;
         }
 
+        /// <summary>
+        /// Gets the text color from a <see cref="Color"/>
+        /// </summary>
         public static string GetTextColor(this Color color)
         {
             var r = Mathf.RoundToInt(color.r * 255f).ToString("X2");
@@ -44,6 +53,9 @@ namespace PeasAPI
 
         #region Roles
 
+        /// <summary>
+        /// Gets the role of a <see cref="PlayerControl"/>
+        /// </summary>
         public static BaseRole GetRole(this PlayerControl player)
         {
             foreach (var _role in RoleManager.Roles)
@@ -55,6 +67,9 @@ namespace PeasAPI
             return null;
         }
         
+        /// <summary>
+        /// Gets the role of a <see cref="GameData.PlayerInfo"/>
+        /// </summary>
         public static BaseRole GetRole(this GameData.PlayerInfo player)
         {
             foreach (var _role in RoleManager.Roles)
@@ -66,15 +81,27 @@ namespace PeasAPI
             return null;
         }
 
+        /// <summary>
+        /// Checks if a <see cref="PlayerControl"/> is a certain role
+        /// </summary>
         public static bool IsRole(this PlayerControl player, BaseRole role) => player.GetRole() == role;
 
         #nullable enable
+        /// <summary>
+        /// Gets the role of a <see cref="PlayerControl"/>
+        /// </summary>
         public static T? GetRole<T>(this PlayerControl player) where T : BaseRole
             => player.GetRole() as T;
 
+        /// <summary>
+        /// Checks if a <see cref="PlayerControl"/> is a certain role
+        /// </summary>
         public static bool IsRole<T>(this PlayerControl player) where T : BaseRole
             => player.GetRole<T>() != null;
 
+        /// <summary>
+        /// Sets the role of a <see cref="PlayerControl"/>
+        /// </summary>
         public static void SetRole(this PlayerControl player, BaseRole? role)
         {
             foreach (var _role in RoleManager.Roles)
@@ -89,6 +116,9 @@ namespace PeasAPI
             }
         }
 
+        /// <summary>
+        /// Sets the role of a <see cref="PlayerControl"/>
+        /// </summary>
         public static void RpcSetRole(this PlayerControl player, BaseRole? role)
         {
             MessageWriter writer =

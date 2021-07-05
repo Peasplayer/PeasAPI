@@ -10,6 +10,9 @@ namespace PeasAPI
     {
         public static List<IRegionInfo> CustomServer = new List<IRegionInfo>();
         
+        /// <summary>
+        /// Adds a custom region to the game
+        /// </summary>
         public static void RegisterServer(string name, string ip, ushort port)
         {
             if (Uri.CheckHostName(ip).ToString() == "Dns")
