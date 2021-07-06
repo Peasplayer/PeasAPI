@@ -64,7 +64,7 @@ namespace PeasAPI
         {
             public static void Postfix(PingTracker __instance)
             {
-                __instance.transform.position = new Vector3(2.5833f, 2.9f, 0f) + PingTextOffset;
+                __instance.transform.localPosition = new Vector3(2.5833f, 2.9f, 0f) + PingTextOffset;
                 
                 if (PingText != null)
                     __instance.text.text += PingText;
