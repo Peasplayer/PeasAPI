@@ -60,19 +60,12 @@ namespace PeasAPI
         }
         
         [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
-        public static class PingTrackerStartPatch
-        {
-            public static void Postfix(PingTracker __instance)
-            {
-                __instance.transform.position += PingTextOffset;
-            }
-        }
-        
-        [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
         public static class PingTrackerUpdatePatch
         {
             public static void Postfix(PingTracker __instance)
             {
+                __instance.transform.position = new Vector3(2.5833f, 2.9f, 0f) + PingTextOffset;
+                
                 if (PingText != null)
                     __instance.text.text += PingText;
 
