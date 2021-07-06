@@ -14,12 +14,18 @@ namespace PeasAPI.CustomEndReason
 
         public static List<GameData.PlayerInfo> Winners;
 
+        public static string VictoryText;
+        
+        public static string DefeatText;
+        
         public static string Stinger;
 
         public static void Reset()
         {
             Color = Color.clear;
             Winners = null;
+            VictoryText = null;
+            DefeatText = null;
             Stinger = null;
         }
 
@@ -46,13 +52,13 @@ namespace PeasAPI.CustomEndReason
                     _ => __instance.DisconnectStinger
                 };
 
-                __instance.WinText.text = "Defeat";
+                __instance.WinText.text = DefeatText;
                 __instance.WinText.color = Palette.ImpostorRed;
                 foreach (var winner in Winners)
                 {
                     if (winner.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
-                        __instance.WinText.text = "Victory";
+                        __instance.WinText.text = VictoryText;
                         __instance.WinText.color = Palette.CrewmateBlue;
                     }
                 }

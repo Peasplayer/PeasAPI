@@ -10,16 +10,23 @@ namespace PeasAPI.CustomEndReason
         /// <summary>
         /// Ends the game with the specified values
         /// </summary>
-        public CustomEndReason(Color color, List<byte> _winners, string stinger)
+        public CustomEndReason(Color color, List<byte> _winners, string victoryText, string defeatText, string stinger)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                 (byte) CustomRpc.CustomEndReason, SendOption.None, -1);
+            
             writer.Write(color.r);
             writer.Write(color.g);
             writer.Write(color.b);
+            
+            writer.Write(victoryText);
+            writer.Write(defeatText);
+            
             writer.Write(stinger);
+            
             writer.Write(_winners.Count);
             writer.Write(_winners.ToArray());
+            
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 
             var winners = new List<GameData.PlayerInfo>();
@@ -30,6 +37,8 @@ namespace PeasAPI.CustomEndReason
 
             EndReasonManager.Color = color;
             EndReasonManager.Winners = winners;
+            EndReasonManager.VictoryText = victoryText;
+            EndReasonManager.DefeatText = defeatText;
             EndReasonManager.Stinger = stinger;
 
             ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
@@ -69,6 +78,8 @@ namespace PeasAPI.CustomEndReason
 
                     EndReasonManager.Color = Palette.ImpostorRed;
                     EndReasonManager.Winners = winners;
+                    EndReasonManager.VictoryText = "Victory";
+                    EndReasonManager.DefeatText = "Defeat";
                     EndReasonManager.Stinger = "impostor";
                 }
                 else
@@ -93,6 +104,8 @@ namespace PeasAPI.CustomEndReason
 
                     EndReasonManager.Color = Palette.Blue;
                     EndReasonManager.Winners = winners;
+                    EndReasonManager.VictoryText = "Victory";
+                    EndReasonManager.DefeatText = "Defeat";
                     EndReasonManager.Stinger = "crew";
                 }
 
@@ -165,6 +178,8 @@ namespace PeasAPI.CustomEndReason
 
                 EndReasonManager.Color = role.Color;
                 EndReasonManager.Winners = winners;
+                EndReasonManager.VictoryText = $"{role.Name} wins";
+                EndReasonManager.DefeatText = $"{role.Name} wins";
                 if (role.Team == Team.Crewmate)
                     EndReasonManager.Stinger = "crew";
                 else

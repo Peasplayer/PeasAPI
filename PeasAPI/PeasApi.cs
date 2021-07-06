@@ -17,7 +17,7 @@ namespace PeasAPI
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.0.0";
+        public const string Version = "1.1.1";
 
         public Harmony Harmony { get; } = new Harmony(Id);
         
@@ -26,8 +26,6 @@ namespace PeasAPI
         public static ManualLogSource Logger { get; private set; }
         
         public static ConfigFile ConfigFile { get; private set; }
-
-        public static bool EnableRoles => true;
         
         public static bool GameStarted
         {
@@ -38,6 +36,21 @@ namespace PeasAPI
                         AmongUsClient.Instance.GameMode == GameModes.FreePlay);
             }
         }
+
+        /// <summary>
+        /// Whether the roles should actually be used
+        /// </summary>
+        public static bool EnableRoles => true;
+
+        /// <summary>
+        /// How much the account tab should be lowered
+        /// </summary>
+        public static Vector3 AccountTabOffset { get; set; } = new (0f, 0f, 0f);
+
+        /// <summary>
+        /// Whether the function of the account tab should be replaced with just the ability to change your name or not
+        /// </summary>
+        public static bool AccountTabOnlyChangesName { get; set; } = true;
 
         public override void Load()
         {
