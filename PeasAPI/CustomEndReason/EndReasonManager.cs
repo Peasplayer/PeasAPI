@@ -88,7 +88,7 @@ namespace PeasAPI.CustomEndReason
                     else
                     {
                         player.SetFlipX(i % 2 == 0);
-                        DestroyableSingleton<HatManager>.Instance.SetSkin(player.SkinSlot, winner.SkinId); // SetSkin
+                        DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, winner.SkinId); // SetSkin
                     }
 
                     PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.Body);
