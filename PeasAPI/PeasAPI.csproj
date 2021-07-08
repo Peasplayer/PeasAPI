@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>1.1.1</Version>
-        <GameVersion>2021.6.15s</GameVersion>
+        <Version>1.1.2</Version>
+        <GameVersion>2021.6.30s</GameVersion>
         <Description>Mod template for Reactor</Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
