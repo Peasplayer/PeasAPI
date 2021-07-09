@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using PeasAPI.Roles;
+using Reactor.Networking;
 using UnityEngine;
 
 namespace PeasAPI
@@ -121,11 +122,7 @@ namespace PeasAPI
         /// </summary>
         public static void RpcSetRole(this PlayerControl player, BaseRole? role)
         {
-            MessageWriter writer =
-                AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte) CustomRpc.SetRole, SendOption.None, -1);
-            writer.Write(player.PlayerId);
-            writer.Write(role.Id);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            Rpc<SetRoleRpc>.Instance.Send(new SetRoleRpc.Data(player, role));
 
             player.SetRole(role);
         }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using BepInEx.IL2CPP;
-using PeasAPI;
-using Rewired;
 using UnityEngine;
 
 namespace PeasAPI.Roles

@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using Reactor.Extensions;
-using TMPro;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Object = Il2CppSystem.Object;

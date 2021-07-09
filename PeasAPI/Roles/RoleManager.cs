@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hazel;
+using Reactor.Networking;
 
 namespace PeasAPI.Roles
 {
@@ -22,14 +23,13 @@ namespace PeasAPI.Roles
             
             foreach (var _role in RoleManager.Roles)
             {
-                _role.Members.Clear();;
+                _role.Members.Clear();
             }
         }
         
         public static void RpcResetRoles()
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRpc.ResetRole, SendOption.None, -1);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            Rpc<ResetRoleRpc>.Instance.Send(new ResetRoleRpc.Data("Useless")); //The Rpc protocol needs data that can't be empty so that's why there is that useless argument
         }
         
         public static BaseRole GetRole(byte id)

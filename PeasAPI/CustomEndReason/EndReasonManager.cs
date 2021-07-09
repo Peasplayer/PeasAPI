@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
-using PeasAPI;
 using UnityEngine;
 
 namespace PeasAPI.CustomEndReason
