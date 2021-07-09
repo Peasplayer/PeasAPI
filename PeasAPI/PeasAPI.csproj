@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>1.1.2</Version>
+        <Version>1.1.3</Version>
         <GameVersion>2021.6.30s</GameVersion>
-        <Description>Mod template for Reactor</Description>
+        <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
