@@ -151,7 +151,15 @@ namespace PeasAPI.Roles
                         {
                             if (ExileController.Instance.exiled.Object.IsRole(role))
                             {
-                                __result = $"{ExileController.Instance.exiled.PlayerName} was a {role.Name}.";
+                                if (role.Members.Count > 1)
+                                {
+                                    __result = $"{ExileController.Instance.exiled.PlayerName} was a {role.Name}.";
+                                } 
+                                else 
+                                {
+                                    __result = $"{ExileController.Instance.exiled.PlayerName} was the {role.Name}.";
+                                    
+                                }
                             }
                         }
 
