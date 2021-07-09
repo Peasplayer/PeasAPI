@@ -29,7 +29,7 @@ namespace PeasAPI.Roles
         
         public static void RpcResetRoles()
         {
-            Rpc<ResetRoleRpc>.Instance.Send(new ResetRoleRpc.Data("Useless")); //The Rpc protocol needs data that can't be empty so that's why there is that useless argument
+            Rpc<ResetRoleRpc>.Instance.Send();
         }
         
         public static BaseRole GetRole(byte id)

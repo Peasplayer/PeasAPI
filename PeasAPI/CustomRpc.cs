@@ -56,35 +56,14 @@ namespace PeasAPI
     }
     
     [RegisterCustomRpc((uint) CustomRpcCalls.ResetRole)]
-    public class ResetRoleRpc : PlayerCustomRpc<PeasApi, ResetRoleRpc.Data>
+    public class ResetRoleRpc : PlayerCustomRpc<PeasApi>
     {
         public ResetRoleRpc(PeasApi plugin, uint id) : base(plugin, id)
         {
         }
 
-        public readonly struct Data
-        {
-            public readonly string Useless;
-            
-            public Data(string useless)
-            {
-                Useless = useless;
-            }
-        }
-
         public override RpcLocalHandling LocalHandling => RpcLocalHandling.None;
-
-        public override void Write(MessageWriter writer, Data data)
-        {
-            writer.Write(data.Useless);
-        }
-
-        public override Data Read(MessageReader reader)
-        {
-            return new Data(reader.ReadString());
-        }
-
-        public override void Handle(PlayerControl innerNetObject, Data data)
+        public override void Handle(PlayerControl innerNetObject)
         {
             RoleManager.ResetRoles();
         }
