@@ -154,11 +154,10 @@ namespace PeasAPI.Roles
                                 if (role.Members.Count > 1)
                                 {
                                     __result = $"{ExileController.Instance.exiled.PlayerName} was a {role.Name}.";
-                                } 
-                                else 
+                                }
+                                else
                                 {
                                     __result = $"{ExileController.Instance.exiled.PlayerName} was the {role.Name}.";
-                                    
                                 }
                             }
                         }
@@ -218,17 +217,20 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl._CoSetTasks_d__83 __instance)
             {
-                if (__instance == null) 
+                if (__instance == null)
                     return;
-                
+
                 var player = __instance.__4__this;
                 var role = player.GetRole();
 
-                if (role == null) 
+                if (role == null)
+                    return;
+
+                if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId)
                     return;
                 
-                if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId) 
-                    return;
+                if (!role.HasToDoTasks)
+                    player.ClearTasks();
                 
                 var task = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
                 task.transform.SetParent(player.transform, false);

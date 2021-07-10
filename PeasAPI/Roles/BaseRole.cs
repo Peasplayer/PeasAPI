@@ -39,6 +39,11 @@ namespace PeasAPI.Roles
         public virtual Team Team { get; } = Team.Alone;
 
         /// <summary>
+        /// Whether the player should get tasks
+        /// </summary>
+        public virtual bool HasToDoTasks { get; } = true;
+
+        /// <summary>
         /// How many player should get the Role
         /// </summary>
         public virtual int Limit { get; set; } = 0;
