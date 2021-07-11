@@ -97,7 +97,9 @@ namespace PeasAPI.CustomEndReason
                     player.NameText.transform.position += new Vector3(0f, 0.5f);
                     player.NameText.gameObject.SetActive(false);
                 }
-
+                
+                SoundManager.Instance.PlaySound(__instance.DisconnectStinger, false, 1f);
+                
                 return false;
             }
         }
