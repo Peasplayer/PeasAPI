@@ -71,7 +71,7 @@ namespace PeasAPI.CustomEndReason
                     var transform = player.transform;
                     transform.localPosition = new Vector3(
                         0.8f * (i % 2 == 0 ? -1 : 1) * oddness * 1 - oddness * 0.035f,
-                        EndGameManager.BaseY - 0.25f + oddness * 0.1f,
+                        EndGameManager.BaseY + oddness * 0.1f,
                         (i == 0 ? -8 : -1) + oddness * 0.01f
                     ) * 1.25f;
                     float scale = 1f - oddness * 0.075f;
