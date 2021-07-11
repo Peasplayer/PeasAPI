@@ -97,13 +97,56 @@ namespace PeasAPI.Roles
 
         public void _OnMeetingUpdate(MeetingHud __instance)
         {
+            if (PlayerControl.LocalPlayer.IsRole(this))
+            {
+                PlayerControl.LocalPlayer.nameText.color = Color;
+                PlayerControl.LocalPlayer.nameText.text = $"{PlayerControl.LocalPlayer.name}\n{Name}";
+                if (Visibility == Visibility.Role)
+                    foreach (var player in Members)
+                        player.GetPlayer().nameText.color = Color;
+            }
+            else if (PlayerControl.LocalPlayer.Data.IsImpostor)
+            {
+                if (Visibility == Visibility.Impostor)
+                    foreach (var player in Members)
+                        player.GetPlayer().nameText.color = Color;
+            }
+            else if (PlayerControl.LocalPlayer.GetRole() == null)
+            {
+                if (Visibility == Visibility.Crewmate)
+                    foreach (var player in Members)
+                        player.GetPlayer().nameText.color = Color;
+            }
+
             foreach (var pstate in __instance.playerStates)
+            {
                 if (pstate.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId &&
                     PlayerControl.LocalPlayer.IsRole(this))
                 {
-                    pstate.NameText.color = this.Color;
+                    pstate.NameText.color = Color;
                     pstate.NameText.text = $"{PlayerControl.LocalPlayer.name}\n{Name}";
                 }
+
+                if (pstate.TargetPlayerId.GetPlayer().IsRole(this))
+                {
+                    if (PlayerControl.LocalPlayer.IsRole(this))
+                    {
+                        if (Visibility == Visibility.Role)
+                            pstate.NameText.color = Color;
+                    }
+                    else if (PlayerControl.LocalPlayer.Data.IsImpostor)
+                    {
+                        if (Visibility == Visibility.Impostor)
+                            pstate.NameText.color = Color;
+                    }
+                    else if (PlayerControl.LocalPlayer.GetRole() == null)
+                    {
+                        if (Visibility == Visibility.Crewmate)
+                            pstate.NameText.color = Color;
+                    }
+                }
+            }
+            
             OnMeetingUpdate(__instance);
         }
 

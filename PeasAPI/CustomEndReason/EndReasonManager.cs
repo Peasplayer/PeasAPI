@@ -60,7 +60,7 @@ namespace PeasAPI.CustomEndReason
                         __instance.WinText.color = Palette.CrewmateBlue;
                     }
                 }
-
+                    
                 __instance.BackgroundBar.material.color = Color;
 
                 for (int i = 0; i < _winners.Count; i++)
@@ -75,7 +75,7 @@ namespace PeasAPI.CustomEndReason
                         (i == 0 ? -8 : -1) + oddness * 0.01f
                     ) * 1.25f;
                     float scale = 1f - oddness * 0.075f;
-                    var scaleVec = new Vector3(scale, scale, scale) * 1.25f;
+                    var scaleVec = new Vector3(scale, scale, scale);// * 1.25f;
                     transform.localScale = scaleVec;
                     if (winner.IsDead)
                     {
@@ -86,14 +86,15 @@ namespace PeasAPI.CustomEndReason
                     else
                     {
                         player.SetFlipX(i % 2 == 0);
-                        DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, winner.SkinId); // SetSkin
+                        DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, winner.SkinId);
                     }
 
                     PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.Body);
                     player.HatSlot.SetHat(winner.HatId, winner.ColorId);
                     PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.PetSlot);
                     player.NameText.text = winner.Name;
-                    player.NameText.transform.localScale = global::Extensions.Inv(scaleVec);
+                    player.NameText.transform.localScale += new Vector3(0f, 0.5f);//= global::Extensions.Inv(scaleVec);
+                    player.NameText.transform.position += new Vector3(0f, 0.5f);
                     player.NameText.gameObject.SetActive(false);
                 }
 
