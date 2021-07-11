@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using PeasAPI.CustomButtons;
+using PeasAPI.CustomEndReason;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
@@ -29,6 +31,8 @@ namespace PeasAPI.Roles
             {
                 RoleManager.ResetRoles();
                 RoleManager.RpcResetRoles();
+                
+                EndReasonManager.Reset();
 
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
@@ -194,6 +198,8 @@ namespace PeasAPI.Roles
                         role._OnUpdate();
                     }
                 }
+                
+                CustomButton.HudUpdate();
             }
         }
 
