@@ -40,7 +40,7 @@ namespace PeasAPI
         /// <summary>
         /// Whether the roles should actually be used
         /// </summary>
-        public static bool EnableRoles => true;
+        public static bool EnableRoles = true;
 
         /// <summary>
         /// How much the account tab should be lowered

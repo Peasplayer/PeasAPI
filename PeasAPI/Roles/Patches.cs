@@ -30,7 +30,6 @@ namespace PeasAPI.Roles
             public static void Postfix(PlayerControl __instance)
             {
                 RoleManager.ResetRoles();
-                RoleManager.RpcResetRoles();
                 
                 EndReasonManager.Reset();
 
@@ -42,7 +41,7 @@ namespace PeasAPI.Roles
                         RoleManager.Crewmates.Add(player.PlayerId);
                 }
 
-                if (PeasApi.EnableRoles)
+                if (PeasApi.EnableRoles && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
                 {
                     foreach (var role in RoleManager.Roles)
                     {
@@ -69,6 +68,23 @@ namespace PeasAPI.Roles
                             }
                         }
                     }
+                }
+            }
+        }
+        
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
+        public static class PlayerControlSetInfectedPatch
+        {
+            public static void Postfix(PlayerControl __instance)
+            {
+                RoleManager.ResetRoles();
+                
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    if (player.Data.IsImpostor)
+                        RoleManager.Impostors.Add(player.PlayerId);
+                    else
+                        RoleManager.Crewmates.Add(player.PlayerId);
                 }
             }
         }
