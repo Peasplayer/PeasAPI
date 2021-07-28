@@ -7,6 +7,7 @@
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
         
+        <PackageIcon>PeasAPI-Icon.png</PackageIcon>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/Peasplayer/PeasAPI</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,6 +24,8 @@
         <PackageReference Include="Reactor.MSBuild" Version="0.1.5" PrivateAssets="all" />
         
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        
+        <None Include="PeasAPI-Icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
     
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
