@@ -28,5 +28,5 @@ jobs:
       
       - uses: actions/upload-artifact@v2
         with:
-          name: Reactor.nupkg
-          path: Reactor/bin/Release/PeasAPI.*.nupkg
+          name: PeasAPI.nupkg
+          path: PeasAPI/bin/Release/PeasAPI.*.nupkg
