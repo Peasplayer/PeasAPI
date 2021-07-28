@@ -1,11 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>1.2.1</Version>
+        <VersionPrefix>1.2.1</VersionPrefix>
+        <VersionSuffix>dev</VersionSuffix>
         <GameVersion>2021.6.30s</GameVersion>
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
+        
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/Peasplayer/PeasAPI</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <Target Name="Copy" AfterTargets="Build">
@@ -13,14 +19,7 @@
     </Target>
 
     <ItemGroup>
-        <Reference Include="$(AmongUs)\BepInEx\core\*.dll">
-            <Private>false</Private>
-        </Reference>
-        <Reference Include="$(AmongUs)\BepInEx\unhollowed\*.dll">
-            <Private>false</Private>
-        </Reference>
-        <Reference Remove="$(AmongUs)\BepInEx\unhollowed\netstandard.dll;$(AmongUs)\BepInEx\unhollowed\Newtonsoft.Json.dll" />
-
-        <Reference Include="$(AmongUs)\BepInEx\plugins\Reactor-$(GameVersion).dll" />
+        <PackageReference Include="Reactor" Version="1.0.0-rc.1" />
+        <PackageReference Include="Reactor.MSBuild" Version="0.1.5" PrivateAssets="all" />
     </ItemGroup>
 </Project>
