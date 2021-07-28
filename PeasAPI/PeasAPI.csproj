@@ -6,11 +6,6 @@
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
-        
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/Peasplayer/PeasAPI</RepositoryUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -25,7 +20,5 @@
     <ItemGroup>
         <PackageReference Include="Reactor" Version="1.0.0-rc.1" />
         <PackageReference Include="Reactor.MSBuild" Version="0.1.5" PrivateAssets="all" />
-        
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
 </Project>
