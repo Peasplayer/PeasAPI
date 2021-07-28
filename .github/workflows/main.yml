@@ -25,3 +25,8 @@ jobs:
         with:
           name: PeasAPI.dll
           path: PeasAPI/bin/Release/netstandard2.1/PeasAPI.dll
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Reactor.nupkg
+          path: Reactor/bin/Release/PeasAPI.*.nupkg
