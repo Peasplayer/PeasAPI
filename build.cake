@@ -15,10 +15,10 @@ Task("Build")
         MSBuildSettings = new DotNetCoreMSBuildSettings()
     };
 
-    if (tag != null) 
+    /*if (tag != null) 
     {
         settings.MSBuildSettings.Properties["Version"] = new[] { tag };
-    }
+    }*/
     else if (buildId != null)
     {
         settings.VersionSuffix = "ci." + buildId;
