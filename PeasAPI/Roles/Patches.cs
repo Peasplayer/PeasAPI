@@ -77,7 +77,8 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl __instance)
             {
-                RoleManager.ResetRoles();
+                RoleManager.Crewmates.Clear();
+                RoleManager.Impostors.Clear();
                 
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
