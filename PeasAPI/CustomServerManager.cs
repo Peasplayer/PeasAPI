@@ -35,13 +35,22 @@ namespace PeasAPI
                 .Cast<IRegionInfo>());
         }
         
-        [HarmonyPatch(typeof(AuthManager), nameof(AuthManager.CoConnect))]
-        class AuthManagerCoConnectPatch
+        //Skidded from https://github.com/edqx/Edward.SkipAuth
+        [HarmonyPatch(typeof(AuthManager._CoConnect_d__4), nameof(AuthManager._CoConnect_d__4.MoveNext))]
+        public static class DoNothingInConnect
         {
-            public static void Prefix(AuthManager __instance, [HarmonyArgument(0)] string targetIp,
-                [HarmonyArgument(0)] ushort targetPort)
+            public static bool Prefix(AuthManager __instance)
             {
-                targetIp = "172.105.251.170";
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(AuthManager._CoWaitForNonce_d__5), nameof(AuthManager._CoWaitForNonce_d__5.MoveNext))]
+        public static class DontWaitForNonce
+        {
+            public static bool Prefix(AuthManager __instance)
+            {
+                return false;
             }
         }
         
