@@ -1,6 +1,6 @@
 var target = Argument("target", "Build");
 
-var buildId = "1";
+var buildId = EnvironmentVariable("GITHUB_RUN_NUMBER");
 
 var @ref = EnvironmentVariable("GITHUB_REF");
 const string prefix = "refs/tags/";
