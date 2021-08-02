@@ -12,7 +12,7 @@ namespace PeasAPI.Roles
 
         public static List<BaseRole> Roles = new List<BaseRole>();
 
-        public static byte GetRoleId() => (byte) Roles.Count;
+        public static int GetRoleId() => Roles.Count;
 
         public static void RegisterRole(BaseRole role) => Roles.Add(role);
         
@@ -32,7 +32,7 @@ namespace PeasAPI.Roles
             Rpc<ResetRoleRpc>.Instance.Send();
         }
         
-        public static BaseRole GetRole(byte id)
+        public static BaseRole GetRole(int id)
         {
             foreach (var _role in RoleManager.Roles)
             {

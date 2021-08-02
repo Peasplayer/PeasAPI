@@ -24,12 +24,15 @@ namespace PeasAPI.Roles
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetInfected))]
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
         public static class PlayerControlRpcSetInfectedPatch
         {
             public static void Postfix(PlayerControl __instance)
             {
-                RoleManager.ResetRoles();
+                if (!AmongUsClient.Instance.AmHost)
+                    return;
+                
+                RoleManager.RpcResetRoles();
                 
                 EndReasonManager.Reset();
 
@@ -75,7 +78,7 @@ namespace PeasAPI.Roles
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
         public static class PlayerControlSetInfectedPatch
         {
-            public static void Postfix(PlayerControl __instance)
+            public static void Prefix(PlayerControl __instance)
             {
                 RoleManager.Crewmates.Clear();
                 RoleManager.Impostors.Clear();
@@ -83,9 +86,15 @@ namespace PeasAPI.Roles
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
                     if (player.Data.IsImpostor)
-                        RoleManager.Impostors.Add(player.PlayerId);
+                    {
+                        if (player.GetRole() == null)
+                            RoleManager.Impostors.Add(player.PlayerId);
+                    }
                     else
-                        RoleManager.Crewmates.Add(player.PlayerId);
+                    {
+                        if (player.GetRole() == null)
+                            RoleManager.Crewmates.Add(player.PlayerId);
+                    }
                 }
             }
         }

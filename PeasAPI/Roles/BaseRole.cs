@@ -6,7 +6,7 @@ namespace PeasAPI.Roles
 {
     public class BaseRole
     {
-        public byte Id { get; } = byte.MaxValue;
+        public int Id { get; } = int.MaxValue;
 
         /// <summary>
         /// The name of the Role. Will displayed at the intro, ejection and task list

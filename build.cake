@@ -1,6 +1,6 @@
 var target = Argument("target", "Build");
 
-var buildId = EnvironmentVariable("GITHUB_RUN_NUMBER");
+var buildId = "1";
 
 var @ref = EnvironmentVariable("GITHUB_REF");
 const string prefix = "refs/tags/";
@@ -14,12 +14,14 @@ Task("Build")
         Configuration = "Release",
         MSBuildSettings = new DotNetCoreMSBuildSettings()
     };
-
+	
     if (buildId != null)
     {
         settings.VersionSuffix = "ci." + buildId.Split("+")[0];
     }
-
+	
+	//settings.VersionSuffix = buildId.Split("+")[0] + "--helo--" + buildId.Split("+")[1];
+	
     foreach (var gamePlatform in new[] { "Steam", "Itch" })
     {
         settings.MSBuildSettings.Properties["GamePlatform"] = new[] { gamePlatform };
