@@ -15,9 +15,13 @@ Task("Build")
         MSBuildSettings = new DotNetCoreMSBuildSettings()
     };
 
-    if (buildId != null)
+    if (tag != null) 
     {
-        settings.VersionSuffix = "ci." + buildId.Split("+")[0];
+        settings.MSBuildSettings.Properties["Version"] = new[] { tag };
+    }
+    else if (buildId != null)
+    {
+        settings.VersionSuffix = "ci." + buildId;
     }
 
     foreach (var gamePlatform in new[] { "Steam", "Itch" })
