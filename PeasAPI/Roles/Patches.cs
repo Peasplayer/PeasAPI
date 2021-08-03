@@ -80,6 +80,9 @@ namespace PeasAPI.Roles
         {
             public static void Prefix(PlayerControl __instance)
             {
+                if (AmongUsClient.Instance.AmHost)
+                    return;
+                
                 RoleManager.Crewmates.Clear();
                 RoleManager.Impostors.Clear();
                 
