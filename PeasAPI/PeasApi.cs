@@ -1,10 +1,12 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
 using InnerNet;
 using PeasAPI.Components;
+using PeasAPI.Managers;
 using Reactor;
 using UnityEngine;
 using Random = System.Random;
@@ -17,7 +19,7 @@ namespace PeasAPI
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.2.2";
+        public const string Version = "1.3.0";
 
         public Harmony Harmony { get; } = new Harmony(Id);
         
@@ -64,6 +66,8 @@ namespace PeasAPI
                     PeasApi.ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value, 
                     PeasApi.ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);    
             }
+            
+            UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/Data.json");
             
             RegisterCustomRoleAttribute.Register(this);
             
