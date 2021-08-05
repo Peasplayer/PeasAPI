@@ -67,7 +67,7 @@ namespace PeasAPI
                     PeasApi.ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);    
             }
             
-            UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/Data.json");
+            UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
             
             RegisterCustomRoleAttribute.Register(this);
             

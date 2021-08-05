@@ -54,41 +54,44 @@ namespace PeasAPI.Managers
             
             PeasApi.Logger.LogInfo("Finished checking for updates!");
 
-            var updatedMods = "This mods can be updated: \n\n";
+            if (_updatedMods.Count != 0)
+            {  
+                var updatedMods = "This mods can be updated: \n\n";
             
-            foreach (var mod in _updatedMods)
-            {
-                updatedMods += $"{mod.Mod.GetName().Name} ({mod.Mod.GetName().Version} -> {mod.NewestVersion})\n";
-            }
-            updatedMods += "\nRestart your game afterwards to use the new versions!";
-
-            var popup = DiscordManager.Instance.discordPopup;
-            popup.transform.localScale *= 2;
-            
-            var exitButton = popup.transform.FindChild("ExitGame");
-            exitButton.GetComponentInChildren<TextTranslatorTMP>().Destroy();
-            
-            var updateButton = Object.Instantiate(exitButton, popup.transform);
-            
-            exitButton.transform.position += new Vector3(0.85f, -0.75f);
-            exitButton.transform.localScale /= 2f;
-            updateButton.transform.position += new Vector3(-0.85f, -0.75f);
-            updateButton.transform.localScale /= 2f;
-            
-            updateButton.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = "Update";
-            exitButton.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = "Don't update";
-
-            var updateButtonButton = updateButton.GetComponent<PassiveButton>();
-            updateButtonButton.OnClick.RemoveAllListeners();
-            updateButtonButton.OnClick.AddListener((Action)(() =>
-            {
                 foreach (var mod in _updatedMods)
                 {
-                    mod.Update();
+                    updatedMods += $"{mod.Mod.GetName().Name} ({mod.Mod.GetName().Version} -> {mod.NewestVersion})\n";
                 }
-            }));
+                updatedMods += "\nRestart your game afterwards to use the new versions!";
+
+                var popup = DiscordManager.Instance.discordPopup;
+                popup.transform.localScale *= 2;
             
-            popup.Show(updatedMods);
+                var exitButton = popup.transform.FindChild("ExitGame");
+                exitButton.GetComponentInChildren<TextTranslatorTMP>().Destroy();
+            
+                var updateButton = Object.Instantiate(exitButton, popup.transform);
+            
+                exitButton.transform.position += new Vector3(0.85f, -0.75f);
+                exitButton.transform.localScale /= 2f;
+                updateButton.transform.position += new Vector3(-0.85f, -0.75f);
+                updateButton.transform.localScale /= 2f;
+            
+                updateButton.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = "Update";
+                exitButton.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = "Don't update";
+
+                var updateButtonButton = updateButton.GetComponent<PassiveButton>();
+                updateButtonButton.OnClick.RemoveAllListeners();
+                updateButtonButton.OnClick.AddListener((Action)(() =>
+                {
+                    foreach (var mod in _updatedMods)
+                    {
+                        mod.Update();
+                    }
+                }));
+            
+                popup.Show(updatedMods);
+            }
         }
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
@@ -120,10 +123,9 @@ namespace PeasAPI.Managers
                     }
                     catch (Exception e)
                     {
-                        PeasApi.Logger.LogError("Error accessing the data file.");
+                        PeasApi.Logger.LogError("Error accessing the version from the data file: " + e.Message);
+                        return "0.0.0";
                     }
-
-                    return "0.0.0";
                 }
             }
             
@@ -142,7 +144,7 @@ namespace PeasAPI.Managers
                     }
                     catch (Exception e)
                     {
-                        PeasApi.Logger.LogError("Error accessing the data file.");
+                        PeasApi.Logger.LogError("Error accessing the download url from the data file: " + e.Message);
                     }
 
                     return null;
@@ -157,7 +159,6 @@ namespace PeasAPI.Managers
 
             public bool IsUpToDate()
             {
-                PeasApi.Logger.LogInfo($"{Mod.GetName().Version}, {Version.Parse(NewestVersion)}, {Mod.GetName().Version >= Version.Parse(NewestVersion)}");
                 return Mod.GetName().Version >= Version.Parse(NewestVersion);
             }
 
