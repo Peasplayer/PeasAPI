@@ -18,6 +18,8 @@ namespace PeasAPI.Managers
     {
         private static List<UpdateListener> _updateListeners = new();
 
+        private static bool _checkedForUpdates = false;
+
         public static void RegisterUpdateListener(string dataUrl)
         {
             var listener = new UpdateListener(Assembly.GetCallingAssembly(), dataUrl);
@@ -45,7 +47,7 @@ namespace PeasAPI.Managers
                     if (listener.DownloadLink == null)
                     {
                         PeasApi.Logger.LogError("No download link was provided, can't update");
-                        return;
+                        continue;
                     }
                     
                     _updatedMods.Add(listener);
@@ -53,6 +55,8 @@ namespace PeasAPI.Managers
             }
             
             PeasApi.Logger.LogInfo("Finished checking for updates!");
+
+            _checkedForUpdates = true;
 
             if (_updatedMods.Count != 0)
             {  
@@ -95,11 +99,12 @@ namespace PeasAPI.Managers
         }
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
-        public static class SomeCoolPatch
+        public static class MainMenuManagerStartPatch
         {
             public static void Postfix(MainMenuManager __instance)
             {
-                CheckForUpdates(__instance);
+                if (!_checkedForUpdates)
+                    CheckForUpdates(__instance);
             }
         }
 
@@ -123,7 +128,7 @@ namespace PeasAPI.Managers
                     }
                     catch (Exception e)
                     {
-                        PeasApi.Logger.LogError("Error accessing the version from the data file: " + e.Message);
+                        PeasApi.Logger.LogError($"Error accessing the version from the data file for {Mod.GetName().Name} : {e.Message}");
                         return "0.0.0";
                     }
                 }
@@ -144,7 +149,7 @@ namespace PeasAPI.Managers
                     }
                     catch (Exception e)
                     {
-                        PeasApi.Logger.LogError("Error accessing the download url from the data file: " + e.Message);
+                        PeasApi.Logger.LogError($"Error accessing the download url from the data file for {Mod.GetName().Name} : {e.Message}");
                     }
 
                     return null;

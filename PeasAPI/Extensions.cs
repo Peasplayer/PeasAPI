@@ -127,6 +127,53 @@ namespace PeasAPI
             player.SetRole(role);
         }
 
+        public static bool IsOnSameTeam(this PlayerControl player, PlayerControl otherPlayer)
+        {
+            var role = player.GetRole();
+            var otherRole = otherPlayer.GetRole();
+
+            if (role != null)
+            {
+                switch (role.Team)
+                {
+                    case Team.Alone:
+                        return false;
+                    case Team.Role:
+                        return role.Id == otherRole.Id;
+                    case Team.Crewmate:
+                        if (otherRole != null)
+                            return otherRole.Team == Team.Crewmate;
+                        else
+                            return !otherPlayer.Data.IsImpostor;
+                    case Team.Impostor:
+                        if (otherRole != null)
+                            return otherRole.Team == Team.Impostor;
+                        else
+                            return otherPlayer.Data.IsImpostor;
+                }
+            }
+            else if (otherRole == null)
+            {
+                return player.Data.IsImpostor == otherPlayer.Data.IsImpostor;
+            }
+            else
+            {
+                switch (otherRole.Team)
+                {
+                    case Team.Alone:
+                        return false;
+                    case Team.Role:
+                        return false;
+                    case Team.Crewmate:
+                        return !otherPlayer.Data.IsImpostor;
+                    case Team.Impostor:
+                        return otherPlayer.Data.IsImpostor;
+                }
+            }
+
+            return false;
+        }
+
         #endregion Roles
     }
 }

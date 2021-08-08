@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Linq;
+using HarmonyLib;
 using PeasAPI.CustomButtons;
 using PeasAPI.CustomEndReason;
 using UnhollowerBaseLib;
@@ -25,32 +27,29 @@ namespace PeasAPI.Roles
         }
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
-        public static class PlayerControlRpcSetInfectedPatch
+        public static class PlayerControlSetInfectedPatch
         {
             public static void Postfix(PlayerControl __instance)
             {
-                if (!AmongUsClient.Instance.AmHost)
-                    return;
-                
-                RoleManager.RpcResetRoles();
-                
-                EndReasonManager.Reset();
-
-                foreach (var player in PlayerControl.AllPlayerControls)
+                if (AmongUsClient.Instance.AmHost)
                 {
-                    if (player.Data.IsImpostor)
-                        RoleManager.Impostors.Add(player.PlayerId);
-                    else
-                        RoleManager.Crewmates.Add(player.PlayerId);
-                }
+                    RoleManager.RpcResetRoles();
 
-                if (PeasApi.EnableRoles && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
-                {
-                    foreach (var role in RoleManager.Roles)
+                    EndReasonManager.Reset();
+
+                    foreach (var player in PlayerControl.AllPlayerControls)
                     {
-                        if (role.Team == Team.Impostor)
+                        if (player.Data.IsImpostor)
+                            RoleManager.Impostors.Add(player.PlayerId);
+                        else
+                            RoleManager.Crewmates.Add(player.PlayerId);
+                    }
+
+                    if (PeasApi.EnableRoles && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
+                    {
+                        foreach (var role in RoleManager.Roles)
                         {
-                            foreach (var player in RoleManager.Impostors)
+                            if (role.Team == Team.Impostor)
                             {
                                 for (int i = 1; i <= role.Limit && RoleManager.Impostors.Count >= 1; i++)
                                 {
@@ -60,43 +59,36 @@ namespace PeasAPI.Roles
                                     RoleManager.Impostors.Remove(member);
                                 }
                             }
-                        }
-                        else if (role.Team != Team.Impostor)
-                        {
-                            for (int i = 1; i <= role.Limit && RoleManager.Crewmates.Count >= 1; i++)
+                            else if (role.Team != Team.Impostor)
                             {
-                                var member = RoleManager.Crewmates[PeasApi.Random.Next(0, RoleManager.Crewmates.Count)];
-                                member.GetPlayer().RpcSetRole(role);
-                                RoleManager.Crewmates.Remove(member);
+                                for (int i = 1; i <= role.Limit && RoleManager.Crewmates.Count >= 1; i++)
+                                {
+                                    var member =
+                                        RoleManager.Crewmates[PeasApi.Random.Next(0, RoleManager.Crewmates.Count)];
+                                    member.GetPlayer().RpcSetRole(role);
+                                    RoleManager.Crewmates.Remove(member);
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-        
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
-        public static class PlayerControlSetInfectedPatch
-        {
-            public static void Prefix(PlayerControl __instance)
-            {
-                if (AmongUsClient.Instance.AmHost)
-                    return;
-                
-                RoleManager.Crewmates.Clear();
-                RoleManager.Impostors.Clear();
-                
-                foreach (var player in PlayerControl.AllPlayerControls)
+                else
                 {
-                    if (player.Data.IsImpostor)
+                    RoleManager.Crewmates.Clear();
+                    RoleManager.Impostors.Clear();
+
+                    foreach (var player in PlayerControl.AllPlayerControls)
                     {
-                        if (player.GetRole() == null)
-                            RoleManager.Impostors.Add(player.PlayerId);
-                    }
-                    else
-                    {
-                        if (player.GetRole() == null)
-                            RoleManager.Crewmates.Add(player.PlayerId);
+                        if (player.Data.IsImpostor)
+                        {
+                            if (player.GetRole() == null)
+                                RoleManager.Impostors.Add(player.PlayerId);
+                        }
+                        else
+                        {
+                            if (player.GetRole() == null)
+                                RoleManager.Crewmates.Add(player.PlayerId);
+                        }
                     }
                 }
             }
@@ -227,7 +219,7 @@ namespace PeasAPI.Roles
                         role._OnUpdate();
                     }
                 }
-                
+
                 CustomButton.HudUpdate();
             }
         }
@@ -247,6 +239,67 @@ namespace PeasAPI.Roles
             }
         }
 
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+        public static class PlayerControlFixedUpdatePatch
+        {
+            public static void Postfix(PlayerControl __instance)
+            {
+                if (PeasApi.GameStarted && PeasApi.EnableRoles)
+                {
+                    var localRole = PlayerControl.LocalPlayer.GetRole();
+
+                    if (localRole != null && __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        HudManager.Instance.KillButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead &&
+                                                                            localRole.CanKill(null));
+
+                        if (localRole.CanKill(null) && __instance.CanMove && !__instance.Data.IsDead)
+                        {
+                            __instance.SetKillTimer(__instance.killTimer - Time.fixedDeltaTime);
+                            PlayerControl target = __instance.FindClosestTarget();
+                            HudManager.Instance.KillButton.SetTarget(target);
+                        }
+                        else
+                        {
+                            HudManager.Instance.KillButton.SetTarget(null);
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+        public static class PlayerControlMurderPlayerPatch
+        {
+            public static void Prefix(PlayerControl __instance, out bool __state)
+            {
+                __state = __instance.Data.IsImpostor;
+
+                __instance.Data.IsImpostor = true;
+            }
+
+            public static void Postfix(PlayerControl __instance, bool __state)
+            {
+                __instance.Data.IsImpostor = __state;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FindClosestTarget))]
+        public static class PlayerControlFindClosestTargetPatch
+        {
+            public static bool Prefix(PlayerControl __instance, out PlayerControl __result)
+            {
+                if (__instance.GetRole() != null)
+                {
+                    __result = __instance.GetRole().FindClosesTarget(__instance);
+                    return false;
+                }
+
+                __result = null;
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__83), nameof(PlayerControl._CoSetTasks_d__83.MoveNext))]
         public static class PlayerControlSetTasks
         {
@@ -263,14 +316,114 @@ namespace PeasAPI.Roles
 
                 if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId)
                     return;
-                
+
                 if (!role.HasToDoTasks)
                     player.ClearTasks();
-                
+
+                if (role.TaskText == null)
+                    return;
+
                 var task = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
                 task.transform.SetParent(player.transform, false);
                 task.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText}</color>";
                 player.myTasks.Insert(0, task);
+            }
+        }
+
+
+        [HarmonyPatch(typeof(UseButtonManager), nameof(UseButtonManager.SetTarget))]
+        public static class UseButtonManagerSetTargetPatch
+        {
+            public static void Postfix(UseButtonManager __instance, [HarmonyArgument(0)] IUsable target)
+            {
+                if (PeasApi.GameStarted && PlayerControl.LocalPlayer.GetRole() != null &&
+                    PlayerControl.LocalPlayer.GetRole().CanSabotage(null) && PlayerControl.LocalPlayer.CanMove)
+                {
+                    __instance.RefreshButtons();
+                    if (target == null)
+                    {
+                        __instance.currentButtonShown = __instance.otherButtons[ImageNames.SabotageButton];
+                        __instance.currentButtonShown.Show();
+                    }
+                    else
+                    {
+                        if (target is Vent)
+                        {
+                            __instance.currentButtonShown = __instance.otherButtons[ImageNames.VentButton];
+                        }
+                        else if (target is OptionsConsole)
+                        {
+                            __instance.currentButtonShown = __instance.otherButtons[ImageNames.OptionsButton];
+                        }
+                        else
+                        {
+                            __instance.currentButtonShown = __instance.otherButtons[target.UseIcon];
+                            __instance.currentButtonShown.graphic.color = UseButtonManager.EnabledColor;
+                            __instance.currentButtonShown.text.color = UseButtonManager.EnabledColor;
+                        }
+
+                        __instance.currentButtonShown.Show(target.PercentCool);
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(UseButtonManager), nameof(UseButtonManager.DoClick))]
+        public static class UseButtonManagerDoClickPatch
+        {
+            public static bool Prefix(UseButtonManager __instance)
+            {
+                if (__instance.isActiveAndEnabled && PeasApi.GameStarted && __instance.currentTarget == null)
+                {
+                    var role = PlayerControl.LocalPlayer.GetRole();
+
+                    if (role == null)
+                        return true;
+
+                    if (!role.CanSabotage(null))
+                        return true;
+
+                    HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
+                    {
+                        foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray()
+                            .Where(room => !role.CanSabotage(room.room)))
+                        {
+                            mapRoom.gameObject.SetActive(false);
+                        }
+
+                        map.ShowInfectedMap();
+                    }));
+
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
+        public static class VentCanUsePatch
+        {
+            public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool canUse, [HarmonyArgument(2)] ref bool couldUse, ref float __result) 
+            {
+                BaseRole role = PlayerControl.LocalPlayer.GetRole();
+
+                if (role == null)
+                    return;
+                
+                couldUse = canUse = role.CanVent;
+                __result = float.MaxValue;
+
+                if (canUse)
+                {
+                    Vector3 center = PlayerControl.LocalPlayer.Collider.bounds.center;
+                    Vector3 position = __instance.transform.position;
+
+                    __result = Vector2.Distance(center, position);
+                    canUse &= (__result <= __instance.UsableDistance &&
+                               !PhysicsHelpers.AnythingBetween(PlayerControl.LocalPlayer.Collider, center, position,
+                                   Constants.ShipOnlyMask, false));
+                }
             }
         }
     }

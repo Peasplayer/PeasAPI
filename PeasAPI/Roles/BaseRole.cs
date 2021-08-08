@@ -1,54 +1,110 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BepInEx.IL2CPP;
 using UnityEngine;
 
 namespace PeasAPI.Roles
 {
-    public class BaseRole
+    public abstract class BaseRole
     {
-        public int Id { get; } = int.MaxValue;
+        public int Id { get; }
+
+        public List<byte> Members = new List<byte>();
 
         /// <summary>
         /// The name of the Role. Will displayed at the intro, ejection and task list
         /// </summary>
-        public virtual string Name { get; } = "Role";
+        public abstract string Name { get; }
 
         /// <summary>
         /// The description of the Role. Will displayed at the intro
         /// </summary>
-        public virtual string Description { get; } = "Do something";
+        public abstract string Description { get; }
         
         /// <summary>
         /// The description of the Role at the task list
         /// </summary>
-        public virtual string TaskText { get; } = null;
+        public abstract string TaskText { get; }
 
         /// <summary>
         /// The color of the Role. Will displayed at the intro, name, task list, game end
         /// </summary>
-        public virtual Color Color { get; } = Color.white;
+        public abstract Color Color { get; }
 
         /// <summary>
         /// Who can see the identity of the player with the Role
         /// </summary>
-        public virtual Visibility Visibility { get; } = Visibility.NoOne;
+        public abstract Visibility Visibility { get; }
 
         /// <summary>
         /// Who the player with the Role is in a team
         /// </summary>
-        public virtual Team Team { get; } = Team.Alone;
+        public abstract Team Team { get; }
 
         /// <summary>
         /// Whether the player should get tasks
         /// </summary>
-        public virtual bool HasToDoTasks { get; } = true;
+        public abstract bool HasToDoTasks { get; }
 
         /// <summary>
         /// How many player should get the Role
         /// </summary>
         public virtual int Limit { get; set; } = 0;
 
-        public List<byte> Members = new List<byte>();
+        /// <summary>
+        /// If a member of the role should be able to kill that player / in general
+        /// </summary>
+        public virtual bool CanKill(PlayerControl victim = null)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// If a member of the role should be able to use vents
+        /// </summary>
+        public virtual bool CanVent { get; } = false;
+        
+        /// <summary>
+        /// If a member of the role should be able to sabotage that sabotage type / in general
+        /// </summary>
+        public virtual bool CanSabotage(SystemTypes? sabotage)
+        {
+            return false;
+        }
+        
+        /// <summary>
+        /// This method calculates the nearest player to kill for a member of this role
+        /// </summary>
+        public virtual PlayerControl FindClosesTarget(PlayerControl from)
+        {
+            var distance = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            
+            if (!ShipStatus.Instance)
+                return null;
+            
+            Vector2 truePosition = from.GetTruePosition();
+            
+            PlayerControl result = null;
+            foreach (var playerInfo in GameData.Instance.AllPlayers)
+            {
+                PlayerControl @object = playerInfo.Object;
+                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && CanKill(@object))
+                {
+                    if (@object && @object.Collider.enabled)
+                    {
+                        Vector2 vector = @object.GetTruePosition() - truePosition;
+                        float magnitude = vector.magnitude;
+                        if (magnitude <= distance && !PhysicsHelpers.AnyNonTriggersBetween(truePosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
+                        {
+                            result = @object;
+                            distance = magnitude;
+                        }
+                    }
+                }
+            }
+            
+            return result;
+        }
 
         public void _OnGameStart()
         {
@@ -161,9 +217,6 @@ namespace PeasAPI.Roles
         {
             Id = RoleManager.GetRoleId();
             RoleManager.RegisterRole(this);
-
-            if (TaskText == null)
-                TaskText = Description;
         }
     }
 }
