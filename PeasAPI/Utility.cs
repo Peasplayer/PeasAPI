@@ -7,13 +7,13 @@ namespace PeasAPI
 {
     public class Utility
     {
-        public static Sprite CreateSprite(string image, Assembly assembly)
+        public static Sprite CreateSprite(string image, float pixelsPerUnit = 128f)
         {
             Texture2D tex = GUIExtensions.CreateEmptyTexture();
-            Stream myStream = assembly.GetManifestResourceStream(image);
-            byte[] buttonTexture = Reactor.Extensions.Extensions.ReadFully(myStream);
+            Stream myStream = Assembly.GetCallingAssembly().GetManifestResourceStream(image);
+            byte[] buttonTexture = myStream.ReadFully();
             ImageConversion.LoadImage(tex, buttonTexture, false);
-            return GUIExtensions.CreateSprite(tex);
+            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
         }
     }
 }

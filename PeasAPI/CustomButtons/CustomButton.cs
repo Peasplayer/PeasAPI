@@ -164,6 +164,8 @@ namespace PeasAPI.CustomButtons
                 Buttons[i].KillButtonManager.enabled = Buttons[i].CanUse();
                 Buttons[i].KillButtonManager.gameObject.active = Buttons[i].CanUse();
                 Buttons[i].KillButtonManager.killText.enabled = Buttons[i].CanUse();
+                
+                Buttons[i].KillButtonManager.killText.color = Buttons[i].CanUse() ? Palette.EnabledColor : Palette.DisabledGrey;
 
                 if (Buttons[i].CanUse() && Buttons[i].Visibile)
                     Buttons[i].Update();
@@ -175,7 +177,7 @@ namespace PeasAPI.CustomButtons
             var pos = KillButtonManager.transform.localPosition;
             
             if (pos.x > 0f)
-                pos = new Vector3((pos.x + 1.3f) * -1, pos.y, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
+                KillButtonManager.transform.localPosition = new Vector3((pos.x + 1.3f) * -1, pos.y, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
             
             if (Timer < 0f && PlayerControl.LocalPlayer.moveable)
             {
@@ -213,7 +215,7 @@ namespace PeasAPI.CustomButtons
 
         public void SetTexture(string image, Assembly assembly)
         {
-            _buttonSprite = Utility.CreateSprite(image, assembly);
+            _buttonSprite = Utility.CreateSprite(image);
         }
     }
 }
