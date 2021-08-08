@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using PeasAPI.Roles;
-using RewiredConsts;
 using UnityEngine;
 using Action = System.Action;
 
@@ -13,9 +12,9 @@ namespace PeasAPI.CustomButtons
         public KillButtonManager KillButtonManager;
         private Color _startColorText = new Color(255, 255, 255);
         public Vector2 PositionOffset;
-        public float MaxTimer = 0f;
-        public float Timer = 0f;
-        public float EffectDuration = 0f;
+        public float MaxTimer;
+        public float Timer;
+        public float EffectDuration;
         public bool IsEffectActive;
         public bool hasEffectDuration;
         public bool enabled = true;
@@ -27,52 +26,85 @@ namespace PeasAPI.CustomButtons
         public BaseRole Role;
         public bool UseRole = false;
         public bool ImpostorButton = false;
-        public bool DeadCanUse = false;
+        public bool DeadCanUse;
+        public string Text = "";
+        public Vector2 TextOffset;
+        public bool UseText = false;
         public PassiveButton Button;
 
-        public CustomButton(Action OnClick, float Cooldown, Sprite Image, Vector2 PositionOffset, bool deadCanUse, float EffectDuration, Action OnEffectEnd)
+        public CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
+            float effectDuration, Action onEffectEnd, bool useText = false, string text = "",
+            Vector2 textOffset = new Vector2())
         {
-            this.OnClick = OnClick;
-            this.OnEffectEnd = OnEffectEnd;
-            this.PositionOffset = PositionOffset;
-            this.EffectDuration = EffectDuration;
+            OnClick = onClick;
+
+            PositionOffset = positionOffset;
+
             DeadCanUse = deadCanUse;
-            MaxTimer = Cooldown;
+
+            MaxTimer = cooldown;
             Timer = MaxTimer;
-            _buttonSprite = Image;
+
+            _buttonSprite = image;
+
+            OnEffectEnd = onEffectEnd;
+            EffectDuration = effectDuration;
             hasEffectDuration = true;
-            IsEffectActive = false;
+
+            UseText = useText;
+            Text = text;
+            TextOffset = textOffset;
+
             Buttons.Add(this);
+
             Start();
         }
-        
-        public CustomButton(Action OnClick, float Cooldown, Sprite Image, Vector2 PositionOffset, bool deadCanUse)
+
+        public CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
+            bool useText = false, string text = "", Vector2 textOffset = new Vector2())
         {
-            this.OnClick = OnClick;
-            this.PositionOffset = PositionOffset;
+            OnClick = onClick;
+
+            PositionOffset = positionOffset;
+
             DeadCanUse = deadCanUse;
-            MaxTimer = Cooldown;
+
+            MaxTimer = cooldown;
             Timer = MaxTimer;
-            _buttonSprite = Image;
-            hasEffectDuration = false;
+
+            _buttonSprite = image;
+
+            UseText = useText;
+            Text = text;
+            TextOffset = textOffset;
+
             Buttons.Add(this);
+
             Start();
         }
 
         private void Start()
         {
-            KillButtonManager = UnityEngine.Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
-            _startColorText = KillButtonManager.TimerText.color;
+            KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
             KillButtonManager.gameObject.SetActive(true);
+            
+            _startColorText = KillButtonManager.TimerText.color;
+            
             KillButtonManager.renderer.enabled = true;
             KillButtonManager.renderer.sprite = _buttonSprite;
-            KillButtonManager.killText.enabled = false;
+            
+            KillButtonManager.killText.enabled = UseText;
+            KillButtonManager.killText.text = Text;
+            KillButtonManager.killText.transform.position += (Vector3) TextOffset;
+            
             Button = KillButtonManager.GetComponent<PassiveButton>();
             Button.OnClick.RemoveAllListeners();
-            Button.OnClick.AddListener((UnityEngine.Events.UnityAction)listener);
+            Button.OnClick.AddListener((UnityEngine.Events.UnityAction) listener);
+
             void listener()
             {
-                if (Timer <= 0f && _canUse && enabled && KillButtonManager.gameObject.active && PlayerControl.LocalPlayer.moveable)
+                if (Timer <= 0f && _canUse && enabled && KillButtonManager.gameObject.active &&
+                    PlayerControl.LocalPlayer.moveable)
                 {
                     KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
                     OnClick();
@@ -86,57 +118,74 @@ namespace PeasAPI.CustomButtons
                 }
             }
         }
+
         public bool CanUse()
         {
-            if (PlayerControl.LocalPlayer == null) return false;
-            if (PlayerControl.LocalPlayer.Data == null) return false;
-            if (MeetingHud.Instance != null) return false;
+            if (PlayerControl.LocalPlayer == null) 
+                return false;
+            
+            if (PlayerControl.LocalPlayer.Data == null) 
+                return false;
+            
+            if (MeetingHud.Instance != null) 
+                return false;
+            
             if (UseRole)
             {
-                _canUse = PlayerControl.LocalPlayer.IsRole(Role) && (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
+                _canUse = PlayerControl.LocalPlayer.IsRole(Role) &&
+                          (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
             }
             else if (ImpostorButton)
             {
-                _canUse = PlayerControl.LocalPlayer.Data.IsImpostor && (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
+                _canUse = PlayerControl.LocalPlayer.Data.IsImpostor &&
+                          (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
             }
             else
             {
                 _canUse = DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead;
             }
+
             return true;
         }
-        
+
         public static void HudUpdate()
         {
             Buttons.RemoveAll(item => item.KillButtonManager == null);
             for (int i = 0; i < Buttons.Count; i++)
             {
-                
                 Buttons[i].KillButtonManager.renderer.sprite = Buttons[i]._buttonSprite;
                 Buttons[i].KillButtonManager.gameObject.SetActive(Buttons[i].Visibile);
                 Buttons[i].KillButtonManager.renderer.enabled = Buttons[i].Visibile;
                 Buttons[i].KillButtonManager.enabled = Buttons[i].Visibile;
                 Buttons[i].KillButtonManager.gameObject.active = Buttons[i].Visibile;
+                Buttons[i].KillButtonManager.killText.enabled = Buttons[i].Visibile;
 
                 Buttons[i].KillButtonManager.renderer.enabled = Buttons[i].CanUse();
                 Buttons[i].KillButtonManager.enabled = Buttons[i].CanUse();
                 Buttons[i].KillButtonManager.gameObject.active = Buttons[i].CanUse();
-                
+                Buttons[i].KillButtonManager.killText.enabled = Buttons[i].CanUse();
+
                 if (Buttons[i].CanUse() && Buttons[i].Visibile)
                     Buttons[i].Update();
             }
         }
+
         private void Update()
         {
-            if (KillButtonManager.transform.localPosition.x > 0f)
-                KillButtonManager.transform.localPosition = new Vector3((KillButtonManager.transform.localPosition.x + 1.3f) * -1, KillButtonManager.transform.localPosition.y, KillButtonManager.transform.localPosition.z) + new Vector3(PositionOffset.x, PositionOffset.y);
+            var pos = KillButtonManager.transform.localPosition;
+            
+            if (pos.x > 0f)
+                pos = new Vector3((pos.x + 1.3f) * -1, pos.y, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
+            
             if (Timer < 0f && PlayerControl.LocalPlayer.moveable)
             {
                 KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 1f);
+                
                 if (IsEffectActive)
                 {
                     KillButtonManager.TimerText.color = _startColorText;
                     Timer = MaxTimer;
+                    
                     IsEffectActive = false;
                     OnEffectEnd();
                 }
@@ -145,10 +194,16 @@ namespace PeasAPI.CustomButtons
             {
                 if (_canUse)
                     Timer -= Time.deltaTime;
+                
                 KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
             }
+
+            KillButtonManager.killText.enabled = UseText;
+            KillButtonManager.killText.text = Text;
+            
             KillButtonManager.gameObject.SetActive(_canUse);
             KillButtonManager.renderer.enabled = _canUse;
+            
             if (_canUse)
             {
                 KillButtonManager.renderer.material.SetFloat("_Desat", 0f);
