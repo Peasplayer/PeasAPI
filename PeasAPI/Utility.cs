@@ -11,8 +11,8 @@ namespace PeasAPI
         {
             Texture2D tex = GUIExtensions.CreateEmptyTexture();
             Stream myStream = Assembly.GetCallingAssembly().GetManifestResourceStream(image);
-            byte[] buttonTexture = myStream.ReadFully();
-            ImageConversion.LoadImage(tex, buttonTexture, false);
+            byte[] data = myStream.ReadFully();
+            ImageConversion.LoadImage(tex, data, false);
             return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
         }
     }
