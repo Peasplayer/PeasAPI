@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hazel;
+using PeasAPI.CustomRpc;
 using Reactor.Networking;
 
 namespace PeasAPI.Roles
@@ -29,7 +30,7 @@ namespace PeasAPI.Roles
         
         public static void RpcResetRoles()
         {
-            Rpc<ResetRoleRpc>.Instance.Send();
+            Rpc<RpcResetRoles>.Instance.Send();
         }
         
         public static BaseRole GetRole(int id)

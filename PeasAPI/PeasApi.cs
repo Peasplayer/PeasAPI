@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
@@ -59,17 +58,23 @@ namespace PeasAPI
             Logger = this.Log;
             ConfigFile = Config;
             
-            var useCustomServer = PeasApi.ConfigFile.Bind("CustomServer", "UseCustomServer", false);
+            var useCustomServer = ConfigFile.Bind("CustomServer", "UseCustomServer", false);
             if (useCustomServer.Value)
             {
-                CustomServerManager.RegisterServer(PeasApi.ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value, 
-                    PeasApi.ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value, 
-                    PeasApi.ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);    
+                CustomServerManager.RegisterServer(ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value, 
+                    ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value, 
+                    ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);    
             }
             
             UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
             
             RegisterCustomRoleAttribute.Register(this);
+
+            /*var option = new CustomToggleOption("Test", true);
+            option.OnValueChanged += args =>
+            {
+                Logger.LogInfo(args.Option.Value + " " + args.NewValue + " " + args.OldValue);
+            };*/
             
             Harmony.PatchAll();
         }

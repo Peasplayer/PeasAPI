@@ -90,7 +90,6 @@ namespace PeasAPI.Managers
         {
             if (modded)
                 return;
-            PeasApi.Logger.LogInfo($"1: {CustomHatManager.CustomHats.Count}");
             
             modded = true;
 

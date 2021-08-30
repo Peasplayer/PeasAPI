@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hazel;
+using PeasAPI.CustomRpc;
 using PeasAPI.Roles;
 using Reactor.Networking;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace PeasAPI.CustomEndReason
         /// </summary>
         public CustomEndReason(Color color, string victoryText, string defeatText, string stinger, List<GameData.PlayerInfo> winners)
         {
-            Rpc<CustomEndReasonRpc>.Instance.Send(new CustomEndReasonRpc.Data(color, victoryText, defeatText, stinger, winners));
+            Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(color, victoryText, defeatText, stinger, winners));
 
             EndReasonManager.Color = color;
             EndReasonManager.Winners = winners;
@@ -50,7 +51,7 @@ namespace PeasAPI.CustomEndReason
                         winners.Add(winner.GetPlayerInfo());
                     }
                     
-                    Rpc<CustomEndReasonRpc>.Instance.Send(new CustomEndReasonRpc.Data(Palette.ImpostorRed, "Victory", "Defeat", "impostor", winners));
+                    Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(Palette.ImpostorRed, "Victory", "Defeat", "impostor", winners));
 
                     EndReasonManager.Color = Palette.ImpostorRed;
                     EndReasonManager.Winners = winners;
@@ -74,7 +75,7 @@ namespace PeasAPI.CustomEndReason
                         winners.Add(winner.GetPlayerInfo());
                     }
                     
-                    Rpc<CustomEndReasonRpc>.Instance.Send(new CustomEndReasonRpc.Data(Palette.Blue, "Victory", "Defeat", "crew", winners));
+                    Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(Palette.Blue, "Victory", "Defeat", "crew", winners));
 
                     EndReasonManager.Color = Palette.Blue;
                     EndReasonManager.Winners = winners;
@@ -132,7 +133,7 @@ namespace PeasAPI.CustomEndReason
                 else
                     stinger = "impostor";
                 
-                Rpc<CustomEndReasonRpc>.Instance.Send(new CustomEndReasonRpc.Data(role.Color, $"{role.Name} wins", $"{role.Name} wins", stinger, winners));
+                Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(role.Color, $"{role.Name} wins", $"{role.Name} wins", stinger, winners));
 
                 EndReasonManager.Color = role.Color;
                 EndReasonManager.Winners = winners;
