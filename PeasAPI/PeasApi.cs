@@ -12,22 +12,23 @@ using Random = System.Random;
 
 namespace PeasAPI
 {
+    [HarmonyPatch]
     [BepInPlugin(Id)]
     [BepInProcess("Among Us.exe")]
     [BepInDependency(ReactorPlugin.Id)]
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.3.2";
+        public const string Version = "1.3.4";
 
         public Harmony Harmony { get; } = new Harmony(Id);
-        
+
         public static readonly Random Random = new Random();
-        
+
         public static ManualLogSource Logger { get; private set; }
-        
+
         public static ConfigFile ConfigFile { get; private set; }
-        
+
         public static bool GameStarted
         {
             get
@@ -46,7 +47,7 @@ namespace PeasAPI
         /// <summary>
         /// How much the account tab should be lowered
         /// </summary>
-        public static Vector3 AccountTabOffset { get; set; } = new (0f, 0f, 0f);
+        public static Vector3 AccountTabOffset { get; set; } = new(0f, 0f, 0f);
 
         /// <summary>
         /// Whether the function of the account tab should be replaced with just the ability to change your name or not
@@ -57,17 +58,18 @@ namespace PeasAPI
         {
             Logger = this.Log;
             ConfigFile = Config;
-            
+
             var useCustomServer = ConfigFile.Bind("CustomServer", "UseCustomServer", false);
             if (useCustomServer.Value)
             {
-                CustomServerManager.RegisterServer(ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value, 
-                    ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value, 
-                    ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);    
+                CustomServerManager.RegisterServer(ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value,
+                    ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value,
+                    ConfigFile.Bind("CustomServer", "Port", (ushort) 22023).Value);
             }
-            
-            UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
-            
+
+            UpdateManager.RegisterUpdateListener(
+                "https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
+
             RegisterCustomRoleAttribute.Register(this);
 
             /*var option = new CustomToggleOption("Test", true);
@@ -75,8 +77,17 @@ namespace PeasAPI
             {
                 Logger.LogInfo(args.Option.Value + " " + args.NewValue + " " + args.OldValue);
             };*/
-            
+
             Harmony.PatchAll();
+        }
+
+        [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
+        [HarmonyPrefix]
+        public static void PatchToTestSomeStuff(KeyboardJoystick __instance)
+        {
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+            }
         }
     }
 }

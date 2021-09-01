@@ -85,6 +85,8 @@ namespace PeasAPI.CustomButtons
 
         private void Start()
         {
+            Visibile = false;
+            
             KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
             KillButtonManager.gameObject.SetActive(true);
             
@@ -153,22 +155,19 @@ namespace PeasAPI.CustomButtons
             Buttons.RemoveAll(item => item.KillButtonManager == null);
             for (int i = 0; i < Buttons.Count; i++)
             {
-                Buttons[i].KillButtonManager.renderer.sprite = Buttons[i]._buttonSprite;
-                Buttons[i].KillButtonManager.gameObject.SetActive(Buttons[i].Visibile);
-                Buttons[i].KillButtonManager.renderer.enabled = Buttons[i].Visibile;
-                Buttons[i].KillButtonManager.enabled = Buttons[i].Visibile;
-                Buttons[i].KillButtonManager.gameObject.active = Buttons[i].Visibile;
-                Buttons[i].KillButtonManager.killText.enabled = Buttons[i].Visibile;
-
-                Buttons[i].KillButtonManager.renderer.enabled = Buttons[i].CanUse();
-                Buttons[i].KillButtonManager.enabled = Buttons[i].CanUse();
-                Buttons[i].KillButtonManager.gameObject.active = Buttons[i].CanUse();
-                Buttons[i].KillButtonManager.killText.enabled = Buttons[i].CanUse();
+                var button = Buttons[i];
+                var killButton = button.KillButtonManager;
+                var canUse = button.CanUse();
                 
-                Buttons[i].KillButtonManager.killText.color = Buttons[i].CanUse() ? Palette.EnabledColor : Palette.DisabledGrey;
+                Buttons[i].KillButtonManager.renderer.sprite = button._buttonSprite;
+                
+                killButton.gameObject.SetActive(button.Visibile && canUse);
+                
+                killButton.killText.enabled = canUse;
+                killButton.killText.alpha = killButton.isCoolingDown ? Palette.DisabledClear.a : Palette.EnabledColor.a;
 
-                if (Buttons[i].CanUse() && Buttons[i].Visibile)
-                    Buttons[i].Update();
+                if (canUse && button.Visibile)
+                    button.Update();
             }
         }
 
