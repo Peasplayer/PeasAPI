@@ -85,8 +85,6 @@ namespace PeasAPI.CustomButtons
 
         private void Start()
         {
-            Visibile = false;
-            
             KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
             KillButtonManager.gameObject.SetActive(true);
             
