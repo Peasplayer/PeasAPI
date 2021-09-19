@@ -105,7 +105,7 @@ namespace PeasAPI.CustomEndReason
         }
 
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.Start))]
-        private class EndGameManager_Start
+        private class EndGameManagerStartPatch
         {
             public static void Prefix(EndGameManager __instance)
             {

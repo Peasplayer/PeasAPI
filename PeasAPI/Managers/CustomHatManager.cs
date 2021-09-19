@@ -53,8 +53,10 @@ namespace PeasAPI.Managers
                     newHat.InFront = InFront;
                     newHat.NoBounce = NoBounce;
                     newHat.ChipOffset = ChipOffset;
-                    newHat.BackImage = BackImage;
-                    newHat.FloorImage = FloorImage;
+                    if (BackImage)
+                        newHat.BackImage = BackImage;
+                    if (FloorImage)
+                        newHat.FloorImage = FloorImage;
                     
                     return newHat;
                 }

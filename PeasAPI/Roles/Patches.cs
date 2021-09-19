@@ -11,20 +11,6 @@ namespace PeasAPI.Roles
 {
     public class Patches
     {
-        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
-        public static class ShipStatusStartPatch
-        {
-            public static void Prefix(PlayerControl __instance)
-            {
-                if (PeasApi.EnableRoles)
-                {
-                    foreach (var role in RoleManager.Roles)
-                    {
-                        role._OnGameStart();
-                    }
-                }
-            }
-        }
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInfected))]
         public static class PlayerControlSetInfectedPatch
@@ -89,6 +75,14 @@ namespace PeasAPI.Roles
                             if (player.GetRole() == null)
                                 RoleManager.Crewmates.Add(player.PlayerId);
                         }
+                    }
+                }
+                
+                if (PeasApi.EnableRoles)
+                {
+                    foreach (var role in RoleManager.Roles)
+                    {
+                        role._OnGameStart();
                     }
                 }
             }
@@ -294,7 +288,7 @@ namespace PeasAPI.Roles
                     __result = __instance.GetRole().FindClosesTarget(__instance);
                     return false;
                 }
-
+                
                 __result = null;
                 return true;
             }

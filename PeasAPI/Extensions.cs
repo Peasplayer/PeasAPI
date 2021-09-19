@@ -13,15 +13,7 @@ namespace PeasAPI
         /// </summary>
         public static PlayerControl GetPlayer(this byte id)
         {
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-            {
-                if (player.PlayerId == id)
-                {
-                    return player;
-                }
-            }
-
-            return null;
+            return GameData.Instance.GetPlayerById(id).Object;
         }
         
         /// <summary>
@@ -29,12 +21,7 @@ namespace PeasAPI
         /// </summary>
         public static GameData.PlayerInfo GetPlayerInfo(this byte id)
         {
-            foreach (GameData.PlayerInfo player in GameData.Instance.AllPlayers)
-            {
-                if (player.PlayerId == id)
-                    return player;
-            }
-            return null;
+            return GameData.Instance.GetPlayerById(id);
         }
 
         /// <summary>
