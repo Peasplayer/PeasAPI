@@ -1,8 +1,11 @@
 ﻿using Hazel;
 using PeasAPI.CustomRpc;
+using PeasAPI.Options;
 using PeasAPI.Roles;
 using Reactor.Networking;
+using UnhollowerBaseLib;
 using UnityEngine;
+using Object = Il2CppSystem.Object;
 
 namespace PeasAPI
 {
@@ -38,6 +41,12 @@ namespace PeasAPI
             var a = Mathf.RoundToInt(color.a * 255f).ToString("X2");
 
             return $"<color=#{r}{g}{b}{a}>";
+        }
+
+        public static string GetTranslation(this StringNames stringName)
+        {
+            return DestroyableSingleton<TranslationController>.Instance.GetString(stringName,
+                new Il2CppReferenceArray<Object>(0));
         }
 
         #region Roles
@@ -163,5 +172,31 @@ namespace PeasAPI
         }
 
         #endregion Roles
+        
+        #region Options
+
+        public static bool IsCustom(this OptionBehaviour option)
+        {
+            foreach (var customOption in OptionManager.CustomOptions)
+            {
+                if (customOption.Option == option)
+                    return true;
+            }
+
+            return false;
+        }
+        
+        public static CustomOption? GetCustom(this OptionBehaviour option)
+        {
+            foreach (var customOption in OptionManager.CustomOptions)
+            {
+                if (customOption.Option == option)
+                    return customOption;
+            }
+
+            return null;
+        }
+        
+        #endregion Options
     }
 }

@@ -19,7 +19,7 @@ namespace PeasAPI
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.3.5";
+        public const string Version = "1.4.0";
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
@@ -71,12 +71,6 @@ namespace PeasAPI
                 "https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
 
             RegisterCustomRoleAttribute.Register(this);
-
-            /*var option = new CustomToggleOption("Test", true);
-            option.OnValueChanged += args =>
-            {
-                Logger.LogInfo(args.Option.Value + " " + args.NewValue + " " + args.OldValue);
-            };*/
 
             Harmony.PatchAll();
         }

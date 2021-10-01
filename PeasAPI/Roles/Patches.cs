@@ -341,11 +341,13 @@ namespace PeasAPI.Roles
                     }
                     else
                     {
+#pragma warning disable 184
                         if (target is Vent)
                         {
                             __instance.currentButtonShown = __instance.otherButtons[ImageNames.VentButton];
                         }
                         else if (target is OptionsConsole)
+#pragma warning restore 184
                         {
                             __instance.currentButtonShown = __instance.otherButtons[ImageNames.OptionsButton];
                         }
