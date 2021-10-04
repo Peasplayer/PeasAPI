@@ -181,7 +181,7 @@ namespace PeasAPI.Roles
 
             foreach (var pstate in __instance.playerStates)
             {
-                let player = pstate.TargetPlayerId.GetPlayer();
+                var player = pstate.TargetPlayerId.GetPlayer();
                 if (player.IsRole(this) && _IsRoleVisible(player, PlayerControl.LocalPlayer))
                 {
                     pstate.NameText.color = Color;
