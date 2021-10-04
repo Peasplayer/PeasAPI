@@ -98,7 +98,6 @@ namespace PeasAPI.Roles
                 case Visibility.Custom: return this.IsRoleVisible(playerWithRole, perspective);
                 default: throw new NotImplementedException("Unknown Visibility");
             }
-            return false;
         }
         
         /// <summary>
