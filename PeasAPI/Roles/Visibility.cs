@@ -5,6 +5,7 @@
         Crewmate = 0,
         Impostor = 1,
         NoOne = 2,
-        Role = 3
+        Role = 3,
+        Custom = 4
     }
 }
