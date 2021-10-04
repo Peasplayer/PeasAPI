@@ -73,9 +73,43 @@ namespace PeasAPI.Roles
         }
         
         /// <summary>
+        /// If a player should be able to see a person with this role.
+        /// Only works with Visibility.Custom
+        /// </summary>
+        public virtual bool IsRoleVisible(PlayerControl playerWithRole, PlayerControl perspective)
+        {
+            return false;
+        }
+        
+        public virtual bool _IsRoleVisible(PlayerControl playerWithRole, PlayerControl perspective)
+        {
+            if (playerWithRole.PlayerId == perspective.PlayerId)
+            {
+                return true;
+            }
+            if (this.Visibility == Visibility.Role)
+            {
+                return perspective.IsRole(this);
+            }
+            if (this.Visibility == Visibility.Impostor)
+            {
+                return perspective.Data.IsImpostor;
+            }
+            if (this.Visibility == Visibility.Crewmate)
+            {
+                return true;
+            }
+            if (this.Visibility == Visibility.Custom)
+            {
+                return this.IsRoleVisible(playerWithRole, perspective);
+            }
+            return false;
+        }
+        
+        /// <summary>
         /// This method calculates the nearest player to kill for a member of this role
         /// </summary>
-        public virtual PlayerControl FindClosesTarget(PlayerControl from)
+        public virtual PlayerControl FindClosestTarget(PlayerControl from)
         {
             var distance = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
             
@@ -120,25 +154,13 @@ namespace PeasAPI.Roles
 
         public void _OnUpdate()
         {
-            if (PlayerControl.LocalPlayer.IsRole(this))
+            foreach (var player in Members)
             {
-                PlayerControl.LocalPlayer.nameText.color = this.Color;
-                PlayerControl.LocalPlayer.nameText.text = $"{PlayerControl.LocalPlayer.name}\n{Name}";
-                if (this.Visibility == Visibility.Role)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = this.Color;
-            }
-            else if (PlayerControl.LocalPlayer.Data.IsImpostor)
-            {
-                if (this.Visibility == Visibility.Impostor)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = this.Color;
-            }
-            else if (PlayerControl.LocalPlayer.GetRole() == null)
-            {
-                if (this.Visibility == Visibility.Crewmate)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = this.Color;
+                if (player.GetPlayer().IsRole(this) && _IsRoleVisible(player.GetPlayer(), PlayerControl.LocalPlayer))
+                {
+                    player.GetPlayer().nameText.color = this.Color;
+                    player.GetPlayer().nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                }
             }
 
             OnUpdate();
@@ -153,53 +175,22 @@ namespace PeasAPI.Roles
 
         public void _OnMeetingUpdate(MeetingHud __instance)
         {
-            if (PlayerControl.LocalPlayer.IsRole(this))
+            foreach (var player in Members)
             {
-                PlayerControl.LocalPlayer.nameText.color = Color;
-                PlayerControl.LocalPlayer.nameText.text = $"{PlayerControl.LocalPlayer.name}\n{Name}";
-                if (Visibility == Visibility.Role)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = Color;
-            }
-            else if (PlayerControl.LocalPlayer.Data.IsImpostor)
-            {
-                if (Visibility == Visibility.Impostor)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = Color;
-            }
-            else if (PlayerControl.LocalPlayer.GetRole() == null)
-            {
-                if (Visibility == Visibility.Crewmate)
-                    foreach (var player in Members)
-                        player.GetPlayer().nameText.color = Color;
+                if (player.GetPlayer().IsRole(this) && _IsRoleVisible(player.GetPlayer(), PlayerControl.LocalPlayer))
+                {
+                    player.GetPlayer().nameText.color = this.Color;
+                    player.GetPlayer().nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                }
             }
 
             foreach (var pstate in __instance.playerStates)
             {
-                if (pstate.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId &&
-                    PlayerControl.LocalPlayer.IsRole(this))
+                let player = pstate.TargetPlayerId.GetPlayer();
+                if (player.IsRole(this) && _IsRoleVisible(player, PlayerControl.LocalPlayer))
                 {
                     pstate.NameText.color = Color;
-                    pstate.NameText.text = $"{PlayerControl.LocalPlayer.name}\n{Name}";
-                }
-
-                if (pstate.TargetPlayerId.GetPlayer().IsRole(this))
-                {
-                    if (PlayerControl.LocalPlayer.IsRole(this))
-                    {
-                        if (Visibility == Visibility.Role)
-                            pstate.NameText.color = Color;
-                    }
-                    else if (PlayerControl.LocalPlayer.Data.IsImpostor)
-                    {
-                        if (Visibility == Visibility.Impostor)
-                            pstate.NameText.color = Color;
-                    }
-                    else if (PlayerControl.LocalPlayer.GetRole() == null)
-                    {
-                        if (Visibility == Visibility.Crewmate)
-                            pstate.NameText.color = Color;
-                    }
+                    pstate.NameText.text = $"{player.name}\n{Name}";
                 }
             }
             
