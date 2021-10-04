@@ -285,7 +285,7 @@ namespace PeasAPI.Roles
             {
                 if (__instance.GetRole() != null)
                 {
-                    __result = __instance.GetRole().FindClosesTarget(__instance);
+                    __result = __instance.GetRole().FindClosestTarget(__instance);
                     return false;
                 }
                 
