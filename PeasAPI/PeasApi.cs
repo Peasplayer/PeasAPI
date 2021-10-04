@@ -45,6 +45,11 @@ namespace PeasAPI
         public static bool EnableRoles = true;
 
         /// <summary>
+        /// If you set this to false please provide credit! I mean this stuff is free and open-source so a little credit would be nice :)
+        /// </summary>
+        public static bool ShamelessPlug = true;
+
+        /// <summary>
         /// How much the account tab should be lowered
         /// </summary>
         public static Vector3 AccountTabOffset { get; set; } = new(0f, 0f, 0f);
