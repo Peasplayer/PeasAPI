@@ -70,9 +70,9 @@ namespace PeasAPI.Options
             OnValueChanged?.Invoke(args);
         }
         
-        public CustomToggleOption(string title, bool defaultValue) : base(title)
+        public CustomToggleOption(string id, string title, bool defaultValue) : base(title)
         {
-            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.ToggleOption.{title}";
+            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.ToggleOption.{id}";
             _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
             
             Value = _configEntry.Value;

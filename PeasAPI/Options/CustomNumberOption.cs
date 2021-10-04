@@ -60,9 +60,9 @@ namespace PeasAPI.Options
             OnValueChanged?.Invoke(args);
         }
         
-        public CustomNumberOption(string title, float minValue, float maxValue, float increment, float defaultValue) : base(title)
+        public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue) : base(title)
         {
-            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{title}";
+            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
             _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
 
             Value = _configEntry.Value;

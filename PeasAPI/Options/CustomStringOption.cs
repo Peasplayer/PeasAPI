@@ -62,9 +62,9 @@ namespace PeasAPI.Options
             OnValueChanged?.Invoke(args);
         }
         
-        public CustomStringOption(string title, params string[] values) : base(title)
+        public CustomStringOption(string id, string title, params string[] values) : base(title)
         {
-            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.StringOption.{title}";
+            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.StringOption.{id}";
             _configEntry = PeasApi.ConfigFile.Bind("Options", Id, 0);
             
             Value = _configEntry.Value;
