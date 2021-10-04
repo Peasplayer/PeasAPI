@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx.IL2CPP;
 using UnityEngine;
@@ -87,21 +88,15 @@ namespace PeasAPI.Roles
             {
                 return true;
             }
-            if (this.Visibility == Visibility.Role)
+            
+            switch (this.Visibility)
             {
-                return perspective.IsRole(this);
-            }
-            if (this.Visibility == Visibility.Impostor)
-            {
-                return perspective.Data.IsImpostor;
-            }
-            if (this.Visibility == Visibility.Crewmate)
-            {
-                return true;
-            }
-            if (this.Visibility == Visibility.Custom)
-            {
-                return this.IsRoleVisible(playerWithRole, perspective);
+                case Visibility.Role: return perspective.IsRole(this);
+                case Visibility.Impostor: return perspective.Data.IsImpostor;
+                case Visibility.Crewmate: return true;
+                case Visibility.NoOne: return false;
+                case Visibility.Custom: return this.IsRoleVisible(playerWithRole, perspective);
+                default: throw new NotImplementedException("Unknown Visibility");
             }
             return false;
         }
