@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.Json;
 using PeasAPI.Enums;
 
-namespace PeasAPI.Managers.UpdateManager
+namespace PeasAPI.Managers.UpdateTools
 {
     public sealed class GitHubUpdater : UpdateListener
     {

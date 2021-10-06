@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace PeasAPI.Managers.UpdateManager
+namespace PeasAPI.Managers.UpdateTools
 {
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public static class MainMenuManagerStartPatch

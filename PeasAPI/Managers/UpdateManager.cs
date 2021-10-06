@@ -4,13 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using PeasAPI.Enums;
+using PeasAPI.Managers.UpdateTools;
 using Reactor;
 using Reactor.Extensions;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace PeasAPI.Managers.UpdateManager
+namespace PeasAPI.Managers
 {
     public static class UpdateManager
     {

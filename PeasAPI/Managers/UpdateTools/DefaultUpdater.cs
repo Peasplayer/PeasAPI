@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-namespace PeasAPI.Managers.UpdateManager
+namespace PeasAPI.Managers.UpdateTools
 {
     public sealed class DefaultUpdater : UpdateListener
     {

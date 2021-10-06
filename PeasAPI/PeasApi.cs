@@ -6,7 +6,6 @@ using HarmonyLib;
 using InnerNet;
 using PeasAPI.Components;
 using PeasAPI.Managers;
-using PeasAPI.Managers.UpdateManager;
 using Reactor;
 using UnityEngine;
 using Random = System.Random;

@@ -11,7 +11,7 @@ using PeasAPI.Enums;
 using Reactor;
 using UnityEngine;
 
-namespace PeasAPI.Managers.UpdateManager
+namespace PeasAPI.Managers.UpdateTools
 {
     public abstract class UpdateListener
     {
@@ -53,9 +53,7 @@ namespace PeasAPI.Managers.UpdateManager
             }
         }
 
-        public virtual void FromJsonElement(JsonElement json)
-        {
-        }
+        public abstract void FromJsonElement(JsonElement json);
 
         public virtual HttpResponseMessage FetchData()
         {
