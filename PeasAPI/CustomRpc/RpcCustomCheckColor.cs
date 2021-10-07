@@ -5,38 +5,28 @@ using Reactor.Networking;
 namespace PeasAPI.CustomRpc
 {
     [RegisterCustomRpc((uint) CustomRpcCalls.CmdCheckColor)]
-    public class RpcCustomCheckColor : PlayerCustomRpc<PeasApi, RpcCustomCheckColor.Data>
+    public class RpcCustomCheckColor : PlayerCustomRpc<PeasApi, byte>
     {
         public RpcCustomCheckColor(PeasApi plugin, uint id) : base(plugin, id)
         {
         }
 
-        public readonly struct Data
-        {
-            public readonly byte ColorId;
-
-            public Data(byte colorId)
-            {
-                ColorId = colorId;
-            }
-        }
-
         public override RpcLocalHandling LocalHandling => RpcLocalHandling.None;
 
-        public override void Write(MessageWriter writer, Data data)
+        public override void Write(MessageWriter writer, byte data)
         {
-            writer.Write(data.ColorId);
+            writer.Write(data);
         }
 
-        public override Data Read(MessageReader reader)
+        public override byte Read(MessageReader reader)
         {
-            return new Data(reader.ReadByte());
+            return reader.ReadByte();
         }
 
-        public override void Handle(PlayerControl innerNetObject, Data data)
+        public override void Handle(PlayerControl innerNetObject, byte data)
         {
             if (AmongUsClient.Instance.AmHost)
-                innerNetObject.CheckColor(data.ColorId);
+                innerNetObject.CheckColor(data);
         }
     }
 }

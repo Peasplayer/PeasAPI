@@ -116,7 +116,7 @@ namespace PeasAPI.Managers
                         return false;
                     }
 
-                    Rpc<RpcCustomCheckColor>.Instance.Send(new RpcCustomCheckColor.Data(bodyColor));
+                    Rpc<RpcCustomCheckColor>.Instance.Send(bodyColor);
                     return false;
                 }
 
