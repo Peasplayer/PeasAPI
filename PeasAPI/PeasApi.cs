@@ -72,9 +72,9 @@ namespace PeasAPI
                     ConfigFile.Bind("CustomServer", "Port", (ushort) 22023).Value);
             }
 
-            UpdateManager.RegisterUpdateListener(
-                "https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
-
+            //UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
+            UpdateManager.RegisterGitHubUpdateListener("Peasplayer","PeasAPI");
+                
             RegisterCustomRoleAttribute.Register(this);
 
             Harmony.PatchAll();
