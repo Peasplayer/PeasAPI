@@ -17,13 +17,6 @@ namespace PeasAPI.Managers
     {
         private static readonly List<UpdateListener> UpdateListeners = new();
 
-        public static void RegisterGitHubUpdateListener(string owner, string repoName, string auth,
-            FileType priority = FileType.First)
-        {
-            var callingAssembly = Assembly.GetCallingAssembly();
-            UpdateListeners.Add(new GitHubUpdater(callingAssembly, owner, repoName, priority, auth));
-        }
-
         public static void RegisterGitHubUpdateListener(string owner, string repoName, FileType type = FileType.First)
         {
             var callingAssembly = Assembly.GetCallingAssembly();

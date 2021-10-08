@@ -11,18 +11,15 @@ namespace PeasAPI.Managers.UpdateTools
 {
     public sealed class GitHubUpdater : UpdateListener
     {
-        public GitHubUpdater(Assembly assembly, string owner, string repoName, FileType priority,
-            string authToken = null)
+        public GitHubUpdater(Assembly assembly, string owner, string repoName, FileType priority)
         {
             Assembly = assembly;
             JsonLink = $"https://api.github.com/repos/{owner}/{repoName}/releases/latest";
-            AuthToken = authToken;
             Priority = priority;
             Initialize();
         }
 
         private FileType Priority { get; }
-        private string AuthToken { get; }
 
         public override void FromJsonElement(JsonElement json)
         {
@@ -36,12 +33,6 @@ namespace PeasAPI.Managers.UpdateTools
         {
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "PeasAPI Updater");
-            
-            if (AuthToken != null && AuthToken.Trim() != "")
-            {
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", AuthToken);
-            }
 
             return httpClient.GetAsync(new Uri(JsonLink), 0).Result;
         }
