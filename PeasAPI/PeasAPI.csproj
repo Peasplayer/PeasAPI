@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <VersionPrefix>1.4.1</VersionPrefix>
-        <VersionSuffix>dev</VersionSuffix>
+        <VersionPrefix>1.5.0</VersionPrefix>
+        <VersionSuffix>release</VersionSuffix>
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>

@@ -6,7 +6,7 @@
         ResetRoles,
         CustomEndReason,
         UpdateSetting,
-        CmdCheckColor,
+        CheckColor,
         SetColor
     }
 }
