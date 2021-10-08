@@ -6,6 +6,7 @@ using HarmonyLib;
 using InnerNet;
 using PeasAPI.CustomRpc;
 using Reactor;
+using Reactor.Extensions;
 using Reactor.Networking;
 using UnhollowerBaseLib;
 using UnityEngine;
@@ -74,22 +75,65 @@ namespace PeasAPI.Managers
             [HarmonyPatch(typeof(PlayerTab))]
             private static class PlayerTabPatch
             {
+                private static Scroller _scroller;
+                
+                // Scroller implementation
+                [HarmonyPrefix]
+                [HarmonyPatch(nameof(PlayerTab.OnEnable))]
+                private static void OnEnablePrefix(PlayerTab __instance)
+                {
+                    var hatsTab = __instance.transform.parent.parent
+                        .GetComponentInChildren<HatsTab>(true);
+                    
+                    if (!hatsTab || _scroller) return;
+
+                    _scroller = UnityEngine.Object.Instantiate(hatsTab.scroller.gameObject, 
+                        __instance.ColorTabArea).GetComponent<Scroller>();
+                    
+                    _scroller.name = "Scroller";
+
+                    var transform = _scroller.Hitbox.transform;
+                    transform.localPosition = Vector3.zero;
+                    transform.localScale = new Vector3(2.8f, 4f, 1f);
+
+                    var cc = __instance.ColorTabPrefab;
+                    cc.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                    foreach (var spr in cc.GetComponentsInChildren<SpriteRenderer>())
+                        spr.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                }
+                
                 // Resize and reposition color chips in playertab
                 [HarmonyPostfix]
                 [HarmonyPatch(nameof(PlayerTab.OnEnable))]
-                private static void OnEnable(PlayerTab __instance)
+                private static void OnEnablePostfix(PlayerTab __instance)
                 {
                     __instance.XRange = new FloatRange(-0.95f, 0.95f);
+                    var chips = __instance.ColorChips.ToArray();
                     
                     for (var i = 0; i < __instance.ColorChips.Count; i++) {
-                        var colorChip = __instance.ColorChips.ToArray()[i];
+                        var colorChip = chips[i];
                         var x = __instance.XRange.Lerp(i % 5 / 4f);
                         var y = __instance.YStart - (i / 5) * 0.45f;
-                        var transform = colorChip.transform;
 
+                        var transform = colorChip.transform;
                         transform.localPosition = new Vector3(x, y, -1f);
                         transform.localScale = Vector3.one;
+                        colorChip.transform.SetParent(_scroller.Inner.transform);
+                        
+                        var fg = colorChip.transform.GetChild(0).gameObject;
+                        var oldShade = fg.transform.GetChild(0).gameObject;
+                        var newShade = fg.transform.GetChild(1).gameObject;
+
+                        var shadeRenderer = newShade.GetComponent<SpriteRenderer>();
+                        shadeRenderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                        shadeRenderer.color = Color.Lerp(shadeRenderer.color, Color.black, .5f);
+
+                        fg.GetComponent<SpriteMask>().Destroy();
+                        oldShade.Destroy();
                     }
+                    
+                    var rows = Mathf.Max(0, (chips.Count / 5) - 8);
+                    _scroller.YBounds = new FloatRange(0f, (rows * 0.45f) + 0.3f);
                 }
                 
                 // Set hat everytime player selecting color
