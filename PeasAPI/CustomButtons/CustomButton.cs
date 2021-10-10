@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using HarmonyLib;
 using PeasAPI.Roles;
 using UnityEngine;
 using Action = System.Action;
@@ -147,25 +148,29 @@ namespace PeasAPI.CustomButtons
 
             return true;
         }
-
-        public static void HudUpdate()
+        
+        [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+        public static class HudManagerUpdatePatch
         {
-            Buttons.RemoveAll(item => item.KillButtonManager == null);
-            for (int i = 0; i < Buttons.Count; i++)
+            public static void Prefix(HudManager __instance)
             {
-                var button = Buttons[i];
-                var killButton = button.KillButtonManager;
-                var canUse = button.CanUse();
+                Buttons.RemoveAll(item => item.KillButtonManager == null);
+                for (int i = 0; i < Buttons.Count; i++)
+                {
+                    var button = Buttons[i];
+                    var killButton = button.KillButtonManager;
+                    var canUse = button.CanUse();
                 
-                Buttons[i].KillButtonManager.renderer.sprite = button._buttonSprite;
+                    Buttons[i].KillButtonManager.renderer.sprite = button._buttonSprite;
                 
-                killButton.gameObject.SetActive(button.Visibile && canUse);
+                    killButton.gameObject.SetActive(button.Visibile && canUse);
                 
-                killButton.killText.enabled = canUse;
-                killButton.killText.alpha = killButton.isCoolingDown ? Palette.DisabledClear.a : Palette.EnabledColor.a;
+                    killButton.killText.enabled = canUse;
+                    killButton.killText.alpha = killButton.isCoolingDown ? Palette.DisabledClear.a : Palette.EnabledColor.a;
 
-                if (canUse && button.Visibile)
-                    button.Update();
+                    if (canUse && button.Visibile)
+                        button.Update();
+                }
             }
         }
 

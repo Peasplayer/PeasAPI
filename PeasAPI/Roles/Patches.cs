@@ -213,8 +213,6 @@ namespace PeasAPI.Roles
                         role._OnUpdate();
                     }
                 }
-
-                CustomButton.HudUpdate();
             }
         }
 
