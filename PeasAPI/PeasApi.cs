@@ -74,7 +74,10 @@ namespace PeasAPI
 
             //UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
-                
+            
+            if (ShamelessPlug)
+                WatermarkManager.AddWatermark($"\n<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", "\n<color=#ff0000ff>PeasAPI");
+            
             RegisterCustomRoleAttribute.Register(this);
 
             Harmony.PatchAll();
