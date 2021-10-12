@@ -75,16 +75,9 @@ namespace PeasAPI
 
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
             
-            test();
-            
             RegisterCustomRoleAttribute.Register(this);
 
             Harmony.PatchAll();
-        }
-
-        private void test()
-        {
-            Logger.LogInfo(Assembly.GetCallingAssembly().GetName().Version.Build + " " + Assembly.GetCallingAssembly().GetName().Version.Major + " " + Assembly.GetCallingAssembly().GetName().Version.Minor);
         }
 
         [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
