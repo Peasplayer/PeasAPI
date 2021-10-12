@@ -46,7 +46,7 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
-        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, bool useText = false, string text = "",
+        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, string text = "",
             Vector2 textOffset = new Vector2())
         {
             var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, 
@@ -55,7 +55,7 @@ namespace PeasAPI.CustomButtons
         }
         
         public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role,
-            float effectDuration, Action onEffectEnd, bool useText = false, string text = "",
+            float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
         {
             var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, effectDuration,
@@ -63,7 +63,7 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
-        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role, bool useText = false, string text = "",
+        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role, string text = "",
             Vector2 textOffset = new Vector2())
         {
             var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, 
