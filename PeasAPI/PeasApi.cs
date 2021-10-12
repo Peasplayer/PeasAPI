@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
@@ -72,15 +73,18 @@ namespace PeasAPI
                     ConfigFile.Bind("CustomServer", "Port", (ushort) 22023).Value);
             }
 
-            //UpdateManager.RegisterUpdateListener("https://raw.githubusercontent.com/Peasplayer/PeasAPI/main/PeasAPI/Data.json");
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
             
-            if (ShamelessPlug)
-                WatermarkManager.AddWatermark($"\n<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", "\n<color=#ff0000ff>PeasAPI");
+            test();
             
             RegisterCustomRoleAttribute.Register(this);
 
             Harmony.PatchAll();
+        }
+
+        private void test()
+        {
+            Logger.LogInfo(Assembly.GetCallingAssembly().GetName().Version.Build + " " + Assembly.GetCallingAssembly().GetName().Version.Major + " " + Assembly.GetCallingAssembly().GetName().Version.Minor);
         }
 
         [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]

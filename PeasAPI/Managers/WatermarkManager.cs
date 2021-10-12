@@ -17,7 +17,7 @@ namespace PeasAPI.Managers
             /// <summary>
             /// How much the version text should be lowered
             /// </summary>
-            public Vector3? VersionTextOffset { get; set; }
+            public Vector3 VersionTextOffset { get; set; }
 
             /// <summary>
             /// Text that gets added to the ping text
@@ -27,10 +27,10 @@ namespace PeasAPI.Managers
             /// <summary>
             /// How much the ping text should be lowered
             /// </summary>
-            public Vector3? PingTextOffset { get; set; }
+            public Vector3 PingTextOffset { get; set; }
 
             public Watermark(string versionText, string pingText,
-                Vector3? versionTextOffset, Vector3? pingTextOffset)
+                Vector3 versionTextOffset, Vector3 pingTextOffset)
             {
                 VersionText = versionText;
                 PingText = pingText;
@@ -49,8 +49,11 @@ namespace PeasAPI.Managers
         /// </summary>
         public static bool UseReactorVersion { get; set; } = false;
 
+        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", 
+            "\n<color=#ff0000ff>PeasAPI", new Vector2(), new Vector2());
+
         public static void AddWatermark(string versionText, string pingText,
-            Vector2? versionTextOffset = null, Vector2? pingTextOffset = null)
+            Vector2 versionTextOffset = new Vector2(), Vector2 pingTextOffset = new Vector2())
         {
             var watermark = new Watermark(versionText, pingText, versionTextOffset, pingTextOffset);
             Watermarks.Add(watermark);
@@ -63,8 +66,7 @@ namespace PeasAPI.Managers
             {
                 foreach (var watermark in Watermarks)
                 {
-                    if (watermark.VersionTextOffset != null)
-                        __instance.transform.position += watermark.VersionTextOffset.Value;
+                    __instance.transform.position += watermark.VersionTextOffset;
 
                     if (UseReactorVersion)
                     {
@@ -75,6 +77,26 @@ namespace PeasAPI.Managers
                     {
                         if (watermark.VersionText != null)
                             __instance.text.text += watermark.VersionText;
+                    
+                        foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
+                            if (gameObject.name.Contains("ReactorVersion"))
+                                Object.Destroy(gameObject);
+                    }
+                }
+
+                if (PeasApi.ShamelessPlug)
+                {
+                    __instance.transform.position += PeasApiWatermark.VersionTextOffset;
+
+                    if (UseReactorVersion)
+                    {
+                        if (PeasApiWatermark.VersionText != null)
+                            Reactor.Patches.ReactorVersionShower.TextUpdated += text => text.text = PeasApiWatermark.VersionText;
+                    }
+                    else
+                    {
+                        if (PeasApiWatermark.VersionText != null)
+                            __instance.text.text += PeasApiWatermark.VersionText;
                     
                         foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
                             if (gameObject.name.Contains("ReactorVersion"))
@@ -92,11 +114,18 @@ namespace PeasAPI.Managers
                 __instance.transform.localPosition = new Vector3(2.5833f, 2.9f, 0f);
                 foreach (var watermark in Watermarks)
                 {
-                    if (watermark.PingTextOffset != null)
-                        __instance.transform.localPosition += watermark.PingTextOffset.Value;
+                    __instance.transform.localPosition += watermark.PingTextOffset;
                 
                     if (watermark.PingText != null)
                         __instance.text.text += watermark.PingText;
+                }
+
+                if (PeasApi.ShamelessPlug)
+                {
+                    __instance.transform.localPosition += PeasApiWatermark.PingTextOffset;
+                
+                    if (PeasApiWatermark.PingText != null)
+                        __instance.text.text += PeasApiWatermark.PingText;
                 }
             }
         }

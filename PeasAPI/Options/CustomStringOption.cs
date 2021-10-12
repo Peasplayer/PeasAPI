@@ -43,7 +43,8 @@ namespace PeasAPI.Options
         {
             var oldValue = Value;
             
-            _configEntry.Value = value;
+            if (AmongUsClient.Instance.AmHost)
+                _configEntry.Value = value;
                 
             Value = value;
             if (Option != null)

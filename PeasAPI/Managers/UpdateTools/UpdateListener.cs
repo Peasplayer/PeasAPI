@@ -22,6 +22,8 @@ namespace PeasAPI.Managers.UpdateTools
 
         public Version Version { get; set; }
 
+        public UpdateType UpdateType { get; set; } = UpdateType.Every;
+
         private FileType? Type
         {
             get
@@ -36,7 +38,25 @@ namespace PeasAPI.Managers.UpdateTools
 
         public virtual bool IsUpToDate()
         {
-            return !(Assembly.GetName().Version < Version);
+            switch (UpdateType)
+            {
+                default:
+                    return !(Assembly.GetName().Version < Version);
+                case UpdateType.Every:
+                    return !(Assembly.GetName().Version < Version);
+                case UpdateType.OnlyMajor:
+                    return !(Assembly.GetName().Version.Major < Version.Major);
+                case UpdateType.OnlyMinor:
+                    return !(Assembly.GetName().Version.Minor < Version.Minor);
+                case UpdateType.OnlyBuild:
+                    return !(Assembly.GetName().Version.Build < Version.Build);
+                case UpdateType.MajorAndBuild:
+                    return !(Assembly.GetName().Version.Major < Version.Major) || !(Assembly.GetName().Version.Build < Version.Build);
+                case UpdateType.MajorAndMinor:
+                    return !(Assembly.GetName().Version.Major < Version.Major) || !(Assembly.GetName().Version.Minor < Version.Minor);
+                case UpdateType.MinorAndBuild:
+                    return !(Assembly.GetName().Version.Minor < Version.Minor) || !(Assembly.GetName().Version.Build < Version.Build);
+            }
         }
 
         public virtual void Initialize()

@@ -11,11 +11,12 @@ namespace PeasAPI.Managers.UpdateTools
 {
     public sealed class GitHubUpdater : UpdateListener
     {
-        public GitHubUpdater(Assembly assembly, string owner, string repoName, FileType priority)
+        public GitHubUpdater(Assembly assembly, string owner, string repoName, FileType priority, UpdateType updateType = UpdateType.Every)
         {
             Assembly = assembly;
             JsonLink = $"https://api.github.com/repos/{owner}/{repoName}/releases/latest";
             Priority = priority;
+            UpdateType = updateType;
             Initialize();
         }
 

@@ -1,14 +1,16 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using PeasAPI.Enums;
 
 namespace PeasAPI.Managers.UpdateTools
 {
     public sealed class DefaultUpdater : UpdateListener
     {
-        public DefaultUpdater(Assembly assembly, string link)
+        public DefaultUpdater(Assembly assembly, string link, UpdateType updateType = UpdateType.Every)
         {
             Assembly = assembly;
             JsonLink = link;
+            UpdateType = updateType;
             Initialize();
         }
 
