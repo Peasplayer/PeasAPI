@@ -150,10 +150,15 @@ namespace PeasAPI.Roles
         {
             foreach (var player in Members)
             {
-                if (player.GetPlayer().IsRole(this) && _IsRoleVisible(player.GetPlayer(), PlayerControl.LocalPlayer))
+                var playerControl = player.GetPlayer();
+                if (playerControl == null)
+                    continue;
+                if (PlayerControl.LocalPlayer == null)
+                    continue;
+                if (playerControl.IsRole(this) && _IsRoleVisible(playerControl, PlayerControl.LocalPlayer))
                 {
-                    player.GetPlayer().nameText.color = this.Color;
-                    player.GetPlayer().nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                    playerControl.nameText.color = this.Color;
+                    playerControl.nameText.text = $"{player.GetPlayer().name}\n{Name}";
                 }
             }
 
@@ -171,16 +176,25 @@ namespace PeasAPI.Roles
         {
             foreach (var player in Members)
             {
-                if (player.GetPlayer().IsRole(this) && _IsRoleVisible(player.GetPlayer(), PlayerControl.LocalPlayer))
+                var playerControl = player.GetPlayer();
+                if (playerControl == null)
+                    continue;
+                if (PlayerControl.LocalPlayer == null)
+                    continue;
+                if (playerControl.IsRole(this) && _IsRoleVisible(playerControl, PlayerControl.LocalPlayer))
                 {
-                    player.GetPlayer().nameText.color = this.Color;
-                    player.GetPlayer().nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                    playerControl.nameText.color = this.Color;
+                    playerControl.nameText.text = $"{player.GetPlayer().name}\n{Name}";
                 }
             }
 
             foreach (var pstate in __instance.playerStates)
             {
                 var player = pstate.TargetPlayerId.GetPlayer();
+                if (player == null)
+                    continue;
+                if (PlayerControl.LocalPlayer == null)
+                    continue;
                 if (player.IsRole(this) && _IsRoleVisible(player, PlayerControl.LocalPlayer))
                 {
                     pstate.NameText.color = Color;
