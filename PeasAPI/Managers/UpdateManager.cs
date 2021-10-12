@@ -15,6 +15,7 @@ namespace PeasAPI.Managers
 {
     public static class UpdateManager
     {
+        public static bool DoUpdateChecks = true;
         private static readonly List<UpdateListener> UpdateListeners = new();
 
         public static void RegisterGitHubUpdateListener(string owner, string repoName, UpdateType updateType = UpdateType.Every, FileType type = FileType.First)
@@ -43,6 +44,11 @@ namespace PeasAPI.Managers
         {
             try
             {
+                if (!DoUpdateChecks)
+                {
+                    Logger<PeasApi>.Info("Checking for updates skipped.");
+                    return;
+                }
                 Logger<PeasApi>.Info("Checking for updates..");
                 var enumerable = UpdateListeners.Where(x => !x.IsUpToDate());
                 var updateListeners = enumerable as UpdateListener[] ?? enumerable.ToArray();
