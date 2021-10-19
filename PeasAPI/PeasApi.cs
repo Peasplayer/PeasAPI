@@ -27,10 +27,18 @@ namespace PeasAPI
         public static readonly Random Random = new Random();
 
         public static ConfigFile ConfigFile { get; private set; }
-        
+
         public static ManualLogSource Logger { get; private set; }
 
-        public static readonly bool Logging = ConfigFile.Bind("Settings", "Logging", true).Value;
+        public static bool Logging
+        {
+            get
+            {
+                if (ConfigFile == null)
+                    return true;
+                return ConfigFile.Bind("Settings", "Logging", true).Value;
+            }
+        }
 
         public static bool GameStarted
         {
@@ -72,11 +80,11 @@ namespace PeasAPI
             {
                 CustomServerManager.RegisterServer(ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value,
                     ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value,
-                    ConfigFile.Bind("CustomServer", "Port", (ushort) 22023).Value);
+                    ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);
             }
 
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
-            
+
             RegisterCustomRoleAttribute.Load();
 
             Harmony.PatchAll();
