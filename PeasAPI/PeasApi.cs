@@ -20,7 +20,7 @@ namespace PeasAPI
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.5.3";
+        public const string Version = "1.5.4";
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
