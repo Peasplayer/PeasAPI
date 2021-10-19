@@ -10,6 +10,8 @@ namespace PeasAPI.Roles
     {
         public int Id { get; }
 
+        public BaseRole Instance;
+
         public List<byte> Members = new List<byte>();
 
         /// <summary>
@@ -215,6 +217,7 @@ namespace PeasAPI.Roles
         public BaseRole(BasePlugin plugin)
         {
             Id = RoleManager.GetRoleId();
+            Instance = this;
             RoleManager.RegisterRole(this);
         }
     }

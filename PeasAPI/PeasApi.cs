@@ -78,6 +78,7 @@ namespace PeasAPI
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
             
             RegisterCustomRoleAttribute.Load();
+            RegisterCustomGameModeAttribute.Load();
 
             Harmony.PatchAll();
         }
