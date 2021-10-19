@@ -20,15 +20,17 @@ namespace PeasAPI
     public class PeasApi : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.5.1";
+        public const string Version = "1.5.3";
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
         public static readonly Random Random = new Random();
 
+        public static ConfigFile ConfigFile { get; private set; }
+        
         public static ManualLogSource Logger { get; private set; }
 
-        public static ConfigFile ConfigFile { get; private set; }
+        public static readonly bool Logging = ConfigFile.Bind("Settings", "Logging", true).Value;
 
         public static bool GameStarted
         {
@@ -75,7 +77,7 @@ namespace PeasAPI
 
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
             
-            RegisterCustomRoleAttribute.Register(this);
+            RegisterCustomRoleAttribute.Load();
 
             Harmony.PatchAll();
         }

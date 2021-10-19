@@ -80,6 +80,9 @@ namespace PeasAPI.Managers
             hat.FloorImage = floorImage;
             
             CustomHats.Add(hat);
+            
+            if (PeasApi.Logging)
+                PeasApi.Logger.LogInfo($"Registered hat {name} from {Assembly.GetCallingAssembly().GetName().Name}");
         }
     }
 

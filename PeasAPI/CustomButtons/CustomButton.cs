@@ -16,7 +16,6 @@ namespace PeasAPI.CustomButtons
         private Color _startColorText = new Color(255, 255, 255);
         private Sprite _buttonSprite;
         private bool _canUse;
-        private bool _isEffectActive;
         private BaseRole _role;
         private bool _useRole = false;
         private bool _impostorButton = false;
@@ -28,10 +27,11 @@ namespace PeasAPI.CustomButtons
         public float Cooldown;
         public float EffectDuration;
         public bool HasEffect;
+        public bool IsEffectActive;
         public bool Enabled = true;
         public bool Visible = true;
         public string Text;
-        public bool UseText => string.IsNullOrEmpty(Text);
+        public bool UseText => !string.IsNullOrEmpty(Text);
         
         public readonly Action OnClick;
         public readonly Action OnEffectEnd;
@@ -148,7 +148,7 @@ namespace PeasAPI.CustomButtons
                     Cooldown = MaxCooldown;
                     if (HasEffect)
                     {
-                        _isEffectActive = true;
+                        IsEffectActive = true;
                         Cooldown = EffectDuration;
                         KillButtonManager.TimerText.color = new Color(0, 255, 0);
                     }
@@ -163,22 +163,22 @@ namespace PeasAPI.CustomButtons
             if (pos.x > 0f)
                 KillButtonManager.transform.localPosition = new Vector3((pos.x + 1.3f) * -1, pos.y, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
             
-            if (Cooldown < 0f && PlayerControl.LocalPlayer.moveable)
+            if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
                 KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 1f);
                 
-                if (_isEffectActive)
+                if (IsEffectActive)
                 {
                     KillButtonManager.TimerText.color = _startColorText;
                     Cooldown = MaxCooldown;
                     
-                    _isEffectActive = false;
+                    IsEffectActive = false;
                     OnEffectEnd();
                 }
             }
             else
             {
-                if (_canUse)
+                if (_canUse && Enabled)
                     Cooldown -= Time.deltaTime;
                 
                 KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
@@ -247,11 +247,6 @@ namespace PeasAPI.CustomButtons
         public bool IsRoleButton()
         {
             return _useRole;
-        }
-        
-        public bool IsEffectActive()
-        {
-            return _isEffectActive;
         }
         
         public bool IsCoolingDown()

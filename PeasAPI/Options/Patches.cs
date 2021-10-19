@@ -242,6 +242,9 @@ namespace PeasAPI.Options
         [HarmonyPostfix]
         private static void HudManagerUpdatePatch(HudManager __instance)
         {
+            if (__instance.GameSettings == null)
+                return;
+            
             __instance.GameSettings.fontSizeMin =
                 __instance.GameSettings.fontSizeMax = 
                     __instance.GameSettings.fontSize = HudTextSize;

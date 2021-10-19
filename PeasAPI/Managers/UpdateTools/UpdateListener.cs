@@ -69,7 +69,7 @@ namespace PeasAPI.Managers.UpdateTools
             }
             catch (Exception ex)
             {
-                Logger<PeasApi>.Error($"An error occured while initializing {Name}: \n{ex}");
+                PeasApi.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
             }
         }
 
@@ -119,7 +119,8 @@ namespace PeasAPI.Managers.UpdateTools
                 default: throw new ArgumentOutOfRangeException();
             }
 
-            PeasApi.Logger.LogInfo($"Successfully updated {Name}!");
+            if (PeasApi.Logging)
+                PeasApi.Logger.LogInfo($"Successfully updated {Name}!");
         }
     }
 }

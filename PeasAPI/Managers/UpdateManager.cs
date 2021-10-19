@@ -43,13 +43,16 @@ namespace PeasAPI.Managers
         {
             try
             {
-                Logger<PeasApi>.Info("Checking for updates..");
+                if (PeasApi.Logging)
+                    PeasApi.Logger.LogInfo("Checking for updates..");
+                
                 var enumerable = UpdateListeners.Where(x => !x.IsUpToDate());
                 var updateListeners = enumerable as UpdateListener[] ?? enumerable.ToArray();
                 
                 if (!updateListeners.Any())
                 {
-                    Logger<PeasApi>.Info("All mods are up-to-dated..");
+                    if (PeasApi.Logging)
+                        PeasApi.Logger.LogInfo("All mods are up-to-dated..");
                     return;
                 }
 
@@ -60,7 +63,9 @@ namespace PeasAPI.Managers
                 {
                     stringBuilder.AppendLine(
                         $"{updateListener.Name} ({updateListener.Assembly.GetName().Version} → {updateListener.Version})");
-                    Logger<PeasApi>.Info($"Found an update for {updateListener.Name}!");
+                    
+                    if (PeasApi.Logging)
+                        PeasApi.Logger.LogInfo($"Found an update for {updateListener.Name}!");
                 }
 
                 stringBuilder.AppendLine("\nRestart your game afterwards to use the new versions!");
@@ -76,7 +81,7 @@ namespace PeasAPI.Managers
             catch (Exception ex)
             {
                 var text = $"An error occurred while attempting to (check for) update: \n{ex}";
-                Logger<PeasApi>.Error(text);
+                PeasApi.Logger.LogError(text);
                 DestroyableSingleton<DiscordManager>.Instance.discordPopup.Show(text);
             }
         }

@@ -3,12 +3,14 @@ using System.Reflection;
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using PeasAPI.Roles;
+using Reactor;
 
 namespace PeasAPI.Components
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class RegisterCustomRoleAttribute : Attribute
     {
+        [Obsolete("You don't need to call this anymore", true)]
         public static void Register(BasePlugin plugin)
         {
             Register(Assembly.GetCallingAssembly(), plugin);
@@ -27,9 +29,17 @@ namespace PeasAPI.Components
                         throw new InvalidOperationException($"Type {type.FullDescription()} must extend {nameof(BaseRole)}.");
                     }
                     
+                    if (PeasApi.Logging)
+                        PeasApi.Logger.LogInfo($"Registered role {type.Name} from {type.Assembly.GetName().Name}");
+                    
                     Activator.CreateInstance(type, plugin);
                 }
             }
+        }
+
+        public static void Load()
+        {
+            ChainloaderHooks.PluginLoad += plugin => Register(plugin.GetType().Assembly, plugin);
         }
     }
 }
