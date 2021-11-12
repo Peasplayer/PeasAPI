@@ -36,7 +36,7 @@ namespace PeasAPI.Managers
                 Minigame.Instance.ForceClose();
 
             var instance = MeetingHud.Instance = Object.Instantiate(HudManager.Instance.MeetingPrefab, DestroyableSingleton<HudManager>.Instance.transform, true);
-            AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);
+            //AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);
             
             instance.playerStates = new PlayerVoteArea[players.Count];
             foreach (var playerId in players)

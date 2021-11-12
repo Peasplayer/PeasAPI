@@ -245,9 +245,10 @@ namespace PeasAPI.Roles
                         HudManager.Instance.KillButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead &&
                                                                             localRole.CanKill(null));
 
-                        if (localRole.CanKill(null) && __instance.CanMove && !__instance.Data.IsDead && !__instance.Data.IsImpostor)
+                        if (localRole.CanKill(null) && __instance.CanMove && !__instance.Data.IsDead)
                         {
-                            __instance.SetKillTimer(__instance.killTimer - Time.fixedDeltaTime);
+                            if (!__instance.Data.IsImpostor)
+                                __instance.SetKillTimer(__instance.killTimer - Time.fixedDeltaTime);
                             PlayerControl target = __instance.FindClosestTarget();
                             HudManager.Instance.KillButton.SetTarget(target);
                         }
