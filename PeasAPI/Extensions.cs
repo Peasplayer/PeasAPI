@@ -27,6 +27,16 @@ namespace PeasAPI
             return GameData.Instance.GetPlayerById(id);
         }
 
+        public static bool IsLocal(this PlayerControl player)
+        {
+            return player.PlayerId == PlayerControl.LocalPlayer.PlayerId;
+        }
+
+        public static Color SetAlpha(this Color original, float alpha)
+        {
+            return new Color(original.r, original.g, original.b, alpha);
+        }
+
         /// <summary>
         /// Gets the text color from a <see cref="Color"/>
         /// </summary>
@@ -198,5 +208,31 @@ namespace PeasAPI
         }
         
         #endregion Options
+        
+        #region Position
+        public static Vector3 SetX(this Transform transform, float x)
+        {
+            var currentPosition = transform.position;
+            var vector = new Vector3(x, currentPosition.y, currentPosition.z);
+            transform.position = vector;
+            return vector;
+        }
+        
+        public static Vector3 SetY(this Transform transform, float y)
+        {
+            var currentPosition = transform.position;
+            var vector = new Vector3(currentPosition.x, y, currentPosition.z);
+            transform.position = vector;
+            return vector;
+        }
+        
+        public static Vector3 SetZ(this Transform transform, float z)
+        {
+            var currentPosition = transform.position;
+            var vector = new Vector3(currentPosition.x, currentPosition.y, z);
+            transform.position = vector;
+            return vector;
+        }
+        #endregion
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PeasAPI
 {
-    public class Utility
+    public static class Utility
     {
         public static Sprite CreateSprite(string image, float pixelsPerUnit = 128f)
         {

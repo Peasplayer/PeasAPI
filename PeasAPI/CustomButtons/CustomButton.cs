@@ -29,6 +29,7 @@ namespace PeasAPI.CustomButtons
         public bool HasEffect;
         public bool IsEffectActive;
         public bool Enabled = true;
+        public bool Usable = true;
         public bool Visible = true;
         public string Text;
         public bool UseText => !string.IsNullOrEmpty(Text);
@@ -140,7 +141,7 @@ namespace PeasAPI.CustomButtons
 
             void listener()
             {
-                if (Cooldown <= 0f && _canUse && Enabled && KillButtonManager.gameObject.active &&
+                if (IsUsable() && _canUse && Enabled && KillButtonManager.gameObject.active &&
                     PlayerControl.LocalPlayer.moveable)
                 {
                     KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
@@ -165,7 +166,7 @@ namespace PeasAPI.CustomButtons
             
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
-                KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 1f);
+                KillButtonManager.renderer.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
                 
                 if (IsEffectActive)
                 {
@@ -252,6 +253,11 @@ namespace PeasAPI.CustomButtons
         public bool IsCoolingDown()
         {
             return KillButtonManager.isCoolingDown;
+        }
+
+        public bool IsUsable()
+        {
+            return Usable && Cooldown < 0f;
         }
         
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
