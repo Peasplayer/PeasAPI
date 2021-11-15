@@ -34,7 +34,7 @@ namespace PeasAPI.CustomRpc
 
         public override Data Read(MessageReader reader)
         {
-            return new Data(reader.ReadByte().GetPlayer(), RoleManager.GetRole(reader.ReadByte()));
+            return new Data(reader.ReadByte().GetPlayer(), PeasAPI.Roles.RoleManager.GetRole(reader.ReadByte()));
         }
 
         public override void Handle(PlayerControl innerNetObject, Data data)

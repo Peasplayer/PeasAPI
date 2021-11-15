@@ -34,14 +34,14 @@ namespace PeasAPI.CustomEndReason
 
             if (role == null)
             {
-                if (player.Data.IsImpostor)
+                if (player.Data.Role.IsImpostor)
                 {
 
                     var _winners = new List<byte>();
                     _winners.Add(player.PlayerId);
                     foreach (var _player in GameData.Instance.AllPlayers)
                     {
-                        if (_player.PlayerId != player.PlayerId && _player.IsImpostor)
+                        if (_player.PlayerId != player.PlayerId && _player.Role.IsImpostor)
                             _winners.Add(_player.PlayerId);
                     }
 
@@ -65,7 +65,7 @@ namespace PeasAPI.CustomEndReason
                     _winners.Add(player.PlayerId);
                     foreach (var _player in GameData.Instance.AllPlayers)
                     {
-                        if (_player.PlayerId != player.PlayerId && !_player.IsImpostor)
+                        if (_player.PlayerId != player.PlayerId && !_player.Role.IsImpostor)
                             _winners.Add(_player.PlayerId);
                     }
 
@@ -94,7 +94,7 @@ namespace PeasAPI.CustomEndReason
                     _winners.Add(player.PlayerId);
                     foreach (var _player in GameData.Instance.AllPlayers)
                     {
-                        if (_player.PlayerId != player.PlayerId && !_player.IsImpostor)
+                        if (_player.PlayerId != player.PlayerId && !_player.Role.IsImpostor)
                             _winners.Add(_player.PlayerId);
                     }
                 }
@@ -103,7 +103,7 @@ namespace PeasAPI.CustomEndReason
                     _winners.Add(player.PlayerId);
                     foreach (var _player in GameData.Instance.AllPlayers)
                     {
-                        if (_player.PlayerId != player.PlayerId && _player.IsImpostor)
+                        if (_player.PlayerId != player.PlayerId && _player.Role.IsImpostor)
                             _winners.Add(_player.PlayerId);
                     }
                 }

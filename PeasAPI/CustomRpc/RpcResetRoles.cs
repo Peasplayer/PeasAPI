@@ -14,7 +14,7 @@ namespace PeasAPI.CustomRpc
         public override RpcLocalHandling LocalHandling => RpcLocalHandling.Before;
         public override void Handle(PlayerControl innerNetObject)
         {
-            RoleManager.ResetRoles();
+            PeasAPI.Roles.RoleManager.ResetRoles();
         }
     }
 }

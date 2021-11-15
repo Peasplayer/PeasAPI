@@ -137,13 +137,13 @@ namespace PeasAPI.Managers
                 }
                 
                 // Set hat everytime player selecting color
-                [HarmonyPostfix]
+                /*[HarmonyPostfix]
                 [HarmonyPatch(nameof(PlayerTab.UpdateAvailableColors))]
                 private static void UpdateAvailableColors(PlayerTab __instance)
                 {
                     __instance.HatImage.SetHat(SaveManager.LastHat, 
                         PlayerControl.LocalPlayer.Data.ColorId);
-                }
+                }*/
             }
 
             // Custom RPC check/set to prevent from triggering anti-cheat
@@ -195,7 +195,7 @@ namespace PeasAPI.Managers
                     bool ColorIsOccupied(GameData.PlayerInfo p)
                     {
                         return !p.Disconnected && p.PlayerId != __instance.PlayerId
-                                               && p.ColorId == bodyColor;
+                                               && p.DefaultOutfit.ColorId == bodyColor;
                     }
                 }
             }

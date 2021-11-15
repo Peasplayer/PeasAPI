@@ -71,7 +71,7 @@ namespace PeasAPI.CustomEndReason
                     var transform = player.transform;
                     transform.localPosition = new Vector3(
                         0.8f * (i % 2 == 0 ? -1 : 1) * oddness * 1 - oddness * 0.035f,
-                        EndGameManager.BaseY + oddness * 0.1f,
+                        EndGameManager.OffsetWidth + oddness * 0.1f,
                         (i == 0 ? -8 : -1) + oddness * 0.01f
                     ) * 1.25f;
                     float scale = 1f - oddness * 0.075f;
@@ -92,7 +92,7 @@ namespace PeasAPI.CustomEndReason
                     PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.Body);
                     player.HatSlot.SetHat(winner.HatId, winner.ColorId);
                     PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.PetSlot);
-                    player.NameText.text = winner.Name;
+                    player.NameText.text = winner.PlayerName;
                     player.NameText.transform.localScale += new Vector3(0f, 0.5f);//= global::Extensions.Inv(scaleVec);
                     player.NameText.transform.position += new Vector3(0f, 0.5f);
                     player.NameText.gameObject.SetActive(false);

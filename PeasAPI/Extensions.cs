@@ -1,5 +1,4 @@
-﻿using Hazel;
-using PeasAPI.CustomRpc;
+﻿using PeasAPI.CustomRpc;
 using PeasAPI.Options;
 using PeasAPI.Roles;
 using Reactor.Networking;
@@ -66,7 +65,7 @@ namespace PeasAPI
         /// </summary>
         public static BaseRole GetRole(this PlayerControl player)
         {
-            foreach (var _role in RoleManager.Roles)
+            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
             {
                 if (_role.Members.Contains(player.PlayerId))
                     return _role;
@@ -80,7 +79,7 @@ namespace PeasAPI
         /// </summary>
         public static BaseRole GetRole(this GameData.PlayerInfo player)
         {
-            foreach (var _role in RoleManager.Roles)
+            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
             {
                 if (_role.Members.Contains(player.PlayerId))
                     return _role;
@@ -112,7 +111,7 @@ namespace PeasAPI
         /// </summary>
         public static void SetRole(this PlayerControl player, BaseRole? role)
         {
-            foreach (var _role in RoleManager.Roles)
+            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
             {
                 if (_role != role)
                     _role.Members.Remove(player.PlayerId);
@@ -151,17 +150,17 @@ namespace PeasAPI
                         if (otherRole != null)
                             return otherRole.Team == Team.Crewmate;
                         else
-                            return !otherPlayer.Data.IsImpostor;
+                            return !otherPlayer.Data.Role.IsImpostor;
                     case Team.Impostor:
                         if (otherRole != null)
                             return otherRole.Team == Team.Impostor;
                         else
-                            return otherPlayer.Data.IsImpostor;
+                            return otherPlayer.Data.Role.IsImpostor;
                 }
             }
             else if (otherRole == null)
             {
-                return player.Data.IsImpostor == otherPlayer.Data.IsImpostor;
+                return player.Data.Role.IsImpostor == otherPlayer.Data.Role.IsImpostor;
             }
             else
             {
@@ -172,9 +171,9 @@ namespace PeasAPI
                     case Team.Role:
                         return false;
                     case Team.Crewmate:
-                        return !otherPlayer.Data.IsImpostor;
+                        return !otherPlayer.Data.Role.IsImpostor;
                     case Team.Impostor:
-                        return otherPlayer.Data.IsImpostor;
+                        return otherPlayer.Data.Role.IsImpostor;
                 }
             }
 

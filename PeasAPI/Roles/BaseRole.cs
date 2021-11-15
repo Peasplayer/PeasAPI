@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.IL2CPP;
+using PeasAPI.Managers;
 using UnityEngine;
 
 namespace PeasAPI.Roles
@@ -92,7 +93,7 @@ namespace PeasAPI.Roles
             switch (this.Visibility)
             {
                 case Visibility.Role: return perspective.IsRole(this);
-                case Visibility.Impostor: return perspective.Data.IsImpostor;
+                case Visibility.Impostor: return perspective.Data.Role.IsImpostor;
                 case Visibility.Crewmate: return true;
                 case Visibility.NoOne: return false;
                 case Visibility.Custom: return this.IsRoleVisible(playerWithRole, perspective);

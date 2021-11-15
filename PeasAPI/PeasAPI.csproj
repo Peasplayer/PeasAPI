@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <VersionPrefix>1.5.5</VersionPrefix>
-        <VersionSuffix>dev</VersionSuffix>
+        <VersionSuffix>dev</VersionSuffix> 
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
@@ -18,13 +18,15 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.6.30s</GameVersion>
-        <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.6.30i</GameVersion>
+        <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.11.9</GameVersion>
+        <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.11.9</GameVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Reactor" Version="1.0.0-rc.1" />
-        <PackageReference Include="Reactor.MSBuild" Version="0.1.5" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="1.0.1" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-be.518" />
+        <PackageReference Include="AmongUs.GameLibs.$(GamePlatform)" Version="$(GameVersion)" PrivateAssets="all" />
         
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         

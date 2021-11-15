@@ -20,7 +20,7 @@ namespace PeasAPI.CustomButtons
         private bool _useRole = false;
         private bool _impostorButton = false;
         
-        public KillButtonManager KillButtonManager;
+        public KillButton KillButtonManager;
         public Vector2 PositionOffset;
         public Vector2 TextOffset;
         public float MaxCooldown;
@@ -126,14 +126,14 @@ namespace PeasAPI.CustomButtons
             KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
             KillButtonManager.gameObject.SetActive(true);
             
-            _startColorText = KillButtonManager.TimerText.color;
+            _startColorText = KillButtonManager.cooldownTimerText.color;
             
-            KillButtonManager.renderer.enabled = true;
-            KillButtonManager.renderer.sprite = _buttonSprite;
+            KillButtonManager.graphic.enabled = true;
+            KillButtonManager.graphic.sprite = _buttonSprite;
             
-            KillButtonManager.killText.enabled = UseText;
-            KillButtonManager.killText.text = Text;
-            KillButtonManager.killText.transform.position += (Vector3) TextOffset;
+            KillButtonManager.buttonLabelText.enabled = UseText;
+            KillButtonManager.buttonLabelText.text = Text;
+            KillButtonManager.buttonLabelText.transform.position += (Vector3) TextOffset;
             
             var button = KillButtonManager.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
@@ -144,14 +144,14 @@ namespace PeasAPI.CustomButtons
                 if (IsUsable() && _canUse && Enabled && KillButtonManager.gameObject.active &&
                     PlayerControl.LocalPlayer.moveable)
                 {
-                    KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
+                    KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
                     OnClick();
                     Cooldown = MaxCooldown;
                     if (HasEffect)
                     {
                         IsEffectActive = true;
                         Cooldown = EffectDuration;
-                        KillButtonManager.TimerText.color = new Color(0, 255, 0);
+                        KillButtonManager.cooldownTimerText.color = new Color(0, 255, 0);
                     }
                 }
             }
@@ -166,11 +166,11 @@ namespace PeasAPI.CustomButtons
             
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
-                KillButtonManager.renderer.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
+                KillButtonManager.graphic.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
                 
                 if (IsEffectActive)
                 {
-                    KillButtonManager.TimerText.color = _startColorText;
+                    KillButtonManager.graphic.color = _startColorText;
                     Cooldown = MaxCooldown;
                     
                     IsEffectActive = false;
@@ -182,18 +182,18 @@ namespace PeasAPI.CustomButtons
                 if (_canUse && Enabled)
                     Cooldown -= Time.deltaTime;
                 
-                KillButtonManager.renderer.color = new Color(1f, 1f, 1f, 0.3f);
+                KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
             }
 
-            KillButtonManager.killText.enabled = UseText;
-            KillButtonManager.killText.text = Text;
+            KillButtonManager.buttonLabelText.enabled = UseText;
+            KillButtonManager.buttonLabelText.text = Text;
             
             KillButtonManager.gameObject.SetActive(_canUse);
-            KillButtonManager.renderer.enabled = _canUse;
+            KillButtonManager.graphic.enabled = _canUse;
             
             if (_canUse)
             {
-                KillButtonManager.renderer.material.SetFloat("_Desat", 0f);
+                KillButtonManager.graphic.material.SetFloat("_Desat", 0f);
                 KillButtonManager.SetCoolDown(Cooldown, MaxCooldown);
             }
         }
@@ -216,7 +216,7 @@ namespace PeasAPI.CustomButtons
             }
             else if (_impostorButton)
             {
-                _canUse = PlayerControl.LocalPlayer.Data.IsImpostor &&
+                _canUse = PlayerControl.LocalPlayer.Data.Role.IsImpostor &&
                           (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
             }
             else
@@ -272,12 +272,12 @@ namespace PeasAPI.CustomButtons
                     var killButton = button.KillButtonManager;
                     var canUse = button.CanUse();
                 
-                    Buttons[i].KillButtonManager.renderer.sprite = button._buttonSprite;
+                    Buttons[i].KillButtonManager.graphic.sprite = button._buttonSprite;
                 
                     killButton.gameObject.SetActive(button.Visible && canUse);
                 
-                    killButton.killText.enabled = canUse;
-                    killButton.killText.alpha = killButton.isCoolingDown ? Palette.DisabledClear.a : Palette.EnabledColor.a;
+                    killButton.buttonLabelText.enabled = canUse;
+                    killButton.buttonLabelText.alpha = killButton.isCoolingDown ? Palette.DisabledClear.a : Palette.EnabledColor.a;
 
                     if (canUse && button.Visible)
                         button.Update();

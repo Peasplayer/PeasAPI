@@ -14,7 +14,7 @@ using Random = System.Random;
 namespace PeasAPI
 {
     [HarmonyPatch]
-    [BepInPlugin(Id)]
+    [BepInPlugin(Id, "PeasAPI", Version)]
     [BepInProcess("Among Us.exe")]
     [BepInDependency(ReactorPlugin.Id)]
     public class PeasApi : BasePlugin
