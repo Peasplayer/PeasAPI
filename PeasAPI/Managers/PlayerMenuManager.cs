@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using InnerNet;
 using Reactor;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
@@ -12,7 +13,7 @@ namespace PeasAPI.Managers
 {
     public static class PlayerMenuManager
     {
-        private static bool _IsMenuOpen = false;
+        public static bool IsMenuOpen = false;
         
         public static void OpenPlayerMenu(List<PlayerControl> players, Action<PlayerControl> onPlayerWasChosen)
         {
@@ -28,7 +29,7 @@ namespace PeasAPI.Managers
 
         private static IEnumerator CoCreatePlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen)
         {
-            _IsMenuOpen = true;
+            IsMenuOpen = true;
 
             if (MapBehaviour.Instance)
                 MapBehaviour.Instance.Close();
@@ -54,7 +55,14 @@ namespace PeasAPI.Managers
 
                 void listener()
                 {
-                    onPlayerWasChosen.Invoke(playerInfo.Object);
+                    try
+                    {
+                        onPlayerWasChosen.Invoke(playerInfo.Object);
+                    }
+                    catch (Exception err)
+                    {
+                        throw err;
+                    }
 
                     CloseMenu();
                 }
@@ -93,7 +101,7 @@ namespace PeasAPI.Managers
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             ControllerManager.Instance.ResetAll();
             Object.Destroy(MeetingHud.Instance.gameObject);
-            _IsMenuOpen = false;
+            IsMenuOpen = false;
         }
         
         [HarmonyPatch]
@@ -103,7 +111,7 @@ namespace PeasAPI.Managers
             [HarmonyPostfix]
             public static void MeetingHudStartPatch(MeetingHud __instance)
             {
-                if (_IsMenuOpen)
+                if (IsMenuOpen)
                 {
                     HudManager.Instance.Chat.SetPosition(null);
                     HudManager.Instance.Chat.SetVisible(false);
@@ -115,10 +123,10 @@ namespace PeasAPI.Managers
             [HarmonyPostfix]
             public static void MeetingHudUpdatePatch(MeetingHud __instance)
             {
-                if (_IsMenuOpen)
+                if (IsMenuOpen)
                 {
                     __instance.TitleText.text = "Choose a player";
-                    __instance.SkipVoteButton.skipVoteText.text = "Close";
+                    __instance.SkipVoteButton.GetComponentInChildren<TextMeshPro>().text = "Close";
                     __instance.discussionTimer -= Time.deltaTime;
                     __instance.UpdateButtons();
 
@@ -137,7 +145,7 @@ namespace PeasAPI.Managers
             [HarmonyPrefix]
             public static void PlayerControlHandleRpcPatch(PlayerControl __instance, [HarmonyArgument(0)] byte callId)
             {
-                if ((callId == 14 || callId == 11) && _IsMenuOpen)
+                if ((callId == 14 || callId == 11) && IsMenuOpen)
                     CloseMenu();
             }
         }

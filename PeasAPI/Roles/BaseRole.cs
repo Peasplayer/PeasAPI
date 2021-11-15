@@ -174,6 +174,9 @@ namespace PeasAPI.Roles
 
         public void _OnMeetingUpdate(MeetingHud __instance)
         {
+            if (PlayerMenuManager.IsMenuOpen)
+                return;
+            
             foreach (var player in Members)
             {
                 var playerControl = player.GetPlayer();
