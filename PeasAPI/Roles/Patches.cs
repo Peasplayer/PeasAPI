@@ -3,6 +3,8 @@ using System.Linq;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
 using PeasAPI.CustomEndReason;
+using PeasAPI.CustomRpc;
+using Reactor.Networking;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
@@ -12,81 +14,11 @@ namespace PeasAPI.Roles
     [HarmonyPatch]
     public static class Patches
     {
-
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
-        public static class PlayerControlSetInfectedPatch
+        [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.SelectRoles))]
+        [HarmonyPostfix]
+        public static void InitializeRolesPatch()
         {
-            public static void Postfix(PlayerControl __instance)
-            {
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    RoleManager.RpcResetRoles();
-
-                    EndReasonManager.Reset();
-
-                    foreach (var player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player.Data.Role.IsImpostor)
-                            RoleManager.Impostors.Add(player.PlayerId);
-                        else
-                            RoleManager.Crewmates.Add(player.PlayerId);
-                    }
-
-                    if (PeasApi.EnableRoles && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
-                    {
-                        foreach (var role in RoleManager.Roles)
-                        {
-                            if (role.Team == Team.Impostor)
-                            {
-                                for (int i = 1; i <= role.Limit && RoleManager.Impostors.Count >= 1; i++)
-                                {
-                                    var member =
-                                        RoleManager.Impostors[PeasApi.Random.Next(0, RoleManager.Impostors.Count)];
-                                    member.GetPlayer().RpcSetRole(role);
-                                    RoleManager.Impostors.Remove(member);
-                                }
-                            }
-                            else if (role.Team != Team.Impostor)
-                            {
-                                for (int i = 1; i <= role.Limit && RoleManager.Crewmates.Count >= 1; i++)
-                                {
-                                    var member =
-                                        RoleManager.Crewmates[PeasApi.Random.Next(0, RoleManager.Crewmates.Count)];
-                                    member.GetPlayer().RpcSetRole(role);
-                                    RoleManager.Crewmates.Remove(member);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    RoleManager.Crewmates.Clear();
-                    RoleManager.Impostors.Clear();
-
-                    foreach (var player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player.Data.Role.IsImpostor)
-                        {
-                            if (player.GetRole() == null)
-                                RoleManager.Impostors.Add(player.PlayerId);
-                        }
-                        else
-                        {
-                            if (player.GetRole() == null)
-                                RoleManager.Crewmates.Add(player.PlayerId);
-                        }
-                    }
-                }
-                
-                if (PeasApi.EnableRoles)
-                {
-                    foreach (var role in RoleManager.Roles)
-                    {
-                        role._OnGameStart();
-                    }
-                }
-            }
+            Rpc<RpcInitializeRoles>.Instance.Send();
         }
 
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]

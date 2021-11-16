@@ -2,6 +2,7 @@
 {
      public enum CustomRpcCalls : uint
     {
+        InitializeRoles,
         SetRole,
         ResetRoles,
         CustomEndReason,
