@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HarmonyLib;
-using PeasAPI.CustomButtons;
+using Il2CppSystem.Collections.Generic;
 using PeasAPI.CustomEndReason;
 using UnhollowerBaseLib;
 using UnityEngine;
@@ -9,7 +9,8 @@ using Object = Il2CppSystem.Object;
 
 namespace PeasAPI.Roles
 {
-    public class Patches
+    [HarmonyPatch]
+    public static class Patches
     {
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
@@ -88,74 +89,77 @@ namespace PeasAPI.Roles
             }
         }
 
-        [HarmonyPatch(typeof(IntroCutscene._CoBegin_d__18), nameof(IntroCutscene._CoBegin_d__18.MoveNext))]
-        public static class IntroCutscenePatch
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]
+        [HarmonyPostfix]
+        public static void RoleTextPatch(IntroCutscene __instance)
         {
-            public static void Prefix(IntroCutscene._CoBegin_d__18 __instance)
+            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
             {
-                if (PeasApi.EnableRoles)
+                var role = PlayerControl.LocalPlayer.GetRole();
+                var scene = __instance;
+
+                scene.RoleText.text = role.Name;
+                scene.RoleBlurbText.text = role.Description;
+                scene.RoleText.color = role.Color;
+                scene.RoleBlurbText.color = role.Color;
+            }
+        }
+        
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginImpostor))]
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
+        [HarmonyPostfix]
+        public static void TeamTextPatch(IntroCutscene __instance)
+        {
+            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            {
+                var role = PlayerControl.LocalPlayer.GetRole();
+                var scene = __instance;
+
+                scene.TeamTitle.text = role.Name;
+                scene.ImpostorText.gameObject.SetActive(true);
+                scene.ImpostorText.text = role.Description;
+                scene.BackgroundBar.material.color = role.Color;
+                scene.TeamTitle.color = role.Color;
+            }
+        }
+        
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginImpostor))]
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
+        [HarmonyPrefix]
+        public static void RoleTeamPatch(IntroCutscene __instance, [HarmonyArgument(0)] ref List<PlayerControl> yourTeam)
+        {
+            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            {
+                var role = PlayerControl.LocalPlayer.GetRole();
+                if (role.Team == Team.Alone)
                 {
-                    foreach (var role in RoleManager.Roles)
+                    yourTeam = new List<PlayerControl>();
+                    yourTeam.Add(PlayerControl.LocalPlayer);
+                }
+                else if (role.Team == Team.Role)
+                {
+                    yourTeam = new List<PlayerControl>();
+                    yourTeam.Add(PlayerControl.LocalPlayer);
+                    foreach (var player in role.Members)
                     {
-                        if (PlayerControl.LocalPlayer.IsRole(role))
-                        {
-                            if (role.Team == Team.Alone)
-                            {
-                                var yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                                yourTeam.Add(PlayerControl.LocalPlayer);
-                                __instance.yourTeam = yourTeam;
-                            }
-                            else if (role.Team == Team.Role)
-                            {
-                                var yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                                yourTeam.Add(PlayerControl.LocalPlayer);
-                                foreach (var player in role.Members)
-                                {
-                                    if (player != PlayerControl.LocalPlayer.PlayerId)
-                                        yourTeam.Add(player.GetPlayer());
-                                }
-
-                                __instance.yourTeam = yourTeam;
-                            }
-                            else if (role.Team == Team.Impostor)
-                            {
-                                var yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                                yourTeam.Add(PlayerControl.LocalPlayer);
-                                foreach (var player in role.Members)
-                                {
-                                    if (player != PlayerControl.LocalPlayer.PlayerId &&
-                                        player.GetPlayer().Data.Role.IsImpostor)
-                                        yourTeam.Add(player.GetPlayer());
-                                }
-
-                                __instance.yourTeam = yourTeam;
-                            }
-                        }
+                        if (player != PlayerControl.LocalPlayer.PlayerId)
+                            yourTeam.Add(player.GetPlayer());
                     }
                 }
-            }
-
-            public static void Postfix(IntroCutscene._CoBegin_d__18 __instance)
-            {
-                if (PeasApi.EnableRoles)
+                else if (role.Team == Team.Impostor)
                 {
-                    foreach (var role in RoleManager.Roles)
+                    yourTeam = new List<PlayerControl>();
+                    yourTeam.Add(PlayerControl.LocalPlayer);
+                    foreach (var player in role.Members)
                     {
-                        if (PlayerControl.LocalPlayer.IsRole(role))
-                        {
-                            var scene = __instance.__4__this;
-
-                            scene.RoleText.text = role.Name;
-                            scene.ImpostorText.gameObject.SetActive(true);
-                            scene.ImpostorText.text = role.Description;
-                            scene.BackgroundBar.material.color = role.Color;
-                            scene.RoleText.color = role.Color;
-                        }
+                        if (player != PlayerControl.LocalPlayer.PlayerId &&
+                            player.GetPlayer().Data.Role.IsImpostor)
+                            yourTeam.Add(player.GetPlayer());
                     }
                 }
             }
         }
-
+        
         [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames),
             typeof(Il2CppReferenceArray<Object>))]
         public class TranslationControllerPatch
