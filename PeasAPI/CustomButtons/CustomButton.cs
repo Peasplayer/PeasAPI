@@ -123,8 +123,18 @@ namespace PeasAPI.CustomButtons
 
         private void Start()
         {
-            KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform);
+            if (HudManager.Instance.transform.FindChild("Buttons").FindChild("Custom") == null)
+            {
+                var custom = new GameObject("Custom");
+                custom.transform.SetParent(HudManager.Instance.transform.FindChild("Buttons"));
+                custom.transform.localPosition = HudManager.Instance.transform.localPosition;
+                custom.transform.position = HudManager.Instance.transform.position;
+            }
+            
+            KillButtonManager = Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.transform.FindChild("Buttons").FindChild("Custom"));
             KillButtonManager.gameObject.SetActive(true);
+            KillButtonManager.gameObject.name = "CustomButton";
+            KillButtonManager.transform.localScale = new Vector3(1, 1, 1);
             
             _startColorText = KillButtonManager.cooldownTimerText.color;
             
@@ -162,7 +172,7 @@ namespace PeasAPI.CustomButtons
             var pos = KillButtonManager.transform.localPosition;
             
             if (pos.x > 0f)
-                KillButtonManager.transform.localPosition = new Vector3((pos.x + 1.3f) * -1, pos.y, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
+                KillButtonManager.transform.localPosition = new Vector3(-(pos.x + 1.3f) + 1.3f, pos.y - 1, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
             
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
