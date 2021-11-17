@@ -49,6 +49,9 @@ namespace PeasAPI.Managers
                     
                     newHat.ProductId = $"+{Name}";
                     newHat.Order += 100;
+                    newHat.Free = true;
+                    newHat.StoreName = Name;
+                    newHat.name = Name;
                     
                     newHat.InFront = InFront;
                     newHat.NoBounce = NoBounce;
