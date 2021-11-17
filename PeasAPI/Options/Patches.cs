@@ -7,8 +7,6 @@ using PeasAPI.CustomRpc;
 using Reactor;
 using Reactor.Extensions;
 using Reactor.Networking;
-using TMPro;
-using UnhollowerBaseLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -98,6 +96,7 @@ namespace PeasAPI.Options
                     numberOption.Value = _option.Value;
                     numberOption.ValidRange = new FloatRange(_option.MinValue, _option.MaxValue);
                     numberOption.Increment = _option.Increment;
+                    numberOption.SuffixType = _option.SuffixType;
 
                     option = numberOption;
                     _option.Option = numberOption;
@@ -208,7 +207,27 @@ namespace PeasAPI.Options
         {
             var customOption = (CustomNumberOption) __instance.GetCustom();
             if (customOption != null)
+            {
+                if (__instance.SuffixType == NumberSuffixes.None)
+                {
+                    __instance.ValueText.text = customOption.Value.ToString();
+                    return;
+                }
+
+                if (__instance.SuffixType == NumberSuffixes.Multiplier)
+                {
+                    __instance.ValueText.text = customOption.Value + "x";
+                    return;
+                }
+
+                if (__instance.SuffixType == NumberSuffixes.Seconds)
+                {
+                    __instance.ValueText.text = customOption.Value + "s";
+                    return;
+                }
+
                 __instance.ValueText.text = customOption.Value.ToString();
+            }
         }
         
         [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToHudString))]
@@ -223,6 +242,24 @@ namespace PeasAPI.Options
                 }
                 else if (option.GetType() == typeof(CustomNumberOption))
                 {
+                    if (((CustomNumberOption)option).SuffixType == NumberSuffixes.None)
+                    {
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value);
+                        continue;
+                    }
+
+                    if (((CustomNumberOption)option).SuffixType == NumberSuffixes.Multiplier)
+                    {
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "x");
+                        continue;
+                    }
+
+                    if (((CustomNumberOption)option).SuffixType == NumberSuffixes.Seconds)
+                    {
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "s");
+                        continue;
+                    }
+
                     __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value);
                 }
                 else if (option.GetType() == typeof(CustomStringOption))
