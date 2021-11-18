@@ -79,7 +79,7 @@ namespace PeasAPI.Options
             OptionManager.CustomOptions.Add(this);
         }
         
-        public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, NumberSuffixes suffixType, float defaultValue) : base(title)
+        public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue, NumberSuffixes suffixType) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
             _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
