@@ -43,5 +43,11 @@ namespace PeasAPI.Roles
 
             return null;
         }
+
+        public static class HostMod
+        {
+            public static Dictionary<BaseRole, bool> IsRole { get; set; } = new Dictionary<BaseRole, bool>();
+            public static bool IsImpostor;
+        }
     }
 }

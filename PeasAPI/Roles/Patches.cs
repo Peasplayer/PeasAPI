@@ -2,7 +2,6 @@
 using System.Linq;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
-using PeasAPI.CustomEndReason;
 using PeasAPI.CustomRpc;
 using Reactor.Networking;
 using UnhollowerBaseLib;
@@ -19,6 +18,24 @@ namespace PeasAPI.Roles
         public static void InitializeRolesPatch()
         {
             Rpc<RpcInitializeRoles>.Instance.Send();
+        }
+
+        [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.AssignRolesFromList))]
+        [HarmonyPrefix]
+        public static bool ChangeImpostors(global::RoleManager __instance, [HarmonyArgument(0)] List<GameData.PlayerInfo> players, [HarmonyArgument(1)] int teamMax, [HarmonyArgument(2)] List<RoleTypes> roleList, [HarmonyArgument(3)] ref int rolesAssigned)
+        {
+            while (roleList.Count > 0 && players.Count > 0 && rolesAssigned < teamMax)
+            {
+                int index = HashRandom.FastNext(roleList.Count);
+                RoleTypes roleType = roleList[index];
+                roleList.RemoveAt(index);
+                int index2 = global::RoleManager.IsImpostorRole(roleType) && RoleManager.HostMod.IsImpostor ? 0 : HashRandom.FastNext(players.Count);
+                players[index2].Object.RpcSetRole(roleType);
+                players.RemoveAt(index2);
+                rolesAssigned++;
+            }
+
+            return false;
         }
 
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]

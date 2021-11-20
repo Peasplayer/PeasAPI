@@ -64,6 +64,8 @@ namespace PeasAPI.Managers.UpdateTools
             try
             {
                 var httpResponseMessage = FetchData();
+                if (httpResponseMessage == null)
+                    return;
                 var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 FromJsonElement(JsonDocument.Parse(result).RootElement);
             }
@@ -77,9 +79,18 @@ namespace PeasAPI.Managers.UpdateTools
 
         public virtual HttpResponseMessage FetchData()
         {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "PeasAPI Updater");
-            return httpClient.GetAsync(new Uri(JsonLink), 0).Result;
+            try
+            {
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "PeasAPI Updater");
+                return httpClient.GetAsync(new Uri(JsonLink), 0).Result;
+            }
+            catch (Exception)
+            {
+                PeasApi.Logger.LogError("There was an error whilst trying to fetch update data");
+            }
+
+            return null;
         }
 
         private string GetAssemblyPath()

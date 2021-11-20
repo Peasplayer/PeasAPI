@@ -38,6 +38,13 @@ namespace PeasAPI.CustomRpc
                         {
                             for (int i = 1; i <= role.Limit && PeasAPI.Roles.RoleManager.Impostors.Count >= 1; i++)
                             {
+                                if (Roles.RoleManager.HostMod.IsRole[role] &&
+                                    PlayerControl.LocalPlayer.GetRole() == null)
+                                {
+                                    PlayerControl.LocalPlayer.RpcSetRole(role);
+                                    continue;
+                                }
+                                
                                 var member =
                                     PeasAPI.Roles.RoleManager.Impostors[PeasApi.Random.Next(0, PeasAPI.Roles.RoleManager.Impostors.Count)];
                                 member.GetPlayer().RpcSetRole(role);
@@ -48,6 +55,13 @@ namespace PeasAPI.CustomRpc
                         {
                             for (int i = 1; i <= role.Limit && PeasAPI.Roles.RoleManager.Crewmates.Count >= 1; i++)
                             {
+                                if (Roles.RoleManager.HostMod.IsRole[role] &&
+                                    PlayerControl.LocalPlayer.GetRole() == null)
+                                {
+                                    PlayerControl.LocalPlayer.RpcSetRole(role);
+                                    continue;
+                                }
+                                
                                 var member =
                                     PeasAPI.Roles.RoleManager.Crewmates[PeasApi.Random.Next(0, PeasAPI.Roles.RoleManager.Crewmates.Count)];
                                 member.GetPlayer().RpcSetRole(role);
