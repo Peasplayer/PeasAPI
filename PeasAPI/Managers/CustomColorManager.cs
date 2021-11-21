@@ -76,7 +76,6 @@ namespace PeasAPI.Managers
             [HarmonyPatch(typeof(PlayerTab))]
             private static class PlayerTabPatch
             {
-                private static Scroller _scroller;
                 
                 // Scroller implementation
                 [HarmonyPrefix]
