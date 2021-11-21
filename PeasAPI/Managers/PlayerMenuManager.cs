@@ -37,7 +37,6 @@ namespace PeasAPI.Managers
                 Minigame.Instance.ForceClose();
 
             var instance = MeetingHud.Instance = Object.Instantiate(HudManager.Instance.MeetingPrefab, DestroyableSingleton<HudManager>.Instance.transform, true);
-            //AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);
             
             instance.playerStates = new PlayerVoteArea[players.Count];
             foreach (var playerId in players)
@@ -83,7 +82,7 @@ namespace PeasAPI.Managers
             instance.MeetingIntro.gameObject.SetActive(true);
 
             HudManager.Instance.SetHudActive(false);
-            instance.transform.FindChild("Background").FindChild("BlackBG").gameObject.SetActive(false);
+            instance.transform.FindChild("Background").gameObject.SetActive(false);
             instance.MeetingIntro.gameObject.SetActive(false);
             ControllerManager.Instance.OpenOverlayMenu(MeetingHud.Instance.name, null,
                 MeetingHud.Instance.DefaultButtonSelected, MeetingHud.Instance.ControllerSelectable, false);
