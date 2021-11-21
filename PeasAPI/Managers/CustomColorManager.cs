@@ -10,6 +10,7 @@ using Reactor.Extensions;
 using Reactor.Networking;
 using UnhollowerBaseLib;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PeasAPI.Managers
 {
@@ -75,7 +76,6 @@ namespace PeasAPI.Managers
             [HarmonyPatch(typeof(PlayerTab))]
             private static class PlayerTabPatch
             {
-                private static Scroller _scroller;
                 
                 // Scroller implementation
                 [HarmonyPrefix]
@@ -85,20 +85,19 @@ namespace PeasAPI.Managers
                     var hatsTab = __instance.transform.parent.parent
                         .GetComponentInChildren<HatsTab>(true);
                     
-                    if (!hatsTab || _scroller) return;
+                    if (__instance.scroller || !hatsTab) return;
 
-                    _scroller = UnityEngine.Object.Instantiate(hatsTab.scroller.gameObject, 
-                        __instance.ColorTabArea).GetComponent<Scroller>();
+                    __instance.scroller = Object.Instantiate(hatsTab.scroller, __instance.ColorTabArea);
                     
-                    _scroller.name = "Scroller";
-
-                    var transform = _scroller.Hitbox.transform;
-                    transform.localPosition = Vector3.zero;
-                    transform.localScale = new Vector3(2.8f, 4f, 1f);
+                    __instance.scroller.name = "Scroller";
+                    __instance.scroller.Hitbox.transform.localPosition = Vector3.zero;
 
                     var cc = __instance.ColorTabPrefab;
                     cc.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
                     foreach (var spr in cc.GetComponentsInChildren<SpriteRenderer>())
+                        spr.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+
+                    foreach (var spr in cc.PlayerEquippedForeground.GetComponentsInChildren<SpriteRenderer>())
                         spr.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
                 }
                 
@@ -107,18 +106,16 @@ namespace PeasAPI.Managers
                 [HarmonyPatch(nameof(PlayerTab.OnEnable))]
                 private static void OnEnablePostfix(PlayerTab __instance)
                 {
-                    __instance.XRange = new FloatRange(-0.95f, 0.95f);
                     var chips = __instance.ColorChips.ToArray();
                     
                     for (var i = 0; i < __instance.ColorChips.Count; i++) {
                         var colorChip = chips[i];
                         var x = __instance.XRange.Lerp(i % 5 / 4f);
-                        var y = __instance.YStart - (i / 5) * 0.45f;
+                        var y = __instance.YStart - (i / 5) * 0.6f;
 
                         var transform = colorChip.transform;
                         transform.localPosition = new Vector3(x, y, -1f);
-                        transform.localScale = Vector3.one;
-                        colorChip.transform.SetParent(_scroller.Inner.transform);
+                        transform.SetParent(__instance.scroller.Inner.transform);
                         
                         var fg = colorChip.transform.GetChild(0).gameObject;
                         var oldShade = fg.transform.GetChild(0).gameObject;
@@ -132,18 +129,17 @@ namespace PeasAPI.Managers
                         oldShade.Destroy();
                     }
                     
-                    var rows = Mathf.Max(0, (chips.Count / 5) - 8);
-                    _scroller.YBounds = new FloatRange(0f, (rows * 0.45f) + 0.3f);
+                    var rows = Mathf.Max(0, (chips.Count / 5) - 6);
+                    __instance.scroller.YBounds.max = (rows * 0.6f) + 0.5f;
                 }
                 
                 // Set hat everytime player selecting color
-                /*[HarmonyPostfix]
-                [HarmonyPatch(nameof(PlayerTab.UpdateAvailableColors))]
-                private static void UpdateAvailableColors(PlayerTab __instance)
+                [HarmonyPostfix]
+                [HarmonyPatch(nameof(PlayerTab.SelectColor))]
+                private static void SelectColor(PlayerTab __instance, int colorId)
                 {
-                    __instance.HatImage.SetHat(SaveManager.LastHat, 
-                        PlayerControl.LocalPlayer.Data.ColorId);
-                }*/
+                    __instance.PlayerPreview.HatSlot.SetHat(SaveManager.LastHat, colorId);
+                }
             }
 
             // Custom RPC check/set to prevent from triggering anti-cheat
