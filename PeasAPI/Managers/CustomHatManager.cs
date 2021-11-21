@@ -69,7 +69,7 @@ namespace PeasAPI.Managers
                 }
                 catch (Exception e)
                 {
-                    PeasApi.Logger.LogError($"Error while creating a hat: {e.StackTrace}");
+                    PeasAPI.Logger.LogError($"Error while creating a hat: {e.StackTrace}");
                 }
 
                 return null;
@@ -82,8 +82,8 @@ namespace PeasAPI.Managers
             
             CustomHats.Add(hat);
             
-            if (PeasApi.Logging)
-                PeasApi.Logger.LogInfo($"Registered hat {name} from {Assembly.GetCallingAssembly().GetName().Name}");
+            if (PeasAPI.Logging)
+                PeasAPI.Logger.LogInfo($"Registered hat {name} from {Assembly.GetCallingAssembly().GetName().Name}");
         }
     }
 

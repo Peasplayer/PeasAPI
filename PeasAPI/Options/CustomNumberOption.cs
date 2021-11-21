@@ -68,7 +68,7 @@ namespace PeasAPI.Options
         public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
-            _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
+            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
 
             Value = _configEntry.Value;
             MinValue = minValue;
@@ -82,7 +82,7 @@ namespace PeasAPI.Options
         public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue, NumberSuffixes suffixType) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
-            _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
+            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
 
             Value = _configEntry.Value;
             MinValue = minValue;

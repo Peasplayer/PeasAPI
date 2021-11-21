@@ -71,7 +71,7 @@ namespace PeasAPI.Managers.UpdateTools
             }
             catch (Exception ex)
             {
-                PeasApi.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
+                PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
             }
         }
 
@@ -87,7 +87,7 @@ namespace PeasAPI.Managers.UpdateTools
             }
             catch (Exception)
             {
-                PeasApi.Logger.LogError("There was an error whilst trying to fetch update data");
+                PeasAPI.Logger.LogError("There was an error whilst trying to fetch update data");
             }
 
             return null;
@@ -130,8 +130,8 @@ namespace PeasAPI.Managers.UpdateTools
                 default: throw new ArgumentOutOfRangeException();
             }
 
-            if (PeasApi.Logging)
-                PeasApi.Logger.LogInfo($"Successfully updated {Name}!");
+            if (PeasAPI.Logging)
+                PeasAPI.Logger.LogInfo($"Successfully updated {Name}!");
         }
     }
 }

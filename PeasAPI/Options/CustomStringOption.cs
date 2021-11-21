@@ -66,7 +66,7 @@ namespace PeasAPI.Options
         public CustomStringOption(string id, string title, params string[] values) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.StringOption.{id}";
-            _configEntry = PeasApi.ConfigFile.Bind("Options", Id, 0);
+            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, 0);
             
             Value = _configEntry.Value;
             Values = new List<StringNames>();

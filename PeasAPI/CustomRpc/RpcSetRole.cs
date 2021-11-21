@@ -6,9 +6,9 @@ using Reactor.Networking;
 namespace PeasAPI.CustomRpc
 {
     [RegisterCustomRpc((uint) CustomRpcCalls.SetRole)]
-    public class RpcSetRole : PlayerCustomRpc<PeasApi, RpcSetRole.Data>
+    public class RpcSetRole : PlayerCustomRpc<PeasAPI, RpcSetRole.Data>
     {
-        public RpcSetRole(PeasApi plugin, uint id) : base(plugin, id)
+        public RpcSetRole(PeasAPI plugin, uint id) : base(plugin, id)
         {
         }
 
@@ -34,7 +34,7 @@ namespace PeasAPI.CustomRpc
 
         public override Data Read(MessageReader reader)
         {
-            return new Data(reader.ReadByte().GetPlayer(), PeasAPI.Roles.RoleManager.GetRole(reader.ReadByte()));
+            return new Data(reader.ReadByte().GetPlayer(), Roles.RoleManager.GetRole(reader.ReadByte()));
         }
 
         public override void Handle(PlayerControl innerNetObject, Data data)

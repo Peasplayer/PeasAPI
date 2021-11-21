@@ -5,9 +5,9 @@ using Reactor.Networking;
 namespace PeasAPI.CustomRpc
 {
     [RegisterCustomRpc((uint) CustomRpcCalls.CheckColor)]
-    public class RpcCustomCheckColor : PlayerCustomRpc<PeasApi, byte>
+    public class RpcCustomCheckColor : PlayerCustomRpc<PeasAPI, byte>
     {
-        public RpcCustomCheckColor(PeasApi plugin, uint id) : base(plugin, id)
+        public RpcCustomCheckColor(PeasAPI plugin, uint id) : base(plugin, id)
         {
         }
 

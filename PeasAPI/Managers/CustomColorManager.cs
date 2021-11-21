@@ -205,7 +205,7 @@ namespace PeasAPI.Managers
             private static class SaveManagerPatch
             {
                 private const byte MAXColor = 17;
-                private static ConfigEntry<byte> Data => PeasApi.ConfigFile
+                private static ConfigEntry<byte> Data => PeasAPI.ConfigFile
                     .Bind("CustomSaveManager", "Player Color ID", (byte) SaveManager.colorConfig);
                 
                 [HarmonyPrefix]

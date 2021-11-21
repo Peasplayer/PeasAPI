@@ -6,9 +6,9 @@ using Reactor.Networking;
 namespace PeasAPI.CustomRpc
 {
     [RegisterCustomRpc((uint) CustomRpcCalls.UpdateSetting)]
-    public class RpcUpdateSetting : PlayerCustomRpc<PeasApi, RpcUpdateSetting.Data>
+    public class RpcUpdateSetting : PlayerCustomRpc<PeasAPI, RpcUpdateSetting.Data>
     {
-        public RpcUpdateSetting(PeasApi plugin, uint id) : base(plugin, id)
+        public RpcUpdateSetting(PeasAPI plugin, uint id) : base(plugin, id)
         {
         }
 

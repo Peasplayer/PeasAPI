@@ -9,9 +9,9 @@ using UnityEngine;
 namespace PeasAPI.CustomRpc
 {
     [RegisterCustomRpc((uint) CustomRpcCalls.CustomEndReason)]
-    public class RpcCustomEndReason : PlayerCustomRpc<PeasApi, RpcCustomEndReason.Data>
+    public class RpcCustomEndReason : PlayerCustomRpc<PeasAPI, RpcCustomEndReason.Data>
     {
-        public RpcCustomEndReason(PeasApi plugin, uint id) : base(plugin, id)
+        public RpcCustomEndReason(PeasAPI plugin, uint id) : base(plugin, id)
         {
         }
 

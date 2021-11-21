@@ -42,7 +42,7 @@ namespace PeasAPI.Roles
         [HarmonyPostfix]
         public static void RoleTextPatch(IntroCutscene __instance)
         {
-            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 var scene = __instance;
@@ -59,7 +59,7 @@ namespace PeasAPI.Roles
         [HarmonyPostfix]
         public static void TeamTextPatch(IntroCutscene __instance)
         {
-            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 var scene = __instance;
@@ -77,7 +77,7 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         public static void RoleTeamPatch(IntroCutscene __instance, [HarmonyArgument(0)] ref List<PlayerControl> yourTeam)
         {
-            if (PeasApi.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 if (role.Team == Team.Alone)
@@ -159,7 +159,7 @@ namespace PeasAPI.Roles
         {
             public static void Prefix(HudManager __instance)
             {
-                if (PeasApi.GameStarted && PeasApi.EnableRoles)
+                if (PeasAPI.GameStarted && PeasAPI.EnableRoles)
                 {
                     foreach (var role in RoleManager.Roles)
                     {
@@ -174,7 +174,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(MeetingHud __instance)
             {
-                if (PeasApi.EnableRoles)
+                if (PeasAPI.EnableRoles)
                 {
                     foreach (var role in RoleManager.Roles)
                     {
@@ -189,7 +189,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl __instance)
             {
-                if (PeasApi.GameStarted && PeasApi.EnableRoles)
+                if (PeasAPI.GameStarted && PeasAPI.EnableRoles)
                 {
                     var localRole = PlayerControl.LocalPlayer.GetRole();
 
@@ -341,7 +341,7 @@ namespace PeasAPI.Roles
         {
             public static bool Prefix(SabotageButton __instance)
             {
-                if (__instance.isActiveAndEnabled && PeasApi.GameStarted)
+                if (__instance.isActiveAndEnabled && PeasAPI.GameStarted)
                 {
                     var role = PlayerControl.LocalPlayer.GetRole();
 

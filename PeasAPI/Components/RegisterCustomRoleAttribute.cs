@@ -29,8 +29,8 @@ namespace PeasAPI.Components
                         throw new InvalidOperationException($"Type {type.FullDescription()} must extend {nameof(BaseRole)}.");
                     }
                     
-                    if (PeasApi.Logging)
-                        PeasApi.Logger.LogInfo($"Registered role {type.Name} from {type.Assembly.GetName().Name}");
+                    if (PeasAPI.Logging)
+                        PeasAPI.Logger.LogInfo($"Registered role {type.Name} from {type.Assembly.GetName().Name}");
                     
                     Activator.CreateInstance(type, plugin);
                 }
