@@ -107,7 +107,6 @@ namespace PeasAPI.Managers
                 [HarmonyPatch(nameof(PlayerTab.OnEnable))]
                 private static void OnEnablePostfix(PlayerTab __instance)
                 {
-                    __instance.XRange = new FloatRange(-0.95f, 0.95f);
                     var chips = __instance.ColorChips.ToArray();
                     
                     for (var i = 0; i < __instance.ColorChips.Count; i++) {
