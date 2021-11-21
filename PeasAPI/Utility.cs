@@ -13,7 +13,10 @@ namespace PeasAPI
             Stream myStream = Assembly.GetCallingAssembly().GetManifestResourceStream(image);
             byte[] data = myStream.ReadFully();
             ImageConversion.LoadImage(tex, data, false);
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f),
+                pixelsPerUnit);
+            sprite.DontDestroy();
+            return sprite;
         }
     }
 }

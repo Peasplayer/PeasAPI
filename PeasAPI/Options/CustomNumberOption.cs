@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BepInEx.Configuration;
 using PeasAPI.CustomRpc;
 using Reactor.Networking;
@@ -16,6 +17,8 @@ namespace PeasAPI.Options
         public float MaxValue { get; private set; }
         
         public float Increment { get; private set; }
+        
+        public NumberSuffixes SuffixType { get; private set; }
 
         public delegate void OnValueChangedHandler(CustomNumberOptionValueChangedArgs args);
 
@@ -61,15 +64,31 @@ namespace PeasAPI.Options
             OnValueChanged?.Invoke(args);
         }
         
+        [Obsolete("NumberSuffixes got added, please change your code!", false)]
         public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
-            _configEntry = PeasApi.ConfigFile.Bind("Options", Id, defaultValue);
+            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
 
             Value = _configEntry.Value;
             MinValue = minValue;
             MaxValue = maxValue;
             Increment = increment;
+            SuffixType = NumberSuffixes.None;
+            
+            OptionManager.CustomOptions.Add(this);
+        }
+        
+        public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue, NumberSuffixes suffixType) : base(title)
+        {
+            Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
+            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
+
+            Value = _configEntry.Value;
+            MinValue = minValue;
+            MaxValue = maxValue;
+            Increment = increment;
+            SuffixType = suffixType;
             
             OptionManager.CustomOptions.Add(this);
         }

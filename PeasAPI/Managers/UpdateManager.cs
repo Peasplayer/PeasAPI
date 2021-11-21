@@ -46,21 +46,21 @@ namespace PeasAPI.Managers
             {
                 if (!DoUpdateChecks)
                 {
-                    if (PeasApi.Logging)
-                        PeasApi.Logger.LogInfo("Checking for updates skipped.");
+                    if (PeasAPI.Logging)
+                        PeasAPI.Logger.LogInfo("Checking for updates skipped.");
                     return;
                 }
                 
-                if (PeasApi.Logging)
-                    PeasApi.Logger.LogInfo("Checking for updates..");
+                if (PeasAPI.Logging)
+                    PeasAPI.Logger.LogInfo("Checking for updates..");
                 
                 var enumerable = UpdateListeners.Where(x => !x.IsUpToDate());
                 var updateListeners = enumerable as UpdateListener[] ?? enumerable.ToArray();
                 
                 if (!updateListeners.Any())
                 {
-                    if (PeasApi.Logging)
-                        PeasApi.Logger.LogInfo("All mods are up-to-dated..");
+                    if (PeasAPI.Logging)
+                        PeasAPI.Logger.LogInfo("All mods are up-to-dated..");
                     return;
                 }
 
@@ -72,8 +72,8 @@ namespace PeasAPI.Managers
                     stringBuilder.AppendLine(
                         $"{updateListener.Name} ({updateListener.Assembly.GetName().Version} → {updateListener.Version})");
                     
-                    if (PeasApi.Logging)
-                        PeasApi.Logger.LogInfo($"Found an update for {updateListener.Name}!");
+                    if (PeasAPI.Logging)
+                        PeasAPI.Logger.LogInfo($"Found an update for {updateListener.Name}!");
                 }
 
                 stringBuilder.AppendLine("\nRestart your game afterwards to use the new versions!");
@@ -89,7 +89,7 @@ namespace PeasAPI.Managers
             catch (Exception ex)
             {
                 var text = $"An error occurred while attempting to (check for) update: \n{ex}";
-                PeasApi.Logger.LogError(text);
+                PeasAPI.Logger.LogError(text);
                 DestroyableSingleton<DiscordManager>.Instance.discordPopup.Show(text);
             }
         }

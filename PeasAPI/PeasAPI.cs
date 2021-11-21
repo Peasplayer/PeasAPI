@@ -17,7 +17,7 @@ namespace PeasAPI
     [BepInPlugin(Id, "PeasAPI", Version)]
     [BepInProcess("Among Us.exe")]
     [BepInDependency(ReactorPlugin.Id)]
-    public class PeasApi : BasePlugin
+    public class PeasAPI : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
         public const string Version = "1.5.5";

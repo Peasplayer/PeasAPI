@@ -64,12 +64,14 @@ namespace PeasAPI.Managers.UpdateTools
             try
             {
                 var httpResponseMessage = FetchData();
+                if (httpResponseMessage == null)
+                    return;
                 var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 FromJsonElement(JsonDocument.Parse(result).RootElement);
             }
             catch (Exception ex)
             {
-                PeasApi.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
+                PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
             }
         }
 
@@ -77,9 +79,18 @@ namespace PeasAPI.Managers.UpdateTools
 
         public virtual HttpResponseMessage FetchData()
         {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "PeasAPI Updater");
-            return httpClient.GetAsync(new Uri(JsonLink), 0).Result;
+            try
+            {
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "PeasAPI Updater");
+                return httpClient.GetAsync(new Uri(JsonLink), 0).Result;
+            }
+            catch (Exception)
+            {
+                PeasAPI.Logger.LogError("There was an error whilst trying to fetch update data");
+            }
+
+            return null;
         }
 
         private string GetAssemblyPath()
@@ -119,8 +130,8 @@ namespace PeasAPI.Managers.UpdateTools
                 default: throw new ArgumentOutOfRangeException();
             }
 
-            if (PeasApi.Logging)
-                PeasApi.Logger.LogInfo($"Successfully updated {Name}!");
+            if (PeasAPI.Logging)
+                PeasAPI.Logger.LogInfo($"Successfully updated {Name}!");
         }
     }
 }

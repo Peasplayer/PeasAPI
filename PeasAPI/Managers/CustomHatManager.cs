@@ -12,22 +12,27 @@ namespace PeasAPI.Managers
     {
         public static List<Hat> CustomHats = new List<Hat>();
 
-        public class Hat
+        public readonly struct Hat
         {
-            public string Name;
-            public string ImagePath;
-            public Assembly Assembly;
-            public bool InFront = true;
-            public bool NoBounce = true;
-            public Vector2 ChipOffset = new Vector2();
-            public Sprite BackImage = null;
-            public Sprite FloorImage = null;
+            public readonly string Name;
+            public readonly string ImagePath;
+            public readonly Assembly Assembly;
+            public readonly bool InFront;
+            public readonly bool NoBounce;
+            public readonly Vector2 ChipOffset;
+            public readonly Sprite BackImage;
+            public readonly Sprite FloorImage;
             
-            public Hat(string name, string imagePath, Assembly assembly)
+            public Hat(string name, string imagePath, Assembly assembly, bool inFront, bool noBounce, Vector2 chipOffset, Sprite backImage, Sprite floorImage)
             {
                 Name = name;
                 ImagePath = imagePath;
                 Assembly = assembly;
+                InFront = inFront;
+                NoBounce = noBounce;
+                ChipOffset = chipOffset;
+                BackImage = backImage;
+                FloorImage = floorImage;
             }
             
             public HatBehaviour CreateHat()
@@ -40,7 +45,7 @@ namespace PeasAPI.Managers
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newHat = ScriptableObject.CreateInstance<HatBehaviour>();
-                    newHat.MainImage = Sprite.Create(
+                    newHat.MainImage = newHat.LeftMainImage = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
                         new Vector2(0.53f, 0.575f),
@@ -49,20 +54,22 @@ namespace PeasAPI.Managers
                     
                     newHat.ProductId = $"+{Name}";
                     newHat.Order += 100;
+                    newHat.Free = true;
+                    newHat.StoreName = Name;
+                    newHat.name = Name;
                     
                     newHat.InFront = InFront;
                     newHat.NoBounce = NoBounce;
                     newHat.ChipOffset = ChipOffset;
-                    if (BackImage)
-                        newHat.BackImage = BackImage;
-                    if (FloorImage)
-                        newHat.FloorImage = FloorImage;
+                    newHat.BackImage = newHat.LeftBackImage = BackImage;
+                    newHat.ClimbImage = newHat.LeftClimbImage = BackImage;
+                    newHat.FloorImage = newHat.LeftFloorImage = FloorImage;
                     
                     return newHat;
                 }
                 catch (Exception e)
                 {
-                    PeasApi.Logger.LogError($"Error while creating a hat: {e.StackTrace}");
+                    PeasAPI.Logger.LogError($"Error while creating a hat: {e.StackTrace}");
                 }
 
                 return null;
@@ -71,18 +78,12 @@ namespace PeasAPI.Managers
         
         public static void RegisterNewHat(string name, string imagePath, Vector2 chipOffset = new Vector2(), bool inFront = true, bool noBounce = true, Sprite backImage = null, Sprite floorImage = null)
         {
-            var hat = new Hat(name, imagePath, Assembly.GetCallingAssembly());
-            
-            hat.InFront = inFront;
-            hat.NoBounce = noBounce;
-            hat.ChipOffset = chipOffset;
-            hat.BackImage = backImage;
-            hat.FloorImage = floorImage;
+            var hat = new Hat(name, imagePath, Assembly.GetCallingAssembly(), inFront, noBounce, chipOffset, backImage, floorImage);
             
             CustomHats.Add(hat);
             
-            if (PeasApi.Logging)
-                PeasApi.Logger.LogInfo($"Registered hat {name} from {Assembly.GetCallingAssembly().GetName().Name}");
+            if (PeasAPI.Logging)
+                PeasAPI.Logger.LogInfo($"Registered hat {name} from {Assembly.GetCallingAssembly().GetName().Name}");
         }
     }
 

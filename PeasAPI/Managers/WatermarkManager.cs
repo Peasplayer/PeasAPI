@@ -49,7 +49,7 @@ namespace PeasAPI.Managers
         /// </summary>
         public static bool UseReactorVersion { get; set; } = false;
 
-        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasApi.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", 
+        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasAPI.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", 
             "\n<color=#ff0000ff>PeasAPI", new Vector2(), new Vector2());
 
         public static void AddWatermark(string versionText, string pingText,
@@ -84,7 +84,7 @@ namespace PeasAPI.Managers
                     }
                 }
 
-                if (PeasApi.ShamelessPlug)
+                if (PeasAPI.ShamelessPlug)
                 {
                     __instance.transform.position += PeasApiWatermark.VersionTextOffset;
 
@@ -120,7 +120,7 @@ namespace PeasAPI.Managers
                         __instance.text.text += watermark.PingText;
                 }
 
-                if (PeasApi.ShamelessPlug)
+                if (PeasAPI.ShamelessPlug)
                 {
                     __instance.transform.localPosition += PeasApiWatermark.PingTextOffset;
                 

@@ -10,7 +10,7 @@ namespace PeasAPI
         {
             static void Postfix(VersionShower __instance)
             {
-                AccountManager.Instance.accountTab.transform.position = new Vector3(-8.5333f, 0f, -5f) + PeasApi.AccountTabOffset;
+                AccountManager.Instance.accountTab.transform.position = new Vector3(-8.5333f, 0f, -5f) + PeasAPI.AccountTabOffset;
             }
         }
 
@@ -19,7 +19,7 @@ namespace PeasAPI
         {
             public static bool Prefix(AccountTab __instance)
             {
-                if (PeasApi.AccountTabOnlyChangesName)
+                if (PeasAPI.AccountTabOnlyChangesName)
                 {
                     if (__instance.editNameScreen.gameObject.active)
                     {

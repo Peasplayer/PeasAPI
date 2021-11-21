@@ -65,7 +65,7 @@ namespace PeasAPI
         /// </summary>
         public static BaseRole GetRole(this PlayerControl player)
         {
-            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
+            foreach (var _role in Roles.RoleManager.Roles)
             {
                 if (_role.Members.Contains(player.PlayerId))
                     return _role;
@@ -79,7 +79,7 @@ namespace PeasAPI
         /// </summary>
         public static BaseRole GetRole(this GameData.PlayerInfo player)
         {
-            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
+            foreach (var _role in Roles.RoleManager.Roles)
             {
                 if (_role.Members.Contains(player.PlayerId))
                     return _role;
@@ -111,7 +111,7 @@ namespace PeasAPI
         /// </summary>
         public static void SetRole(this PlayerControl player, BaseRole? role)
         {
-            foreach (var _role in PeasAPI.Roles.RoleManager.Roles)
+            foreach (var _role in Roles.RoleManager.Roles)
             {
                 if (_role != role)
                     _role.Members.Remove(player.PlayerId);
