@@ -146,7 +146,7 @@ namespace PeasAPI.Managers
             [HarmonyPatch(typeof(PlayerControl))]
             private static class PlayerControlPatch
             {
-                [HarmonyPrefix]
+                /*[HarmonyPrefix]
                 [HarmonyPatch(nameof(PlayerControl.CmdCheckColor))]
                 private static bool CmdCheckColor(byte bodyColor, PlayerControl __instance)
                 {
@@ -169,7 +169,7 @@ namespace PeasAPI.Managers
                     
                     Rpc<RpcSetColor>.Instance.Send(new RpcSetColor.Data(__instance, bodyColor));
                     return false;
-                }
+                }*/
                 
                 // It does the same as the original one
                 // But needed because it sends vanilla RPC for some reason
