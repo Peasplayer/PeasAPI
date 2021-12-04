@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace PeasAPI
 {
-    public class Patches
+    [HarmonyPatch]
+    public static class Patches
     {
         [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
         public static class VersionShowerStartPatch
@@ -34,6 +35,30 @@ namespace PeasAPI
                 }
                 return true;
             }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
+        [HarmonyPrefix]
+        public static bool CheckMurderPatch(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+        {
+            if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+            {
+                return false;
+            }
+            if (!target || __instance.Data.IsDead || __instance.Data.Disconnected)
+            {
+                int num = target ? target.PlayerId : -1;
+                Debug.LogWarning(string.Format("Bad kill from {0} to {1}", __instance.PlayerId, num));
+                return false;
+            }
+            GameData.PlayerInfo data = target.Data;
+            if (data == null || data.IsDead || target.inVent)
+            {
+                Debug.LogWarning("Invalid target data for kill");
+                return false;
+            }
+            __instance.RpcMurderPlayer(target);
+            return false;
         }
     }
 }

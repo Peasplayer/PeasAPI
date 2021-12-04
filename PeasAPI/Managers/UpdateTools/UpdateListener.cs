@@ -71,7 +71,7 @@ namespace PeasAPI.Managers.UpdateTools
             }
             catch (Exception ex)
             {
-                PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex}");
+                PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex.Message}");
             }
         }
 

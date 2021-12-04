@@ -146,6 +146,18 @@ namespace PeasAPI.Roles
         public virtual void OnGameStart()
         {
         }
+        
+        public void _OnGameStop()
+        {
+            OnGameStop();
+        }
+
+        /// <summary>
+        /// Gets called when the game stops
+        /// </summary>
+        public virtual void OnGameStop()
+        {
+        }
 
         public void _OnUpdate()
         {

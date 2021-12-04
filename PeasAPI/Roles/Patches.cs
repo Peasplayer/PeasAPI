@@ -13,6 +13,19 @@ namespace PeasAPI.Roles
     [HarmonyPatch]
     public static class Patches
     {
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
+        [HarmonyPrefix]
+        public static void OnGameEndPatch(AmongUsClient __instance)
+        {
+            if (PeasAPI.EnableRoles)
+            {
+                foreach (var role in RoleManager.Roles)
+                {
+                    role._OnGameStop();
+                }
+            }
+        }
+        
         [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.SelectRoles))]
         [HarmonyPostfix]
         public static void InitializeRolesPatch()
