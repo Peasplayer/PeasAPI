@@ -15,7 +15,7 @@ namespace PeasAPI.Options
         
         public int OldValue { get; private set; }
         
-        public List<StringNames> Values { get; private set; }
+        public List<StringNames> Values { get; set; }
 
         public delegate void OnValueChangedHandler(CustomStringOptionValueChangedArgs args);
 
