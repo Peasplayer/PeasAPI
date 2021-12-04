@@ -11,8 +11,16 @@ namespace PeasAPI.Options
     {
         public int Value { get; private set; }
 
-        public string StringValue => Values[Value].GetTranslation();
-        
+        public string StringValue
+        {
+            get
+            {
+                if (Values.Count >= Value + 1)
+                    return Values[Value].GetTranslation();
+                return "Error";
+            }
+        }
+
         public int OldValue { get; private set; }
         
         public List<StringNames> Values { get; set; }

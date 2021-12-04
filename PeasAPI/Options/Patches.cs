@@ -115,6 +115,7 @@ namespace PeasAPI.Options
                     stringOption.TitleText.text = _option.Title;
                     stringOption.Title = CustomStringName.Register(_option.Title);
                     stringOption.Value = _option.Value;
+                    stringOption.ValueText.text = _option.StringValue;
                     stringOption.Values = _option.Values.ToArray();
                     
                     option = stringOption;
