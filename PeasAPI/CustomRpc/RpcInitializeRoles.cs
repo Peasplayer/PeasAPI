@@ -30,7 +30,7 @@ namespace PeasAPI.CustomRpc
                         Roles.RoleManager.Crewmates.Add(player.PlayerId);
                 }
 
-                if (PeasAPI.EnableRoles && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
+                if (PeasAPI.EnableRoles && AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
                 {
                     foreach (var role in Roles.RoleManager.Roles)
                     {

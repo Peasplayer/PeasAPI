@@ -6,7 +6,9 @@ using BepInEx.Logging;
 using HarmonyLib;
 using InnerNet;
 using PeasAPI.Components;
+using PeasAPI.GameModes;
 using PeasAPI.Managers;
+using PeasAPI.Options;
 using Reactor;
 using UnityEngine;
 using Random = System.Random;
@@ -46,7 +48,7 @@ namespace PeasAPI
             {
                 return GameData.Instance && ShipStatus.Instance && AmongUsClient.Instance &&
                        (AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started ||
-                        AmongUsClient.Instance.GameMode == GameModes.FreePlay);
+                        AmongUsClient.Instance.GameMode == global::GameModes.FreePlay);
             }
         }
 
@@ -86,6 +88,12 @@ namespace PeasAPI
             UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
 
             RegisterCustomRoleAttribute.Load();
+            RegisterCustomGameModeAttribute.Load();
+            GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
+            GameModeManager.GameModeOption.OnValueChanged += args =>
+            {
+                EnableRoles = args.Option.Values[args.NewValue].GetTranslation().Equals("None");
+            };
 
             Harmony.PatchAll();
         }
