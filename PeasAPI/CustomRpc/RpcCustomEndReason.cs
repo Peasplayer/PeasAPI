@@ -33,7 +33,7 @@ namespace PeasAPI.CustomRpc
             }
         }
 
-        public override RpcLocalHandling LocalHandling => RpcLocalHandling.None;
+        public override RpcLocalHandling LocalHandling => RpcLocalHandling.After;
 
         public override void Write(MessageWriter writer, Data data)
         {
@@ -77,11 +77,18 @@ namespace PeasAPI.CustomRpc
 
         public override void Handle(PlayerControl innerNetObject, Data data)
         {
+            if (EndReasonManager.GameIsEnding)
+                return;
+            EndReasonManager.GameIsEnding = true;
+            
             EndReasonManager.Color = data.Color;
             EndReasonManager.Winners = data.Winners;
             EndReasonManager.VictoryText = data.VictoryText;
             EndReasonManager.DefeatText = data.DefeatText;
             EndReasonManager.Stinger = data.Stinger;
+            
+            if (AmongUsClient.Instance.AmHost)
+                ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
         }
     }
 }

@@ -15,14 +15,6 @@ namespace PeasAPI.CustomEndReason
         public CustomEndReason(Color color, string victoryText, string defeatText, string stinger, List<GameData.PlayerInfo> winners)
         {
             Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(color, victoryText, defeatText, stinger, winners));
-
-            EndReasonManager.Color = color;
-            EndReasonManager.Winners = winners;
-            EndReasonManager.VictoryText = victoryText;
-            EndReasonManager.DefeatText = defeatText;
-            EndReasonManager.Stinger = stinger;
-
-            ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace PeasAPI.CustomEndReason
 {
     public class EndReasonManager
     {
-        public static GameOverReason CustomGameOverReason = (GameOverReason) (255);
+        public static GameOverReason CustomGameOverReason = (GameOverReason) 255;
 
         public static Color Color;
 
@@ -18,6 +18,8 @@ namespace PeasAPI.CustomEndReason
         
         public static string Stinger;
 
+        public static bool GameIsEnding;
+
         public static void Reset()
         {
             Color = Color.clear;
@@ -25,6 +27,7 @@ namespace PeasAPI.CustomEndReason
             VictoryText = null;
             DefeatText = null;
             Stinger = null;
+            GameIsEnding = false;
         }
 
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
@@ -52,16 +55,16 @@ namespace PeasAPI.CustomEndReason
 
                 __instance.WinText.text = DefeatText;
                 __instance.WinText.color = Palette.ImpostorRed;
+                __instance.BackgroundBar.material.color = Palette.ImpostorRed;
                 foreach (var winner in Winners)
                 {
                     if (winner.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         __instance.WinText.text = VictoryText;
                         __instance.WinText.color = Palette.CrewmateBlue;
+                        __instance.BackgroundBar.material.color = Palette.CrewmateBlue;
                     }
                 }
-                    
-                __instance.BackgroundBar.material.color = Color;
 
                 for (int i = 0; i < _winners.Count; i++)
                 {
@@ -71,11 +74,11 @@ namespace PeasAPI.CustomEndReason
                     var transform = player.transform;
                     transform.localPosition = new Vector3(
                         0.8f * (i % 2 == 0 ? -1 : 1) * oddness * 1 - oddness * 0.035f,
-                        EndGameManager.OffsetWidth + oddness * 0.1f,
+                        FloatRange.SpreadToEdges(-1.125f, 0f, oddness, Mathf.CeilToInt(7.5f)),
                         (i == 0 ? -8 : -1) + oddness * 0.01f
                     ) * 1.25f;
                     float scale = 1f - oddness * 0.075f;
-                    var scaleVec = new Vector3(scale, scale, scale);// * 1.25f;
+                    var scaleVec = new Vector3(scale, scale, scale);
                     transform.localScale = scaleVec;
                     if (winner.IsDead)
                     {
@@ -93,9 +96,7 @@ namespace PeasAPI.CustomEndReason
                     player.HatSlot.SetHat(winner.HatId, winner.ColorId);
                     PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.PetSlot);
                     player.NameText.text = winner.PlayerName;
-                    player.NameText.transform.localScale += new Vector3(0f, 0.5f);//= global::Extensions.Inv(scaleVec);
-                    player.NameText.transform.position += new Vector3(0f, 0.5f);
-                    player.NameText.gameObject.SetActive(false);
+                    player.NameText.transform.SetLocalZ(-15f);
                 }
                 
                 SoundManager.Instance.PlaySound(__instance.DisconnectStinger, false, 1f);

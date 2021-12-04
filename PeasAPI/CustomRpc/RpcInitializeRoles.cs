@@ -75,6 +75,8 @@ namespace PeasAPI.CustomRpc
             {
                 Roles.RoleManager.Crewmates.Clear();
                 Roles.RoleManager.Impostors.Clear();
+                
+                EndReasonManager.Reset();
 
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
