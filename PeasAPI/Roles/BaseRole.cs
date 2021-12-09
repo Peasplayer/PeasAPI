@@ -106,34 +106,32 @@ namespace PeasAPI.Roles
         /// <summary>
         /// This method calculates the nearest player to kill for a member of this role
         /// </summary>
-        public virtual PlayerControl FindClosestTarget(PlayerControl from)
+        public virtual PlayerControl FindClosestTarget(PlayerControl from, bool protecting)
         {
-            var distance = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
-            
-            if (!ShipStatus.Instance)
-                return null;
-            
-            Vector2 truePosition = from.GetTruePosition();
-            
             PlayerControl result = null;
+            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            if (!ShipStatus.Instance)
+            {
+                return null;
+            }
+            Vector2 truePosition = from.GetTruePosition();
             foreach (var playerInfo in GameData.Instance.AllPlayers)
             {
-                PlayerControl @object = playerInfo.Object;
-                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && CanKill(@object))
+                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (playerInfo.Role.CanBeKilled || protecting) && !playerInfo.Object.inVent)
                 {
+                    PlayerControl @object = playerInfo.Object;
                     if (@object && @object.Collider.enabled)
                     {
                         Vector2 vector = @object.GetTruePosition() - truePosition;
                         float magnitude = vector.magnitude;
-                        if (magnitude <= distance && !PhysicsHelpers.AnyNonTriggersBetween(truePosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
+                        if (magnitude <= num && !PhysicsHelpers.AnyNonTriggersBetween(truePosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
                         {
                             result = @object;
-                            distance = magnitude;
+                            num = magnitude;
                         }
                     }
                 }
             }
-            
             return result;
         }
 
@@ -227,6 +225,10 @@ namespace PeasAPI.Roles
         /// Gets called every frame when a meeting is active. The meeting gets passed on
         /// </summary>
         public virtual void OnMeetingUpdate(MeetingHud meeting)
+        {
+        }
+
+        public virtual void OnKill(PlayerControl victim)
         {
         }
 

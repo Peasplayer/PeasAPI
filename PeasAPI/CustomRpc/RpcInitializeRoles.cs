@@ -44,7 +44,12 @@ namespace PeasAPI.CustomRpc
                         
                         if (role.Team == Team.Impostor)
                         {
-                            for (int i = 1; i <= role.Limit && Roles.RoleManager.Impostors.Count >= 1; i++)
+                            var nonRoleImpostors = Roles.RoleManager.Impostors.Where(id =>
+                                id.GetPlayer().Data.Role.IsSimpleRole &&
+                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
+                            if (nonRoleImpostors.Length == 0)
+                                continue;
+                            for (int i = 1; i <= role.Limit && nonRoleImpostors.Length >= 1; i++)
                             {
                                 if (Roles.RoleManager.HostMod.IsRole.ContainsKey(role) && Roles.RoleManager.HostMod.IsRole[role] &&
                                     PlayerControl.LocalPlayer.GetRole() == null)
@@ -52,16 +57,21 @@ namespace PeasAPI.CustomRpc
                                     PlayerControl.LocalPlayer.RpcSetRole(role);
                                     continue;
                                 }
-                                
+
                                 var member =
-                                    Roles.RoleManager.Impostors[PeasAPI.Random.Next(0, Roles.RoleManager.Impostors.Count)];
+                                    nonRoleImpostors[PeasAPI.Random.Next(0, nonRoleImpostors.Length)];
                                 member.GetPlayer().RpcSetRole(role);
                                 Roles.RoleManager.Impostors.Remove(member);
                             }
                         }
                         else if (role.Team != Team.Impostor)
                         {
-                            for (int i = 1; i <= role.Limit && Roles.RoleManager.Crewmates.Count >= 1; i++)
+                            var nonRoleCrewmates = Roles.RoleManager.Crewmates.Where(id =>
+                                id.GetPlayer().Data.Role.IsSimpleRole &&
+                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
+                            if (nonRoleCrewmates.Length == 0)
+                                continue;
+                            for (int i = 1; i <= role.Limit && nonRoleCrewmates.Length >= 1; i++)
                             {
                                 if (Roles.RoleManager.HostMod.IsRole.ContainsKey(role) && Roles.RoleManager.HostMod.IsRole[role] &&
                                     PlayerControl.LocalPlayer.GetRole() == null)
@@ -71,7 +81,7 @@ namespace PeasAPI.CustomRpc
                                 }
                                 
                                 var member =
-                                    Roles.RoleManager.Crewmates[PeasAPI.Random.Next(0, Roles.RoleManager.Crewmates.Count)];
+                                    nonRoleCrewmates[PeasAPI.Random.Next(0, nonRoleCrewmates.Length)];
                                 member.GetPlayer().RpcSetRole(role);
                                 Roles.RoleManager.Crewmates.Remove(member);
                             }
