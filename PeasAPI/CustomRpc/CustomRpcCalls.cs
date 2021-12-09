@@ -8,6 +8,7 @@
         CustomEndReason,
         UpdateSetting,
         CheckColor,
-        SetColor
+        SetColor,
+        ShowMessage
     }
 }
