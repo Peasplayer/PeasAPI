@@ -45,7 +45,7 @@ namespace PeasAPI.GameModes
             {
                 foreach (var mode in GameModeManager.Modes)
                 {
-                    if (mode.Enabled && PlayerControl.LocalPlayer)
+                    if (mode.Enabled && PlayerControl.LocalPlayer && PeasAPI.GameStarted)
                         mode.OnUpdate();
                 }
             }
