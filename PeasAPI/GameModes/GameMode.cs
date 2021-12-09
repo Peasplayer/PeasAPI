@@ -1,4 +1,6 @@
-﻿using BepInEx.IL2CPP;
+﻿using System;
+using System.Collections.Generic;
+using BepInEx.IL2CPP;
 
 namespace PeasAPI.GameModes
 {
@@ -17,7 +19,9 @@ namespace PeasAPI.GameModes
         public virtual bool Enabled => GameModeManager.IsGameModeActive(this);
 
         public virtual bool HasToDoTasks { get; } = false;
-        
+
+        public virtual Type[] RoleWhitelist { get; } = Array.Empty<Type>();
+
         public virtual void OnGameStart() {}
 
         public virtual void OnUpdate() {}
@@ -32,9 +36,9 @@ namespace PeasAPI.GameModes
             return true;
         }
 
-        public virtual Data.CustomIntroScreen GetIntroScreen(PlayerControl player)
+        public virtual Data.CustomIntroScreen? GetIntroScreen(PlayerControl player)
         {
-            return new Data.CustomIntroScreen("Impostor God", "UwU overpowered", Palette.Purple, new System.Collections.Generic.List<byte> {PlayerControl.LocalPlayer.PlayerId});
+            return new Data.CustomIntroScreen(true, "Impostor God", "UwU overpowered", Palette.Purple, new List<byte> {PlayerControl.LocalPlayer.PlayerId});
         }
 
         public virtual string GetObjective(PlayerControl player)
@@ -44,7 +48,7 @@ namespace PeasAPI.GameModes
 
         public virtual void AssignRoles() {}
 
-        public virtual RoleTypes AssignLocalRole(PlayerControl player) => RoleTypes.Crewmate;
+        public virtual RoleTypes? AssignLocalRole(PlayerControl player) => null;
         
         public virtual bool AllowSabotage(SystemTypes? sabotage)
         {

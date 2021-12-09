@@ -11,23 +11,27 @@ namespace PeasAPI
     {
         public readonly struct CustomIntroScreen
         {
+            public readonly bool OverrideTeam;
             public readonly string Team;
             public readonly string TeamDescription;
             public readonly Color TeamColor;
             public readonly List<byte> TeamMembers;
+            public readonly bool OverrideRole;
             public readonly string Role;
             public readonly string RoleDescription;
             public readonly Color RoleColor;
 
-            public CustomIntroScreen(string team, string teamDescription, Color teamColor, List<byte> teamMembers, string role = null, string roleDescription= null, Color? roleColor = null)
+            public CustomIntroScreen(bool overrideTeam = false, string team = null, string teamDescription = null, Color? teamColor = null, List<byte> teamMembers = null, bool overrideRole = false, string role = null, string roleDescription= null, Color? roleColor = null)
             {
+                OverrideTeam = overrideTeam;
                 Team = team;
-                TeamColor = teamColor;
+                TeamColor = teamColor.GetValueOrDefault();
                 TeamDescription = teamDescription;
                 TeamMembers = teamMembers;
-                Role = role.IsNullOrWhiteSpace() ? team : role;
-                RoleDescription = roleDescription.IsNullOrWhiteSpace() ? teamDescription : roleDescription;
-                RoleColor = roleColor ?? teamColor;
+                OverrideRole = overrideRole;
+                Role = role;
+                RoleDescription = roleDescription;
+                RoleColor = roleColor.GetValueOrDefault();
             }
         }
         

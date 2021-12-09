@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
 using PeasAPI.Options;
-using Reactor;
 
 namespace PeasAPI.GameModes
 {
@@ -16,16 +13,17 @@ namespace PeasAPI.GameModes
 
         public static CustomStringOption GameModeOption;
 
-        public static bool IsGameModeActive(GameMode mode) => GameModeOption.StringValue.Equals(mode.Name);
-        
-        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
-        class AmongUsClientOnGameJoinedPatch
+        public static GameMode GetCurrentGameMode()
         {
-            static void Postfix(AmongUsClient __instance)
+            foreach (var mode in Modes)
             {
-                GameModeOption.Values = Modes.ConvertAll(mode => mode.Name).Prepend("None").ToList().ConvertAll(mode => (StringNames) CustomStringName.Register(mode));
-                PeasAPI.EnableRoles = GameModeOption.StringValue.Equals("None");
+                if (GameModeOption.StringValue.Equals(mode.Name))
+                    return mode;
             }
+
+            return null;
         }
+        
+        public static bool IsGameModeActive(GameMode mode) => GameModeOption.StringValue.Equals(mode.Name);
     }
 }

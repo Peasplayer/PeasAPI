@@ -1,4 +1,6 @@
-﻿using PeasAPI.CustomEndReason;
+﻿using System.Linq;
+using PeasAPI.CustomEndReason;
+using PeasAPI.GameModes;
 using PeasAPI.Roles;
 using Reactor;
 using Reactor.Networking;
@@ -30,10 +32,16 @@ namespace PeasAPI.CustomRpc
                         Roles.RoleManager.Crewmates.Add(player.PlayerId);
                 }
 
-                if (PeasAPI.EnableRoles && AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
+                if ((PeasAPI.EnableRoles || GameModeManager.GetCurrentGameMode() != null && GameModeManager.GetCurrentGameMode().RoleWhitelist.Length != 0) && AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
                 {
                     foreach (var role in Roles.RoleManager.Roles)
                     {
+                        if (GameModeManager.GetCurrentGameMode() != null && !GameModeManager.GetCurrentGameMode().RoleWhitelist.Contains(role.GetType()))
+                            continue;
+
+                        if (role.GameModeWhitelist.Length != 0 && !role.GameModeWhitelist.Contains(GameModeManager.GetCurrentGameMode().GetType()))
+                            continue;
+                        
                         if (role.Team == Team.Impostor)
                         {
                             for (int i = 1; i <= role.Limit && Roles.RoleManager.Impostors.Count >= 1; i++)

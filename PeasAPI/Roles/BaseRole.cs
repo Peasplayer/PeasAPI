@@ -53,6 +53,8 @@ namespace PeasAPI.Roles
         /// </summary>
         public virtual int Limit { get; set; } = 0;
 
+        public virtual Type[] GameModeWhitelist { get; } = Array.Empty<Type>();
+
         /// <summary>
         /// If a member of the role should be able to kill that player / in general
         /// </summary>

@@ -2,6 +2,7 @@
 using System.Linq;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
+using Reactor;
 using UnityEngine;
 
 namespace PeasAPI.GameModes
@@ -44,14 +45,14 @@ namespace PeasAPI.GameModes
             {
                 foreach (var mode in GameModeManager.Modes)
                 {
-                    if (mode.Enabled)
+                    if (mode.Enabled && PlayerControl.LocalPlayer)
                         mode.OnUpdate();
                 }
             }
         }
         
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
-        class PlayerControlMurderPlayerPatch
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
+        class PlayerControlRpcMurderPlayerPatch
         {
             public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl victim)
             {
@@ -65,7 +66,8 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.AssignRolesFromList))]
+        [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
+        [HarmonyPriority(Priority.Last)]
         [HarmonyPostfix]
         public static void AssignRolesPatch(RoleManager __instance)
         {
@@ -82,9 +84,9 @@ namespace PeasAPI.GameModes
         {
             foreach (var mode in GameModeManager.Modes)
             {
-                if (mode.Enabled)
+                if (mode.Enabled && mode.AssignLocalRole(__instance).HasValue)
                 {
-                    roleType = mode.AssignLocalRole(__instance);
+                    roleType = mode.AssignLocalRole(__instance).GetValueOrDefault();
                 }
             }
         }
@@ -116,6 +118,30 @@ namespace PeasAPI.GameModes
                 }
 
                 return true;
+            }
+        }
+        
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowSabotageMap))]
+        public static class MapBehaviourShowSabotageMapPatch
+        {
+            public static void Prefix(MapBehaviour __instance)
+            {
+                if (PeasAPI.GameStarted)
+                {
+                    foreach (var mode in GameModeManager.Modes)
+                    {
+                        if (mode.Enabled)
+                        {
+                            HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
+                            {
+                                foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray())
+                                {
+                                    mapRoom.gameObject.SetActive(mode.AllowSabotage(mapRoom.room));
+                                }
+                            }));
+                        }
+                    }
+                }
             }
         }
         
@@ -171,8 +197,14 @@ namespace PeasAPI.GameModes
             {
                 if (mode.Enabled)
                 {
+                    if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).HasValue)
+                        continue;
+                    
                     var scene = __instance;
-                    var intro = mode.GetIntroScreen(PlayerControl.LocalPlayer);
+                    var intro = mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault();
+                    
+                    if (!intro.OverrideRole)
+                        continue;
 
                     scene.RoleText.text = intro.Role;
                     scene.RoleBlurbText.text = intro.RoleDescription;
@@ -191,9 +223,15 @@ namespace PeasAPI.GameModes
             {
                 if (mode.Enabled)
                 {
+                    if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).HasValue)
+                        continue;
+                    
                     var scene = __instance;
-                    var intro = mode.GetIntroScreen(PlayerControl.LocalPlayer);
+                    var intro = mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault();
 
+                    if (!intro.OverrideTeam)
+                        continue;
+                    
                     scene.TeamTitle.text = intro.Team;
                     scene.ImpostorText.gameObject.SetActive(true);
                     scene.ImpostorText.text = intro.TeamDescription;
@@ -212,12 +250,24 @@ namespace PeasAPI.GameModes
             {
                 if (mode.Enabled)
                 {
+                    if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).HasValue)
+                        continue;
+                    if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault().OverrideTeam)
+                        continue;
+                    
                     var _yourTeam = new List<PlayerControl>();
-                    mode.GetIntroScreen(PlayerControl.LocalPlayer).TeamMembers
+                    mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault().TeamMembers
                         .Do(member => _yourTeam.Add(member.GetPlayer()));
                     yourTeam = _yourTeam;
                 }
             }
+        }
+        
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
+        [HarmonyPostfix]
+        static void SetupGameModeSetting(AmongUsClient __instance)
+        {
+            GameModeManager.GameModeOption.Values = GameModeManager.Modes.ConvertAll(mode => mode.Name).Prepend("None").ToList().ConvertAll(mode => (StringNames) CustomStringName.Register(mode));
         }
     }
 }
