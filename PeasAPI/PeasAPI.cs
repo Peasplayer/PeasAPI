@@ -53,11 +53,6 @@ namespace PeasAPI
         }
 
         /// <summary>
-        /// Whether the roles should actually be used
-        /// </summary>
-        public static bool EnableRoles = true;
-
-        /// <summary>
         /// If you set this to false please provide credit! I mean this stuff is free and open-source so a little credit would be nice :)
         /// </summary>
         public static bool ShamelessPlug = true;
@@ -90,10 +85,6 @@ namespace PeasAPI
             RegisterCustomRoleAttribute.Load();
             RegisterCustomGameModeAttribute.Load();
             GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
-            GameModeManager.GameModeOption.OnValueChanged += args =>
-            {
-                EnableRoles = args.Option.Values[args.NewValue].GetTranslation().Equals("None");
-            };
 
             Harmony.PatchAll();
         }

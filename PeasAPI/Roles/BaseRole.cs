@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.IL2CPP;
 using PeasAPI.Managers;
 using UnityEngine;
@@ -137,7 +136,8 @@ namespace PeasAPI.Roles
 
         public void _OnGameStart()
         {
-            OnGameStart();
+            if (Members.Count != 0)
+                OnGameStart();
         }
 
         /// <summary>
@@ -149,7 +149,8 @@ namespace PeasAPI.Roles
         
         public void _OnGameStop()
         {
-            OnGameStop();
+            if (Members.Count != 0)
+                OnGameStop();
         }
 
         /// <summary>
@@ -161,6 +162,9 @@ namespace PeasAPI.Roles
 
         public void _OnUpdate()
         {
+            if (Members.Count == 0)
+                return;
+            
             foreach (var player in Members)
             {
                 var playerControl = player.GetPlayer();
@@ -187,6 +191,9 @@ namespace PeasAPI.Roles
 
         public void _OnMeetingUpdate(MeetingHud __instance)
         {
+            if (Members.Count == 0)
+                return;
+            
             if (PlayerMenuManager.IsMenuOpen)
                 return;
             
@@ -228,6 +235,12 @@ namespace PeasAPI.Roles
         {
         }
 
+        public void _OnKill(PlayerControl victim)
+        {
+            if (Members.Count != 0)
+                OnKill(victim);
+        }
+        
         public virtual void OnKill(PlayerControl victim)
         {
         }

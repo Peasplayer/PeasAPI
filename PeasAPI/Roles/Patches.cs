@@ -17,12 +17,9 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         public static void OnGameEndPatch(AmongUsClient __instance)
         {
-            if (PeasAPI.EnableRoles)
+            foreach (var role in RoleManager.Roles)
             {
-                foreach (var role in RoleManager.Roles)
-                {
-                    role._OnGameStop();
-                }
+                role._OnGameStop();
             }
         }
 
@@ -59,7 +56,7 @@ namespace PeasAPI.Roles
         [HarmonyPostfix]
         public static void RoleTextPatch(IntroCutscene __instance)
         {
-            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 var scene = __instance;
@@ -76,7 +73,7 @@ namespace PeasAPI.Roles
         [HarmonyPostfix]
         public static void TeamTextPatch(IntroCutscene __instance)
         {
-            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 var scene = __instance;
@@ -95,7 +92,7 @@ namespace PeasAPI.Roles
         public static void RoleTeamPatch(IntroCutscene __instance,
             [HarmonyArgument(0)] ref List<PlayerControl> yourTeam)
         {
-            if (PeasAPI.EnableRoles && PlayerControl.LocalPlayer.GetRole() != null)
+            if (PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
                 if (role.Team == Team.Alone)
@@ -177,7 +174,7 @@ namespace PeasAPI.Roles
         {
             public static void Prefix(HudManager __instance)
             {
-                if (PeasAPI.GameStarted && PeasAPI.EnableRoles)
+                if (PeasAPI.GameStarted)
                 {
                     foreach (var role in RoleManager.Roles)
                     {
@@ -192,12 +189,9 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(MeetingHud __instance)
             {
-                if (PeasAPI.EnableRoles)
+                foreach (var role in RoleManager.Roles) 
                 {
-                    foreach (var role in RoleManager.Roles)
-                    {
-                        role._OnMeetingUpdate(__instance);
-                    }
+                    role._OnMeetingUpdate(__instance);
                 }
             }
         }
@@ -207,7 +201,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl __instance)
             {
-                if (PeasAPI.GameStarted && PeasAPI.EnableRoles)
+                if (PeasAPI.GameStarted)
                 {
                     var localRole = PlayerControl.LocalPlayer.GetRole();
 
@@ -264,7 +258,7 @@ namespace PeasAPI.Roles
             {
                 if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
                     return false;
-                if (!target || __instance.Data.IsDead || !__instance.Data.Role.IsImpostor && !__instance.GetRole().CanKill() || __instance.Data.Disconnected)
+                if (!target || __instance.Data == null || __instance.Data.IsDead || !__instance.Data.Role.IsImpostor && __instance.GetRole() == null || !__instance.Data.Role.IsImpostor && !__instance.GetRole().CanKill() || __instance.Data.Disconnected)
                 {
                     int num = target ? target.PlayerId : -1;
                     Debug.LogWarning(string.Format("Bad kill from {0} to {1}", __instance.PlayerId, num));
@@ -341,7 +335,7 @@ namespace PeasAPI.Roles
             {
                 if (__instance.GetRole() != null)
                 {
-                    __instance.GetRole().OnKill(target);
+                    __instance.GetRole()._OnKill(target);
                 }
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using HarmonyLib;
 using PeasAPI.Roles;
 using UnityEngine;
@@ -12,6 +12,7 @@ namespace PeasAPI.CustomButtons
     public class CustomButton
     {
         public static List<CustomButton> Buttons = new List<CustomButton>();
+        public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible).ToList();
         
         private Color _startColorText = new Color(255, 255, 255);
         private Sprite _buttonSprite;
@@ -38,6 +39,7 @@ namespace PeasAPI.CustomButtons
         public readonly Action OnEffectEnd;
         public readonly bool DeadCanUse;
 
+        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
@@ -47,6 +49,7 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
+        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -55,6 +58,7 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
+        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
@@ -64,6 +68,7 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
+        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -170,9 +175,10 @@ namespace PeasAPI.CustomButtons
         private void Update()
         {
             var pos = KillButtonManager.transform.localPosition;
+            var i = VisibleButtons.IndexOf(this);
             
             if (pos.x > 0f)
-                KillButtonManager.transform.localPosition = new Vector3(-(pos.x + 1.3f) + 1.3f, pos.y - 1, pos.z) + new Vector3(PositionOffset.x, PositionOffset.y);
+                KillButtonManager.transform.localPosition = new Vector3(-(pos.x + 1.3f) + 1.3f, pos.y - 1, pos.z) + new Vector3(i / 3 * 1.3f, 1.2f * (i - i / 3 * 3)) + new Vector3(PositionOffset.x, PositionOffset.y);
             
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {

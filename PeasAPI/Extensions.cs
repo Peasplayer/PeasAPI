@@ -180,6 +180,27 @@ namespace PeasAPI
             return false;
         }
 
+        public static RoleTypes GetSimpleRoleType(this RoleTypes role)
+        {
+            switch (role)
+            {
+                case RoleTypes.Engineer:
+                    return RoleTypes.Crewmate;
+                case RoleTypes.Scientist:
+                    return RoleTypes.Crewmate;
+                case RoleTypes.GuardianAngel:
+                    return RoleTypes.Crewmate;
+                case RoleTypes.Shapeshifter:
+                    return RoleTypes.Impostor;
+                case RoleTypes.Crewmate:
+                    return RoleTypes.Crewmate;
+                case RoleTypes.Impostor:
+                    return RoleTypes.Impostor;
+            }
+
+            return RoleTypes.Crewmate;
+        }
+
         #endregion Roles
         
         #region Options

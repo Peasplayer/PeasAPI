@@ -22,6 +22,8 @@ namespace PeasAPI.GameModes
 
         public virtual Type[] RoleWhitelist { get; } = Array.Empty<Type>();
 
+        public virtual bool AllowVanillaRoles { get; } = false;
+
         public virtual void OnGameStart() {}
 
         public virtual void OnUpdate() {}

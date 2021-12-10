@@ -51,8 +51,8 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
-        class PlayerControlRpcMurderPlayerPatch
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+        class PlayerControlMurderPlayerPatch
         {
             public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl victim)
             {
@@ -75,6 +75,16 @@ namespace PeasAPI.GameModes
             {
                 if (mode.Enabled)
                     mode.AssignRoles();
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
+        [HarmonyPrefix]
+        public static void AllowVanillaRolesPatch(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
+        {
+            if (GameModeManager.GetCurrentGameMode() != null && !GameModeManager.GetCurrentGameMode().AllowVanillaRoles)
+            {
+                roleType = roleType.GetSimpleRoleType();
             }
         }
         
@@ -253,6 +263,8 @@ namespace PeasAPI.GameModes
                     if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).HasValue)
                         continue;
                     if (!mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault().OverrideTeam)
+                        continue;
+                    if (mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault().TeamMembers == null || mode.GetIntroScreen(PlayerControl.LocalPlayer).GetValueOrDefault().TeamMembers.Count == 0)
                         continue;
                     
                     var _yourTeam = new List<PlayerControl>();

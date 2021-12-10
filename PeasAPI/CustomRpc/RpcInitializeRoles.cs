@@ -32,7 +32,7 @@ namespace PeasAPI.CustomRpc
                         Roles.RoleManager.Crewmates.Add(player.PlayerId);
                 }
 
-                if ((PeasAPI.EnableRoles || GameModeManager.GetCurrentGameMode() != null && GameModeManager.GetCurrentGameMode().RoleWhitelist.Length != 0) && AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
+                if (AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
                 {
                     foreach (var role in Roles.RoleManager.Roles)
                     {
@@ -110,13 +110,10 @@ namespace PeasAPI.CustomRpc
                     }
                 }
             }
-
-            if (PeasAPI.EnableRoles)
+            
+            foreach (var role in Roles.RoleManager.Roles)
             {
-                foreach (var role in Roles.RoleManager.Roles)
-                {
-                    role._OnGameStart();
-                }
+                role._OnGameStart();
             }
         }
     }
