@@ -22,6 +22,16 @@ namespace PeasAPI.Roles
                 role._OnGameStop();
             }
         }
+        
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.ExitGame))]
+        [HarmonyPrefix]
+        public static void ResetRolePatch(AmongUsClient __instance)
+        {
+            if (PlayerControl.LocalPlayer)
+                PlayerControl.LocalPlayer.SetRole(null);
+        }
 
         [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.SelectRoles))]
         [HarmonyPostfix]
@@ -421,6 +431,7 @@ namespace PeasAPI.Roles
         }
 
         [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
+        [HarmonyPriority(Priority.First)]
         public static class VentCanUsePatch
         {
             public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool canUse,
