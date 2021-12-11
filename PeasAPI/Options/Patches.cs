@@ -145,6 +145,49 @@ namespace PeasAPI.Options
 
                     _option.Option = header;
                 }
+                else if (customOption.GetType() == typeof(CustomOptionButton))
+                {
+                    var _option = (CustomOptionButton) customOption;
+
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        ToggleOption toggleOption =
+                            Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
+
+                        _option.Option = toggleOption;
+
+                        toggleOption.TitleText.text = _option.Title;
+                        toggleOption.Title = CustomStringName.Register(_option.Title); 
+                        toggleOption.transform.FindChild("CheckBox").gameObject.SetActive(false);
+
+                        option = toggleOption;
+
+                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                        {
+                            _option.SetValue(!toggleOption.oldValue);
+                        });
+                    }
+                    else
+                    {
+                        StringOption toggleOption =
+                            Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
+
+                        _option.Option = toggleOption;
+
+                        toggleOption.TitleText.text = _option.Title;
+                        toggleOption.Title = CustomStringName.Register(_option.Title);
+                        toggleOption.Value = 0;
+                        toggleOption.transform.FindChild("Value_TMP").gameObject.SetActive(false);
+
+                        option = toggleOption;
+
+                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                        {
+                            _option.SetValue(_option.Value);
+                        });
+                        option.OnValueChanged.Invoke(option);
+                    }
+                }
 
                 option.transform.localPosition = new Vector3(option.transform.localPosition.x,
                     LowestOption - (OptionManager.CustomOptions.IndexOf(customOption) + 1) * OptionSize, -1);
