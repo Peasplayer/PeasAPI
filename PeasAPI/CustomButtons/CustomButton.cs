@@ -12,7 +12,7 @@ namespace PeasAPI.CustomButtons
     public class CustomButton
     {
         public static List<CustomButton> Buttons = new List<CustomButton>();
-        public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible).ToList();
+        public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible && button._canUse).ToList();
         
         private Color _startColorText = new Color(255, 255, 255);
         private Sprite _buttonSprite;
@@ -39,7 +39,6 @@ namespace PeasAPI.CustomButtons
         public readonly Action OnEffectEnd;
         public readonly bool DeadCanUse;
 
-        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
@@ -49,7 +48,6 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
-        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -58,7 +56,6 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
-        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
@@ -68,7 +65,6 @@ namespace PeasAPI.CustomButtons
             return button;
         }
         
-        [Obsolete("The way this method work has changed! Check the documentation or the latest code.")]
         public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -148,7 +144,7 @@ namespace PeasAPI.CustomButtons
             
             KillButtonManager.buttonLabelText.enabled = UseText;
             KillButtonManager.buttonLabelText.text = Text;
-            KillButtonManager.buttonLabelText.transform.position += (Vector3) TextOffset;
+            KillButtonManager.buttonLabelText.transform.position += (Vector3) TextOffset + new Vector3(0f, 0.1f);
             
             var button = KillButtonManager.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
@@ -159,7 +155,7 @@ namespace PeasAPI.CustomButtons
                 if (IsUsable() && _canUse && Enabled && KillButtonManager.gameObject.active &&
                     PlayerControl.LocalPlayer.moveable)
                 {
-                    KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
+                    KillButtonManager.buttonLabelText.material.color = KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
                     OnClick();
                     Cooldown = MaxCooldown;
                     if (HasEffect)
@@ -176,17 +172,22 @@ namespace PeasAPI.CustomButtons
         {
             var pos = KillButtonManager.transform.localPosition;
             var i = VisibleButtons.IndexOf(this);
-            
+
             if (pos.x > 0f)
-                KillButtonManager.transform.localPosition = new Vector3(-(pos.x + 1.3f) + 1.3f, pos.y - 1, pos.z) + new Vector3(i / 3 * 1.3f, 1.2f * (i - i / 3 * 3)) + new Vector3(PositionOffset.x, PositionOffset.y);
-            
+            {
+                var offset = PositionOffset == Vector2.zero || PositionOffset == default
+                    ? new Vector3(i / 3 * 1.3f, 1.2f * (i - i / 3 * 3))
+                    : new Vector3(PositionOffset.x, PositionOffset.y);
+                KillButtonManager.transform.localPosition = new Vector3(-(pos.x + 1.3f) + 1.3f, pos.y - 1, pos.z) + offset;   
+            }
+
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
-                KillButtonManager.graphic.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
+                KillButtonManager.buttonLabelText.color = KillButtonManager.graphic.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
                 
                 if (IsEffectActive)
                 {
-                    KillButtonManager.graphic.color = _startColorText;
+                    KillButtonManager.cooldownTimerText.color = _startColorText;
                     Cooldown = MaxCooldown;
                     
                     IsEffectActive = false;
@@ -198,7 +199,7 @@ namespace PeasAPI.CustomButtons
                 if (_canUse && Enabled)
                     Cooldown -= Time.deltaTime;
                 
-                KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
+                KillButtonManager.buttonLabelText.color = KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
             }
 
             KillButtonManager.buttonLabelText.enabled = UseText;
@@ -210,6 +211,7 @@ namespace PeasAPI.CustomButtons
             if (_canUse)
             {
                 KillButtonManager.graphic.material.SetFloat("_Desat", 0f);
+                KillButtonManager.buttonLabelText.material.SetFloat("_Desat", 0f);
                 KillButtonManager.SetCoolDown(Cooldown, MaxCooldown);
             }
         }

@@ -38,10 +38,7 @@ namespace PeasAPI.GameModes
             return true;
         }
 
-        public virtual Data.CustomIntroScreen? GetIntroScreen(PlayerControl player)
-        {
-            return new Data.CustomIntroScreen(true, "Impostor God", "UwU overpowered", Palette.Purple, new List<byte> {PlayerControl.LocalPlayer.PlayerId});
-        }
+        public virtual Data.CustomIntroScreen? GetIntroScreen(PlayerControl player) => new Data.CustomIntroScreen();
 
         public virtual string GetObjective(PlayerControl player)
         {

@@ -38,8 +38,10 @@ namespace PeasAPI.CustomRpc
                     {
                         if (GameModeManager.GetCurrentGameMode() != null && !GameModeManager.GetCurrentGameMode().RoleWhitelist.Contains(role.GetType()))
                             continue;
-
-                        if (role.GameModeWhitelist.Length != 0 && !role.GameModeWhitelist.Contains(GameModeManager.GetCurrentGameMode().GetType()))
+                        if (GameModeManager.GetCurrentGameMode() == null && role.GameModeWhitelist.Length != 0)
+                            continue;
+                        if (role.GameModeWhitelist.Length != 0 && GameModeManager.GetCurrentGameMode() != null &&
+                            !role.GameModeWhitelist.Contains(GameModeManager.GetCurrentGameMode().GetType()))
                             continue;
                         
                         if (role.Team == Team.Impostor)
@@ -49,6 +51,7 @@ namespace PeasAPI.CustomRpc
                                 !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
                             if (nonRoleImpostors.Length == 0)
                                 continue;
+                            
                             for (int i = 1; i <= role.Limit && nonRoleImpostors.Length >= 1; i++)
                             {
                                 if (Roles.RoleManager.HostMod.IsRole.ContainsKey(role) && Roles.RoleManager.HostMod.IsRole[role] &&
@@ -71,6 +74,7 @@ namespace PeasAPI.CustomRpc
                                 !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
                             if (nonRoleCrewmates.Length == 0)
                                 continue;
+                            
                             for (int i = 1; i <= role.Limit && nonRoleCrewmates.Length >= 1; i++)
                             {
                                 if (Roles.RoleManager.HostMod.IsRole.ContainsKey(role) && Roles.RoleManager.HostMod.IsRole[role] &&
