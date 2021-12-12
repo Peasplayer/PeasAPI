@@ -157,11 +157,12 @@ namespace PeasAPI.Options
                         _option.Option = toggleOption;
 
                         toggleOption.TitleText.text = _option.Title;
-                        toggleOption.Title = CustomStringName.Register(_option.Title); 
+                        toggleOption.Title = CustomStringName.Register(_option.Title);
+                        toggleOption.CheckMark.enabled = false;
                         toggleOption.transform.FindChild("CheckBox").gameObject.SetActive(false);
 
                         option = toggleOption;
-
+                        
                         option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
                         {
                             _option.SetValue(!toggleOption.oldValue);

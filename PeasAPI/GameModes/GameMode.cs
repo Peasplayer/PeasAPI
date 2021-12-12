@@ -28,7 +28,9 @@ namespace PeasAPI.GameModes
 
         public virtual void OnUpdate() {}
 
-        public virtual bool OnKill(PlayerControl killer, PlayerControl victim)
+        public virtual void OnKill(PlayerControl killer, PlayerControl victim) {}
+        
+        public virtual bool CanKill(PlayerControl killer, PlayerControl victim)
         {
             return true;
         }

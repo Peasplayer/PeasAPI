@@ -59,10 +59,23 @@ namespace PeasAPI.GameModes
                 foreach (var mode in GameModeManager.Modes)
                 {
                     if (mode.Enabled)
-                        return mode.OnKill(__instance, victim);
+                        return mode.CanKill(__instance, victim);
                 }
                     
                 return true;
+            }
+        }
+        
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+        class PlayerControlMurderPlayerPostfixPatch
+        {
+            public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl victim)
+            {
+                foreach (var mode in GameModeManager.Modes)
+                {
+                    if (mode.Enabled)
+                        mode.OnKill(__instance, victim);
+                }
             }
         }
         
