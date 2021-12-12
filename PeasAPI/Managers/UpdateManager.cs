@@ -18,7 +18,7 @@ namespace PeasAPI.Managers
         public static bool DoUpdateChecks = true;
         private static readonly List<UpdateListener> UpdateListeners = new();
 
-        public static void RegisterGitHubUpdateListener(string owner, string repoName, UpdateType updateType = UpdateType.Every, FileType type = FileType.First)
+        public static void RegisterGitHubUpdateListener(string owner, string repoName, UpdateType updateType = UpdateType.Every, FileType type = FileType.Dll)
         {
             var callingAssembly = Assembly.GetCallingAssembly();
             UpdateListeners.Add(new GitHubUpdater(callingAssembly, owner, repoName, type, updateType));
