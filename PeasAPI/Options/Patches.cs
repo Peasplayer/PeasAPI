@@ -191,23 +191,23 @@ namespace PeasAPI.Options
                 }
 
                 option.transform.localPosition = new Vector3(option.transform.localPosition.x,
-                    LowestOption - (OptionManager.CustomOptions.IndexOf(customOption) + 1) * OptionSize, -1);
+                    LowestOption + 2 * OptionSize - (OptionManager.CustomOptions.IndexOf(customOption) + 1) * OptionSize, -1);
 
                 var options = __instance.Children.ToList();
                 options.Add(option);
                 __instance.Children = options.ToArray();
             }
 
-            __instance.GetComponentInParent<Scroller>().YBounds.max =
-                AllOptionSize + OptionManager.MenuVisibleOptions.Count * 0.5f;
+            __instance.GetComponentInParent<Scroller>().ContentYBounds.max =
+                AllOptionSize + OptionManager.MenuVisibleOptions.Count * 0.5f - 2 * OptionSize;
         }
 
         [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
         [HarmonyPostfix]
         private static void GameOptionsMenuUpdatePatch(GameOptionsMenu __instance)
         {
-            __instance.GetComponentInParent<Scroller>().YBounds.max =
-                AllOptionSize + OptionManager.MenuVisibleOptions.Count * 0.5f;
+            __instance.GetComponentInParent<Scroller>().ContentYBounds.max =
+                AllOptionSize + OptionManager.MenuVisibleOptions.Count * 0.5f - 2 * OptionSize;
 
             foreach (var option in __instance.Children.ToList().FindAll(option => option.IsCustom()))
             {
@@ -219,7 +219,7 @@ namespace PeasAPI.Options
                 
                 if (customOption.MenuVisible)
                     option.transform.localPosition = new Vector3(option.transform.localPosition.x,
-                        LowestOption - (OptionManager.MenuVisibleOptions.IndexOf(customOption) + 1) * OptionSize, -1);
+                        LowestOption + 2 * OptionSize - (OptionManager.MenuVisibleOptions.IndexOf(customOption) + 1) * OptionSize, -1);
 
                 if (option.gameObject.GetComponent<ToggleOption>() != null)
                     option.gameObject.GetComponent<ToggleOption>().TitleText.text = customOption.Title;
@@ -335,7 +335,7 @@ namespace PeasAPI.Options
 
             var bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0)) - Camera.main.transform.localPosition;
             
-            OptionsScroller.YBounds = new FloatRange(-bottomLeft.y, Mathf.Max(-bottomLeft.y, __instance.GameSettings.renderedHeight - -bottomLeft.y + 0.02F));
+            OptionsScroller.ContentYBounds = new FloatRange(-bottomLeft.y, Mathf.Max(-bottomLeft.y, __instance.GameSettings.renderedHeight - -bottomLeft.y + 0.02F));
         }
 
         //THIS BIT IS SKIDDED FROM ESSENTIALS: https://github.com/DorCoMaNdO/Reactor-Essentials
@@ -352,7 +352,7 @@ namespace PeasAPI.Options
             OptionsScroller.allowY = true;
             OptionsScroller.active = true;
             OptionsScroller.velocity = new Vector2(0, 0);
-            OptionsScroller.ScrollerYRange = new FloatRange(0, 0);
+            OptionsScroller.ContentYBounds = new FloatRange(0, 0);
             OptionsScroller.enabled = true;
 
             OptionsScroller.Inner = hudManager.GameSettings.transform;

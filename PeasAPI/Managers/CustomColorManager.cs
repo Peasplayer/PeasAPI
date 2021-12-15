@@ -130,7 +130,7 @@ namespace PeasAPI.Managers
                     }
                     
                     var rows = Mathf.Max(0, (chips.Count / 5) - 6);
-                    __instance.scroller.YBounds.max = (rows * 0.6f) + 0.5f;
+                    __instance.scroller.ContentYBounds.max = (rows * 0.6f) + 0.5f;
                 }
                 
                 // Set hat everytime player selecting color
