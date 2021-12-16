@@ -409,9 +409,6 @@ namespace PeasAPI.Roles
                     if (role == null)
                         return true;
 
-                    if (!role.CanSabotage(null))
-                        return true;
-
                     HudManager.Instance.ShowMap((Action<MapBehaviour>)(map =>
                     {
                         foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray()
@@ -424,6 +421,33 @@ namespace PeasAPI.Roles
                     }));
 
                     return false;
+                }
+
+                return true;
+            }
+        }
+        
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowSabotageMap))]
+        public static class MapBehaviourShowSabotageMapPatch
+        {
+            public static bool Prefix(MapBehaviour __instance)
+            {
+                if (PeasAPI.GameStarted)
+                {
+                    var role = PlayerControl.LocalPlayer.GetRole();
+
+                    if (role == null)
+                        return true;
+                    
+                    HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
+                    {
+                        foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray())
+                        {
+                            mapRoom.gameObject.SetActive(role.CanSabotage(mapRoom.room));
+                        }
+                    }));
+                    
+                    //return false;
                 }
 
                 return true;
