@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
-using InnerNet;
 using Reactor;
 using TMPro;
 using UnityEngine;
@@ -15,16 +15,14 @@ namespace PeasAPI.Managers
     {
         public static bool IsMenuOpen = false;
         
-        public static void OpenPlayerMenu(List<PlayerControl> players, Action<PlayerControl> onPlayerWasChosen)
+        public static void OpenPlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen)
         {
-            var playerIds = players.ConvertAll(player => player.PlayerId);
-            
             if (MeetingHud.Instance != null)
                 return;
             if (AmongUsClient.Instance.IsGameOver)
                 return;
             
-            Coroutines.Start(CoCreatePlayerMenu(playerIds, onPlayerWasChosen));
+            Coroutines.Start(CoCreatePlayerMenu(players, onPlayerWasChosen));
         }
 
         private static IEnumerator CoCreatePlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen)
@@ -38,7 +36,7 @@ namespace PeasAPI.Managers
 
             var instance = MeetingHud.Instance = Object.Instantiate(HudManager.Instance.MeetingPrefab, DestroyableSingleton<HudManager>.Instance.transform, true);
             
-            instance.playerStates = new PlayerVoteArea[players.Count];
+            instance.playerStates = new PlayerVoteArea[GameData.Instance.PlayerCount];
             foreach (var playerId in players)
             {
                 GameData.PlayerInfo playerInfo = playerId.GetPlayerInfo();
@@ -68,6 +66,7 @@ namespace PeasAPI.Managers
                 
                 ControllerManager.Instance.AddSelectableUiElement(playerVoteArea.PlayerButton, false);
             }
+            instance.playerStates = instance.playerStates.Where(p => p != null).ToArray();
 
             var skipButton = instance.gameObject.GetComponentInChildren<PassiveButton>();
             skipButton.OnClick.RemoveAllListeners();

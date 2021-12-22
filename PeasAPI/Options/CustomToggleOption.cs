@@ -73,7 +73,14 @@ namespace PeasAPI.Options
         public CustomToggleOption(string id, string title, bool defaultValue) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.ToggleOption.{id}";
-            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
+            try
+            {
+                _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
+            }
+            catch (Exception e)
+            {
+                PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
+            }
             
             Value = _configEntry.Value;
             

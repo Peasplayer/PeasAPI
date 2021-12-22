@@ -29,8 +29,7 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         public static void ResetRolePatch(AmongUsClient __instance)
         {
-            if (PlayerControl.LocalPlayer)
-                PlayerControl.LocalPlayer.SetRole(null);
+            PlayerControl.AllPlayerControls.ToArray().Where(player => player != null).Do(player => player.SetRole(null));
         }
 
         [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.SelectRoles))]

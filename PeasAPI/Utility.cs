@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Reactor.Extensions;
 using UnityEngine;
@@ -18,7 +20,14 @@ namespace PeasAPI
             sprite.DontDestroy();
             return sprite;
         }
-        
+
+        public static List<PlayerControl> GetAllPlayers()
+        {
+            if (PlayerControl.AllPlayerControls != null && PlayerControl.AllPlayerControls.Count > 0)
+                return PlayerControl.AllPlayerControls.ToArray().ToList();
+            return GameData.Instance.AllPlayers.ToArray().ToList().ConvertAll(p => p.Object);
+        }
+
         public class StringColor
         {
             public const string Reset = "<color=#ffffffff>";

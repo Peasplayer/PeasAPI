@@ -67,7 +67,14 @@ namespace PeasAPI.Options
         public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue, NumberSuffixes suffixType) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.NumberOption.{id}";
-            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
+            try
+            {
+                _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, defaultValue);
+            }
+            catch (Exception e)
+            {
+                PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
+            }
 
             Value = _configEntry.Value;
             MinValue = minValue;

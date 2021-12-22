@@ -66,18 +66,21 @@ namespace PeasAPI.Managers
                 }
                 ServerManager.DefaultRegions = defaultRegions.ToArray();
                 __instance.AvailableRegions = defaultRegions.ToArray();
-                __instance.SetRegion(defaultRegions[0]);
             }
         }
         
-        /*[HarmonyPatch(typeof(JoinGameButton), nameof(JoinGameButton.OnClick))]
-        public static class JoinGameButtonOnClickPatch
+        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
+        public static class MainMenuManagerStartPatch
         {
-            static void Postfix(JoinGameButton __instance)
+            private static bool _initialized;
+
+            public static void Postfix(MainMenuManager __instance)
             {
-                AmongUsClient.Instance.SetEndpoint(DestroyableSingleton<ServerManager>.Instance.UdpNetAddress, DestroyableSingleton<ServerManager>.Instance.UdpNetPort);
+                if (!_initialized) 
+                    ServerManager.Instance.SetRegion(CustomServer[0]);
+                _initialized = true;
             }
-        }*/
+        }
         
         [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.AmBanned), MethodType.Getter)]
         public static class AmBannedPatch

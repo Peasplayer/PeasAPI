@@ -1,6 +1,8 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using System.Collections.Generic;
 using System.Reflection;
+using BepInEx.IL2CPP;
 using PeasAPI.CustomRpc;
 using Reactor;
 using Reactor.Networking;
@@ -74,7 +76,13 @@ namespace PeasAPI.Options
         public CustomStringOption(string id, string title, params string[] values) : base(title)
         {
             Id = $"{Assembly.GetCallingAssembly().GetName().Name}.StringOption.{id}";
-            _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, 0);
+            try
+            {
+                _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, 0);
+            } catch (Exception e) {
+                PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
+                return;
+            }
             
             Value = _configEntry.Value;
             Values = new List<StringNames>();

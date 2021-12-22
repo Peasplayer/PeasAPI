@@ -7,8 +7,8 @@
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
         
-        <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.12.14</GameVersion>
-        <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.12.14</GameVersion>
+        <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.12.15</GameVersion>
+        <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.12.15</GameVersion>
         
         <PackageIcon>PeasAPI-Icon.png</PackageIcon>
         <RepositoryType>git</RepositoryType>
