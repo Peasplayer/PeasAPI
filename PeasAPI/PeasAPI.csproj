@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <VersionPrefix>1.7.3</VersionPrefix>
+        <VersionPrefix>1.7.4</VersionPrefix>
         <VersionSuffix>release</VersionSuffix> 
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
         
-        <GamePlatform>Steam</GamePlatform>
         <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.12.15</GameVersion>
         <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.12.15</GameVersion>
         
