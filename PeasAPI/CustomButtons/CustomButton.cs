@@ -13,6 +13,7 @@ namespace PeasAPI.CustomButtons
     {
         public static List<CustomButton> Buttons = new List<CustomButton>();
         public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible && button._canUse).ToList();
+        public static bool HudActive = true;
         
         private Color _startColorText = new Color(255, 255, 255);
         private Sprite _buttonSprite;
@@ -275,7 +276,7 @@ namespace PeasAPI.CustomButtons
 
         public bool IsUsable()
         {
-            return Usable && Cooldown < 0f;
+            return Usable && Cooldown < 0f && HudActive;
         }
         
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
@@ -300,6 +301,15 @@ namespace PeasAPI.CustomButtons
                     if (canUse && button.Visible)
                         button.Update();
                 }
+            }
+        }
+        
+        [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+        public static class HudManagerSetHudActivePatch
+        {
+            public static void Prefix(HudManager __instance, [HarmonyArgument(0)] bool isActive)
+            {
+                HudActive = isActive;
             }
         }
     }

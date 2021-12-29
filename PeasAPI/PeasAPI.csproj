@@ -7,6 +7,7 @@
         <Authors>Peasplayer</Authors>
         <LangVersion>latest</LangVersion>
         
+        <GamePlatform>Steam</GamePlatform>
         <GameVersion Condition="'$(GamePlatform)' == 'Steam'">2021.12.15</GameVersion>
         <GameVersion Condition="'$(GamePlatform)' == 'Itch'">2021.12.15</GameVersion>
         

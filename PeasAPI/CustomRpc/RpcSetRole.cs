@@ -29,12 +29,20 @@ namespace PeasAPI.CustomRpc
         public override void Write(MessageWriter writer, Data data)
         {
             writer.Write(data.Player.PlayerId);
-            writer.Write(data.Role.Id);
+            if (data.Role != null)
+                writer.Write(data.Role.Id);
+            else
+                writer.Write(byte.MaxValue);
         }
 
         public override Data Read(MessageReader reader)
         {
-            return new Data(reader.ReadByte().GetPlayer(), Roles.RoleManager.GetRole(reader.ReadByte()));
+            var playerId = reader.ReadByte();
+            var roleId = reader.ReadByte();
+            BaseRole role = null;
+            if (roleId != byte.MaxValue)
+                role = Roles.RoleManager.GetRole(roleId);
+            return new Data(playerId.GetPlayer(), role);
         }
 
         public override void Handle(PlayerControl innerNetObject, Data data)

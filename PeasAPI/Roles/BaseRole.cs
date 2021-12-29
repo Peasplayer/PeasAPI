@@ -54,6 +54,8 @@ namespace PeasAPI.Roles
 
         public virtual Type[] GameModeWhitelist { get; } = Array.Empty<Type>();
 
+        public virtual float KillDistance { get; set; } = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+
         /// <summary>
         /// If a member of the role should be able to kill that player / in general
         /// </summary>
@@ -108,7 +110,7 @@ namespace PeasAPI.Roles
         public virtual PlayerControl FindClosestTarget(PlayerControl from, bool protecting)
         {
             PlayerControl result = null;
-            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            float num = KillDistance;
             if (!ShipStatus.Instance)
             {
                 return null;
@@ -116,7 +118,7 @@ namespace PeasAPI.Roles
             Vector2 truePosition = from.GetTruePosition();
             foreach (var playerInfo in GameData.Instance.AllPlayers)
             {
-                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (playerInfo.Role.CanBeKilled || protecting) && !playerInfo.Object.inVent)
+                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (playerInfo.Role.CanBeKilled || from.GetRole().CanKill(playerInfo.Object) || protecting) && !playerInfo.Object.inVent)
                 {
                     PlayerControl @object = playerInfo.Object;
                     if (@object && @object.Collider.enabled)
@@ -134,6 +136,8 @@ namespace PeasAPI.Roles
             return result;
         }
 
+        public virtual bool ShouldGameEnd(GameOverReason reason) => true;
+        
         public void _OnGameStart()
         {
             OnGameStart();
@@ -227,12 +231,12 @@ namespace PeasAPI.Roles
         {
         }
 
-        public void _OnKill(PlayerControl victim)
+        public void _OnKill(PlayerControl killer, PlayerControl victim)
         {
-            OnKill(victim);
+            OnKill(killer, victim);
         }
         
-        public virtual void OnKill(PlayerControl victim)
+        public virtual void OnKill(PlayerControl killer, PlayerControl victim)
         {
         }
 

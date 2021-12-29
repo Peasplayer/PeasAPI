@@ -58,7 +58,7 @@ namespace PeasAPI.Managers
                     }
                     catch (Exception err)
                     {
-                        throw err;
+                        PeasAPI.Logger.LogError("There was an error while executing the player menu: " + err);
                     }
 
                     CloseMenu();

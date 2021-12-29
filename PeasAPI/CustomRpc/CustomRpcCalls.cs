@@ -9,6 +9,7 @@
         UpdateSetting,
         CheckColor,
         SetColor,
-        ShowMessage
+        ShowMessage,
+        SetVanillaRole
     }
 }

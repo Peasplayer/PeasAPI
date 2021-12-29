@@ -2,6 +2,7 @@
 using System.Linq;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
+using PeasAPI.CustomButtons;
 using PeasAPI.CustomRpc;
 using Reactor.Networking;
 using UnhollowerBaseLib;
@@ -217,7 +218,7 @@ namespace PeasAPI.Roles
                     if (localRole != null && __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         HudManager.Instance.KillButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead &&
-                                                                            localRole.CanKill(null));
+                                                                            localRole.CanKill(null) && CustomButton.HudActive);
 
                         if (localRole.CanKill(null) && __instance.CanMove && !__instance.Data.IsDead)
                         {
@@ -233,7 +234,7 @@ namespace PeasAPI.Roles
                         }
 
                         HudManager.Instance.SabotageButton.gameObject.SetActive(
-                            !PlayerControl.LocalPlayer.Data.IsDead && localRole.CanSabotage(null));
+                            !PlayerControl.LocalPlayer.Data.IsDead && localRole.CanSabotage(null) && CustomButton.HudActive);
 
                         if (localRole.CanSabotage(null) && __instance.CanMove && !__instance.Data.IsDead)
                         {
@@ -245,7 +246,7 @@ namespace PeasAPI.Roles
                         }
 
                         HudManager.Instance.ImpostorVentButton.gameObject.SetActive(
-                            !PlayerControl.LocalPlayer.Data.IsDead && localRole.CanVent);
+                            !PlayerControl.LocalPlayer.Data.IsDead && localRole.CanVent && CustomButton.HudActive);
 
                         if (localRole.CanVent && __instance.CanMove && !__instance.Data.IsDead)
                         {
@@ -261,7 +262,7 @@ namespace PeasAPI.Roles
         }
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
-        public static class PlayerControlMurderPlayerPatch
+        public static class PlayerControlCheckMurderPatch
         {
             public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
             {
@@ -337,15 +338,12 @@ namespace PeasAPI.Roles
             }
         }
         
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
-        public static class PlayerControlRpcMurderPlayerPatch
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+        public static class PlayerControlMurderPlayerPatch
         {
-            public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+            public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
             {
-                if (__instance.GetRole() != null)
-                {
-                    __instance.GetRole()._OnKill(target);
-                }
+                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnKill(__instance, target));
             }
         }
 
@@ -479,6 +477,13 @@ namespace PeasAPI.Roles
                                    Constants.ShipOnlyMask, false));
                 }
             }
+        }
+
+        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcEndGame))]
+        [HarmonyPrefix]
+        private static bool ShouldGameEndPatch(ShipStatus __instance, [HarmonyArgument(0)] GameOverReason endReason)
+        {
+            return Utility.GetAllPlayers().Count(p => p.GetRole() != null && !p.GetRole().ShouldGameEnd(endReason)) == 0;
         }
     }
 }

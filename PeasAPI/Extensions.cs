@@ -1,7 +1,10 @@
-﻿using PeasAPI.CustomRpc;
+﻿using System.Linq;
+using PeasAPI.CustomRpc;
 using PeasAPI.Options;
 using PeasAPI.Roles;
+using Reactor.Extensions;
 using Reactor.Networking;
+using Reactor.Networking.MethodRpc;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
@@ -111,16 +114,69 @@ namespace PeasAPI
         /// </summary>
         public static void SetRole(this PlayerControl player, BaseRole? role)
         {
-            foreach (var _role in Roles.RoleManager.Roles)
-            {
-                if (_role != role)
-                    _role.Members.Remove(player.PlayerId);
-            }
-
+            var oldRole = Roles.RoleManager.Roles.Where(r => r.Members.Contains(player.PlayerId)).ToList();
+            if (oldRole.Count != 0)
+                oldRole[0].Members.Remove(player.PlayerId);
+            
             if (role != null)
             {
                 role.Members.Add(player.PlayerId);
             }
+            else if (player.IsLocal())
+            {
+                var isImpostor = player.Data.Role.IsImpostor;
+                var isDead = player.Data.IsDead;
+                
+                if (oldRole.Count != 0)
+                    GameObject.Find(oldRole[0].Name + "Task").Destroy();
+                HudManager.Instance.SabotageButton.gameObject.SetActive(isImpostor);
+                HudManager.Instance.KillButton.gameObject.SetActive(isImpostor && !isDead);
+                HudManager.Instance.ImpostorVentButton.gameObject.SetActive(isImpostor && !isDead);
+                
+                player.nameText.color = isImpostor ? Palette.ImpostorRed : Color.white;
+                player.nameText.text = player.name;
+            }
+        }
+        
+        public static void SetVanillaRole(this PlayerControl player, RoleTypes role)
+        {
+            player.roleAssigned = true;
+            if (RoleManager.IsGhostRole(role))
+            {
+                RoleManager.Instance.SetRole(player, role);
+                player.Data.Role.SpawnTaskHeader(player);
+                return;
+            }
+            HudManager.Instance.MapButton.gameObject.SetActive(true);
+            HudManager.Instance.ReportButton.gameObject.SetActive(true);
+            HudManager.Instance.UseButton.gameObject.SetActive(true);
+            PlayerControl.LocalPlayer.RemainingEmergencies = PlayerControl.GameOptions.NumEmergencyMeetings;
+            RoleManager.Instance.SetRole(player, role);
+            player.Data.Role.SpawnTaskHeader(player);
+            if (!DestroyableSingleton<TutorialManager>.InstanceExists)
+            {
+                if (Utility.GetAllPlayers().All(pc => pc.roleAssigned))
+                {
+                    Utility.GetAllPlayers().ForEach(pc =>
+                    {
+                        if (pc.Data.Role.TeamType == PlayerControl.LocalPlayer.Data.Role.TeamType)
+                        {
+                            pc.nameText.color = pc.Data.Role.NameColor;
+                        }
+                        else
+                        {
+                            pc.nameText.color = Palette.White;
+                        }
+                    });
+                }
+            }
+        }
+
+        public static void RpcSetVanillaRole(this PlayerControl player, RoleTypes role)
+        {
+            Rpc<RpcSetVanillaRole>.Instance.Send(new RpcSetVanillaRole.Data(player, role));
+            
+            player.SetVanillaRole(role);
         }
 
         /// <summary>
