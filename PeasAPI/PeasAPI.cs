@@ -64,7 +64,9 @@ namespace PeasAPI
         /// <summary>
         /// Whether the function of the account tab should be replaced with just the ability to change your name or not
         /// </summary>
-        public static bool AccountTabOnlyChangesName { get; set; } = true;
+        public static bool AccountTabOnlyChangesName { get; set; } = false;
+
+        public static CustomToggleOption ShowRolesOfDead;
 
         public override void Load()
         {
@@ -84,6 +86,8 @@ namespace PeasAPI
             RegisterCustomRoleAttribute.Load();
             RegisterCustomGameModeAttribute.Load();
             GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
+            ShowRolesOfDead = ShowRolesOfDead =
+                new CustomToggleOption("ShowRolesOfDead", "Show the roles of dead player", false);
 
             Harmony.PatchAll();
         }

@@ -153,37 +153,37 @@ namespace PeasAPI.Options
             {
                 if (option.GetType() == typeof(CustomToggleOption))
                 {
-                    __instance.settings.AppendLine($"{option.Title}: " + (((CustomToggleOption) option).Value ? "On" : "Off"));
+                    __instance.settings.AppendLine($"{option.Title}: " + (((CustomToggleOption) option).Value ? "On" : "Off") + Utility.StringColor.Reset);
                 }
                 else if (option.GetType() == typeof(CustomNumberOption))
                 {
                     if (((CustomNumberOption)option).SuffixType == NumberSuffixes.None)
                     {
-                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value);
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + Utility.StringColor.Reset);
                         continue;
                     }
 
                     if (((CustomNumberOption)option).SuffixType == NumberSuffixes.Multiplier)
                     {
-                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "x");
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "x" + Utility.StringColor.Reset);
                         continue;
                     }
 
                     if (((CustomNumberOption)option).SuffixType == NumberSuffixes.Seconds)
                     {
-                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "s");
+                        __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + "s" + Utility.StringColor.Reset);
                         continue;
                     }
 
-                    __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value);
+                    __instance.settings.AppendLine($"{option.Title}: " + ((CustomNumberOption) option).Value + Utility.StringColor.Reset);
                 }
                 else if (option.GetType() == typeof(CustomStringOption))
                 {
-                    __instance.settings.AppendLine($"{option.Title}: " + ((CustomStringOption) option).StringValue);
+                    __instance.settings.AppendLine($"{option.Title}: " + ((CustomStringOption) option).StringValue + Utility.StringColor.Reset);
                 }
                 else if (option.GetType() == typeof(CustomOptionHeader))
                 {
-                    __instance.settings.AppendLine($"{option.Title}");
+                    __instance.settings.AppendLine($"{option.Title}" + Utility.StringColor.Reset);
                 }
             }
 

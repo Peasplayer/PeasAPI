@@ -90,9 +90,10 @@ namespace PeasAPI.Roles
         public virtual bool _IsRoleVisible(PlayerControl playerWithRole, PlayerControl perspective)
         {
             if (playerWithRole.PlayerId == perspective.PlayerId)
-            {
                 return true;
-            }
+
+            if (playerWithRole.Data.IsDead && PeasAPI.ShowRolesOfDead.Value)
+                return true;
             
             switch (this.Visibility)
             {
