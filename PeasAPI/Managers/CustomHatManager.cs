@@ -1,5 +1,7 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using static PeasAPI.Data;
@@ -49,9 +51,9 @@ namespace PeasAPI.Managers
             foreach (var visor in CustomHatManager.CustomVisors)
                 __instance.AllVisors.Add(visor.CreateVisor());
             
-            __instance.AllHats.Sort((Il2CppSystem.Comparison<HatBehaviour>)((h1, h2) => h2.ProductId.CompareTo(h1.ProductId)));
+            __instance.AllHats.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
             
-            __instance.AllVisors.Sort((Il2CppSystem.Comparison<VisorData>)((h1, h2) => h2.ProductId.CompareTo(h1.ProductId)));
+            __instance.AllVisors.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
         }
     }
 }

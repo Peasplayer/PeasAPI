@@ -314,6 +314,13 @@ namespace PeasAPI.Roles
             }
         }
 
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+        [HarmonyPostfix]
+        public static void OnPlayerExiledPatch(PlayerControl __instance)
+        {
+            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnExiled(__instance));
+        }
+
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FindClosestTarget))]
         public static class PlayerControlFindClosestTargetPatch
         {
@@ -451,6 +458,35 @@ namespace PeasAPI.Roles
         private static bool ShouldGameEndPatch(ShipStatus __instance, [HarmonyArgument(0)] GameOverReason endReason)
         {
             return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.ShouldGameEnd(endReason)) == 0;
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
+        [HarmonyPrefix]
+        private static void OnTaskCompletePatch(PlayerControl __instance, [HarmonyArgument(0)] uint idx)
+        {
+            PlayerTask playerTask = __instance.myTasks.ToArray().ToList().Find(p => p.Id == idx);
+            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnTaskComplete(__instance, playerTask));
+        }
+        
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
+        [HarmonyPrefix]
+        private static void OnRevivePatch(PlayerControl __instance)
+        {
+            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnRevive(__instance));
+        }
+        
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+        [HarmonyPrefix]
+        private static bool PreExiledPatch(PlayerControl __instance)
+        {
+            return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.PreExile(__instance)) == 0;
+        }
+        
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+        [HarmonyPrefix]
+        private static bool PreKillPatch(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+        {
+            return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.PreKill(__instance, target)) == 0;
         }
     }
 }

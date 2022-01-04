@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BepInEx.IL2CPP;
+using JetBrains.Annotations;
 using PeasAPI.Managers;
 using UnityEngine;
 
@@ -221,7 +222,29 @@ namespace PeasAPI.Roles
         {
         }
 
+        public virtual bool PreKill(PlayerControl killer, PlayerControl victim)
+        {
+            return true;
+        }
+        
         public virtual void OnKill(PlayerControl killer, PlayerControl victim)
+        {
+        }
+        
+        public virtual bool PreExile(PlayerControl victim)
+        {
+            return true;
+        }
+        
+        public virtual void OnExiled(PlayerControl victim)
+        {
+        }
+
+        public virtual void OnRevive(PlayerControl player)
+        {
+        }
+        
+        public virtual void OnTaskComplete(PlayerControl player, PlayerTask task)
         {
         }
 
