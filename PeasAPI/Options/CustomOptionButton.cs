@@ -1,4 +1,8 @@
-﻿namespace PeasAPI.Options
+﻿using System;
+using Reactor;
+using Object = UnityEngine.Object;
+
+namespace PeasAPI.Options
 {
     public class CustomOptionButton : CustomOption
     {
@@ -56,6 +60,49 @@
         {
             var args = new CustomOptionButtonValueChangedArgs(this, oldValue, newValue);
             OnValueChanged?.Invoke(args);
+        }
+
+        internal OptionBehaviour CreateOption(ToggleOption toggleOptionPrefab, StringOption stringOptionPrefab)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                ToggleOption toggleOption =
+                    Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
+
+                Option = toggleOption;
+
+                toggleOption.TitleText.text = Title;
+                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.CheckMark.enabled = false;
+                toggleOption.transform.FindChild("CheckBox").gameObject.SetActive(false);
+
+                toggleOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                {
+                    SetValue(!toggleOption.oldValue);
+                });
+                
+                return toggleOption;
+            }
+            else
+            {
+                StringOption toggleOption =
+                    Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
+
+                Option = toggleOption;
+
+                toggleOption.TitleText.text = Title;
+                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.Value = 0;
+                toggleOption.transform.FindChild("Value_TMP").gameObject.SetActive(false);
+
+                toggleOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                {
+                    SetValue(Value);
+                });
+                toggleOption.OnValueChanged.Invoke(toggleOption);
+                
+                return toggleOption;
+            }
         }
         
         public CustomOptionButton(string id, string title, bool defaultValue) : base(title)

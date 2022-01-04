@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using HarmonyLib;
 using PeasAPI.CustomEndReason;
 using PeasAPI.GameModes;
 using PeasAPI.Roles;
@@ -115,10 +116,7 @@ namespace PeasAPI.CustomRpc
                 }
             }
             
-            foreach (var role in Roles.RoleManager.Roles)
-            {
-                role._OnGameStart();
-            }
+            Roles.RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnGameStart());
         }
     }
 }

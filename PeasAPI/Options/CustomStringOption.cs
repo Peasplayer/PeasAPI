@@ -6,6 +6,8 @@ using BepInEx.IL2CPP;
 using PeasAPI.CustomRpc;
 using Reactor;
 using Reactor.Networking;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PeasAPI.Options
 {
@@ -53,7 +55,7 @@ namespace PeasAPI.Options
         {
             var oldValue = Value;
             
-            if (AmongUsClient.Instance.AmHost)
+            if (AmongUsClient.Instance.AmHost && _configEntry != null)
                 _configEntry.Value = value;
                 
             Value = value;
@@ -72,6 +74,27 @@ namespace PeasAPI.Options
             var args = new CustomStringOptionValueChangedArgs(this, oldValue, newValue);
             OnValueChanged?.Invoke(args);
         }
+
+        internal OptionBehaviour CreateOption(StringOption stringOptionPrefab)
+        {
+            StringOption stringOption =
+                Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
+                    
+            stringOption.TitleText.text = Title;
+            stringOption.Title = CustomStringName.Register(Title);
+            stringOption.Value = Value;
+            stringOption.ValueText.text = StringValue;
+            stringOption.Values = Values.ToArray();
+                    
+            Option = stringOption;
+
+            stringOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+            {
+                SetValue(stringOption.Value);
+            });
+            
+            return stringOption;
+        }
         
         public CustomStringOption(string id, string title, params string[] values) : base(title)
         {
@@ -81,10 +104,9 @@ namespace PeasAPI.Options
                 _configEntry = PeasAPI.ConfigFile.Bind("Options", Id, 0);
             } catch (Exception e) {
                 PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
-                return;
             }
             
-            Value = _configEntry.Value;
+            Value = _configEntry?.Value ?? 0;
             Values = new List<StringNames>();
             foreach (var value in values)
                 Values.Add((StringNames)CustomStringName.Register(value));

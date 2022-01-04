@@ -18,10 +18,7 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         public static void OnGameEndPatch(AmongUsClient __instance)
         {
-            foreach (var role in RoleManager.Roles)
-            {
-                role._OnGameStop();
-            }
+            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnGameStop());
         }
         
         [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
@@ -49,12 +46,12 @@ namespace PeasAPI.Roles
             while (roleList.Count > 0 && players.Count > 0 && rolesAssigned < teamMax)
             {
                 int index = HashRandom.FastNext(roleList.Count);
-                RoleTypes roleType = roleList[index];
+                RoleTypes roleType = roleList.ToArray()[index];
                 roleList.RemoveAt(index);
                 int index2 = global::RoleManager.IsImpostorRole(roleType) && RoleManager.HostMod.IsImpostor
                     ? 0
                     : HashRandom.FastNext(players.Count);
-                players[index2].Object.RpcSetRole(roleType);
+                players.ToArray()[index2].Object.RpcSetRole(roleType);
                 players.RemoveAt(index2);
                 rolesAssigned++;
             }
@@ -140,37 +137,13 @@ namespace PeasAPI.Roles
         {
             public static bool Prefix(ref string __result, [HarmonyArgument(0)] StringNames name)
             {
-                if (ExileController.Instance != null && ExileController.Instance.exiled != null)
+                if (ExileController.Instance != null && ExileController.Instance.exiled != null && (name == StringNames.ExileTextPN || name == StringNames.ExileTextSN))
                 {
-                    if (name == StringNames.ExileTextPN || name == StringNames.ExileTextSN)
+                    var role = ExileController.Instance.exiled.Object.GetRole();
+                    if (role != null)
                     {
-                        foreach (var role in RoleManager.Roles)
-                        {
-                            if (ExileController.Instance.exiled.Object.IsRole(role))
-                            {
-                                if (role.Members.Count > 1)
-                                {
-                                    __result = $"{ExileController.Instance.exiled.PlayerName} was a {role.Name}.";
-                                }
-                                else
-                                {
-                                    __result = $"{ExileController.Instance.exiled.PlayerName} was the {role.Name}.";
-                                }
-                            }
-                        }
-
-                        if (__result == null)
-                        {
-                            if (RoleManager.Impostors.Count == 1)
-                            {
-                                __result = ExileController.Instance.exiled.PlayerName + " was not The Impostor.";
-                            }
-                            else
-                            {
-                                __result = ExileController.Instance.exiled.PlayerName + " was not An Impostor.";
-                            }
-                        }
-
+                        var article = role.Members.Count > 1 ? "a" : "the";
+                        __result = $"{ExileController.Instance.exiled.PlayerName} was ${article} {role.Name}.";
                         return false;
                     }
                 }
@@ -186,10 +159,7 @@ namespace PeasAPI.Roles
             {
                 if (PeasAPI.GameStarted)
                 {
-                    foreach (var role in RoleManager.Roles)
-                    {
-                        role._OnUpdate();
-                    }
+                    RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnUpdate());
                 }
             }
         }
@@ -199,10 +169,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(MeetingHud __instance)
             {
-                foreach (var role in RoleManager.Roles) 
-                {
-                    role._OnMeetingUpdate(__instance);
-                }
+                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnMeetingUpdate(__instance));
             }
         }
 
@@ -343,7 +310,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
             {
-                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnKill(__instance, target));
+                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnKill(__instance, target));
             }
         }
 
@@ -483,7 +450,7 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         private static bool ShouldGameEndPatch(ShipStatus __instance, [HarmonyArgument(0)] GameOverReason endReason)
         {
-            return Utility.GetAllPlayers().Count(p => p.GetRole() != null && !p.GetRole().ShouldGameEnd(endReason)) == 0;
+            return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.ShouldGameEnd(endReason)) == 0;
         }
     }
 }

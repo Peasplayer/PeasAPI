@@ -60,5 +60,12 @@ namespace PeasAPI
             __instance.RpcMurderPlayer(target);
             return false;
         }
+
+        [HarmonyPatch(typeof(AccountManager), nameof(AccountManager.RandomizeName))]
+        [HarmonyPrefix]
+        public static bool RemoveRandomNamePatch()
+        {
+            return false;
+        }
     }
 }

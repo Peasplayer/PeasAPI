@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Configuration;
 using PeasAPI.CustomRpc;
+using Reactor;
 using Reactor.Networking;
+using UnityEngine;
+using Object = System.Object;
 
 namespace PeasAPI.Options
 {
@@ -40,7 +44,8 @@ namespace PeasAPI.Options
             
             if (AmongUsClient.Instance.AmHost)
             {
-                _configEntry.Value = value;
+                if (_configEntry != null)
+                 _configEntry.Value = value;
                 
                 if (Option)
                     ((ToggleOption) Option).CheckMark.enabled = value;
@@ -69,6 +74,51 @@ namespace PeasAPI.Options
             var args = new CustomToggleOptionValueChangedArgs(this, oldValue, newValue);
             OnValueChanged?.Invoke(args);
         }
+
+        internal OptionBehaviour CreateOption(ToggleOption toggleOptionPrefab, StringOption stringOptionPrefab)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                ToggleOption toggleOption =
+                    UnityEngine.Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
+
+                Option = toggleOption;
+
+                toggleOption.TitleText.text = Title;
+                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.CheckMark.enabled = Value;
+
+                toggleOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                {
+                    SetValue(!toggleOption.oldValue);
+                });
+
+                return toggleOption;
+            }
+            else
+            {
+                StringOption toggleOption =
+                    UnityEngine.Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
+
+                Option = toggleOption;
+
+                toggleOption.TitleText.text = Title;
+                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.Value = Value ? 0 : 1;
+
+                var values = new List<StringNames>();
+                values.Add(CustomStringName.Register("On"));
+                values.Add(CustomStringName.Register("Off"));
+                toggleOption.Values = values.ToArray();
+
+                toggleOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+                {
+                    SetValue(toggleOption.Value == 0);
+                });
+
+                return toggleOption;
+            }
+        }
         
         public CustomToggleOption(string id, string title, bool defaultValue) : base(title)
         {
@@ -82,7 +132,7 @@ namespace PeasAPI.Options
                 PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
             }
             
-            Value = _configEntry.Value;
+            Value = _configEntry?.Value ?? defaultValue;
             
             OptionManager.CustomOptions.Add(this);
         }

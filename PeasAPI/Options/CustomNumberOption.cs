@@ -2,7 +2,9 @@
 using System.Reflection;
 using BepInEx.Configuration;
 using PeasAPI.CustomRpc;
+using Reactor;
 using Reactor.Networking;
+using Object = UnityEngine.Object;
 
 namespace PeasAPI.Options
 {
@@ -46,7 +48,7 @@ namespace PeasAPI.Options
         {
             var oldValue = Value;
             
-            if (AmongUsClient.Instance.AmHost)
+            if (AmongUsClient.Instance.AmHost && _configEntry != null)
                 _configEntry.Value = value;
             
             Value = value;
@@ -63,6 +65,28 @@ namespace PeasAPI.Options
             var args = new CustomNumberOptionValueChangedArgs(this, oldValue, newValue);
             OnValueChanged?.Invoke(args);
         }
+
+        internal OptionBehaviour CreateOption(NumberOption numberOptionPrefab)
+        {
+            NumberOption numberOption =
+                Object.Instantiate(numberOptionPrefab, numberOptionPrefab.transform.parent);
+                    
+            numberOption.TitleText.text = Title;
+            numberOption.Title = CustomStringName.Register(Title);
+            numberOption.Value = Value;
+            numberOption.ValidRange = new FloatRange(MinValue, MaxValue);
+            numberOption.Increment = Increment;
+            numberOption.SuffixType = SuffixType;
+
+            Option = numberOption;
+
+            numberOption.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
+            {
+                SetValue(numberOption.Value);
+            });
+
+            return numberOption;
+        }
         
         public CustomNumberOption(string id, string title, float minValue, float maxValue, float increment, float defaultValue, NumberSuffixes suffixType) : base(title)
         {
@@ -76,7 +100,7 @@ namespace PeasAPI.Options
                 PeasAPI.Logger.LogError($"Error while loading the option \"{title}\": {e.Source}");
             }
 
-            Value = _configEntry.Value;
+            Value = _configEntry?.Value ?? defaultValue;
             MinValue = minValue;
             MaxValue = maxValue;
             Increment = increment;

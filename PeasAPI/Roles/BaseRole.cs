@@ -138,11 +138,6 @@ namespace PeasAPI.Roles
 
         public virtual bool ShouldGameEnd(GameOverReason reason) => true;
         
-        public void _OnGameStart()
-        {
-            OnGameStart();
-        }
-
         /// <summary>
         /// Gets called when the game starts
         /// </summary>
@@ -150,11 +145,6 @@ namespace PeasAPI.Roles
         {
         }
         
-        public void _OnGameStop()
-        {
-            OnGameStop();
-        }
-
         /// <summary>
         /// Gets called when the game stops
         /// </summary>
@@ -162,7 +152,7 @@ namespace PeasAPI.Roles
         {
         }
 
-        public void _OnUpdate()
+        internal void _OnUpdate()
         {
             foreach (var player in Members)
             {
@@ -188,7 +178,7 @@ namespace PeasAPI.Roles
         {
         }
 
-        public void _OnMeetingUpdate(MeetingHud __instance)
+        internal void _OnMeetingUpdate(MeetingHud __instance)
         {
             if (PlayerMenuManager.IsMenuOpen)
                 return;
@@ -231,11 +221,6 @@ namespace PeasAPI.Roles
         {
         }
 
-        public void _OnKill(PlayerControl killer, PlayerControl victim)
-        {
-            OnKill(killer, victim);
-        }
-        
         public virtual void OnKill(PlayerControl killer, PlayerControl victim)
         {
         }

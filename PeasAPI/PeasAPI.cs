@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;

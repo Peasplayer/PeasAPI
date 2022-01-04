@@ -41,153 +41,23 @@ namespace PeasAPI.Options
 
                 if (customOption.GetType() == typeof(CustomToggleOption))
                 {
-                    var _option = (CustomToggleOption) customOption;
-
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        ToggleOption toggleOption =
-                            Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
-
-                        _option.Option = toggleOption;
-
-                        toggleOption.TitleText.text = _option.Title;
-                        toggleOption.Title = CustomStringName.Register(_option.Title);
-                        toggleOption.CheckMark.enabled = _option.Value;
-
-                        option = toggleOption;
-
-                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                        {
-                            _option.SetValue(!toggleOption.oldValue);
-                        });
-                    }
-                    else
-                    {
-                        StringOption toggleOption =
-                            Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
-
-                        _option.Option = toggleOption;
-
-                        toggleOption.TitleText.text = _option.Title;
-                        toggleOption.Title = CustomStringName.Register(_option.Title);
-                        toggleOption.Value = _option.Value ? 0 : 1;
-
-                        var values = new List<StringNames>();
-                        values.Add(CustomStringName.Register("On"));
-                        values.Add(CustomStringName.Register("Off"));
-                        toggleOption.Values = values.ToArray();
-
-                        option = toggleOption;
-
-                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                        {
-                            _option.SetValue(toggleOption.Value == 0);
-                        });
-                    }
+                    option = ((CustomToggleOption)customOption).CreateOption(toggleOptionPrefab, stringOptionPrefab);
                 }
                 else if (customOption.GetType() == typeof(CustomNumberOption))
                 {
-                    var _option = (CustomNumberOption) customOption;
-                    NumberOption numberOption =
-                        Object.Instantiate(numberOptionPrefab, numberOptionPrefab.transform.parent);
-                    
-                    numberOption.TitleText.text = _option.Title;
-                    numberOption.Title = CustomStringName.Register(_option.Title);
-                    numberOption.Value = _option.Value;
-                    numberOption.ValidRange = new FloatRange(_option.MinValue, _option.MaxValue);
-                    numberOption.Increment = _option.Increment;
-                    numberOption.SuffixType = _option.SuffixType;
-
-                    option = numberOption;
-                    _option.Option = numberOption;
-
-                    option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                    {
-                        _option.SetValue(numberOption.Value);
-                    });
+                    option = ((CustomNumberOption) customOption).CreateOption(numberOptionPrefab);
                 }
                 else if (customOption.GetType() == typeof(CustomStringOption))
                 {
-                    var _option = (CustomStringOption) customOption;
-                    StringOption stringOption =
-                        Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
-                    
-                    stringOption.TitleText.text = _option.Title;
-                    stringOption.Title = CustomStringName.Register(_option.Title);
-                    stringOption.Value = _option.Value;
-                    stringOption.ValueText.text = _option.StringValue;
-                    stringOption.Values = _option.Values.ToArray();
-                    
-                    option = stringOption;
-                    _option.Option = stringOption;
-
-                    option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                    {
-                        _option.SetValue(stringOption.Value);
-                    });
+                    option = ((CustomStringOption) customOption).CreateOption(stringOptionPrefab);
                 }
                 else if (customOption.GetType() == typeof(CustomOptionHeader))
                 {
-                    var _option = (CustomOptionHeader) customOption;
-                    ToggleOption header =
-                        Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
-                    
-                    header.TitleText.text = _option.Title;
-                    header.Title = CustomStringName.Register(_option.Title);
-                    
-                    var checkBox = header.transform.FindChild("CheckBox")?.gameObject;
-                    if (checkBox) checkBox.Destroy();
-                
-                    var background = header.transform.FindChild("Background")?.gameObject;
-                    if (background) background.Destroy();
-
-                    option = header;
-
-                    _option.Option = header;
+                    option = ((CustomOptionHeader) customOption).CreateOption(toggleOptionPrefab);
                 }
                 else if (customOption.GetType() == typeof(CustomOptionButton))
                 {
-                    var _option = (CustomOptionButton) customOption;
-
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        ToggleOption toggleOption =
-                            Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
-
-                        _option.Option = toggleOption;
-
-                        toggleOption.TitleText.text = _option.Title;
-                        toggleOption.Title = CustomStringName.Register(_option.Title);
-                        toggleOption.CheckMark.enabled = false;
-                        toggleOption.transform.FindChild("CheckBox").gameObject.SetActive(false);
-
-                        option = toggleOption;
-                        
-                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                        {
-                            _option.SetValue(!toggleOption.oldValue);
-                        });
-                    }
-                    else
-                    {
-                        StringOption toggleOption =
-                            Object.Instantiate(stringOptionPrefab, stringOptionPrefab.transform.parent);
-
-                        _option.Option = toggleOption;
-
-                        toggleOption.TitleText.text = _option.Title;
-                        toggleOption.Title = CustomStringName.Register(_option.Title);
-                        toggleOption.Value = 0;
-                        toggleOption.transform.FindChild("Value_TMP").gameObject.SetActive(false);
-
-                        option = toggleOption;
-
-                        option.OnValueChanged = new Action<OptionBehaviour>(behaviour =>
-                        {
-                            _option.SetValue(_option.Value);
-                        });
-                        option.OnValueChanged.Invoke(option);
-                    }
+                    option = ((CustomOptionButton) customOption).CreateOption(toggleOptionPrefab, stringOptionPrefab);
                 }
 
                 option.transform.localPosition = new Vector3(option.transform.localPosition.x,
