@@ -38,43 +38,27 @@ namespace PeasAPI.CustomButtons
         
         public readonly Action OnClick;
         public readonly Action OnEffectEnd;
-        public readonly bool DeadCanUse;
+        public readonly ButtonUsability Usability;
 
-        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
-            float effectDuration, Action onEffectEnd, string text = "",
+        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset = new Vector2(), ButtonUsability usability = ButtonUsability.Alive,
+            float effectDuration = 0, Action onEffectEnd = null, string text = "",
             Vector2 textOffset = new Vector2())
         {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, effectDuration,
+            var button = new CustomButton(onClick, cooldown, image, positionOffset, usability, effectDuration,
                 onEffectEnd, text, textOffset) {_impostorButton = true};
             return button;
         }
         
-        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, string text = "",
+        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, BaseRole role, Vector2 positionOffset = new Vector2(), ButtonUsability usability = ButtonUsability.Alive,
+            float effectDuration = 0, Action onEffectEnd = null, string text = "",
             Vector2 textOffset = new Vector2())
         {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, 
-                text, textOffset) {_impostorButton = true};
-            return button;
-        }
-        
-        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role,
-            float effectDuration, Action onEffectEnd, string text = "",
-            Vector2 textOffset = new Vector2())
-        {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, effectDuration,
+            var button = new CustomButton(onClick, cooldown, image, positionOffset, usability, effectDuration,
                 onEffectEnd, text, textOffset) {_useRole = true, _role = role};
             return button;
         }
         
-        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse, BaseRole role, string text = "",
-            Vector2 textOffset = new Vector2())
-        {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, deadCanUse, 
-                text, textOffset) {_useRole = true, _role = role};
-            return button;
-        }
-        
-        private CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
+        private CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, ButtonUsability usability,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -82,7 +66,7 @@ namespace PeasAPI.CustomButtons
 
             PositionOffset = positionOffset;
 
-            DeadCanUse = deadCanUse;
+            Usability = usability;
 
             MaxCooldown = cooldown;
             Cooldown = MaxCooldown;
@@ -91,29 +75,7 @@ namespace PeasAPI.CustomButtons
 
             OnEffectEnd = onEffectEnd;
             EffectDuration = effectDuration;
-            HasEffect = true;
-
-            Text = text;
-            TextOffset = textOffset;
-
-            Buttons.Add(this);
-
-            Start();
-        }
-
-        private CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, bool deadCanUse,
-            string text = "", Vector2 textOffset = new Vector2())
-        {
-            OnClick = onClick;
-
-            PositionOffset = positionOffset;
-
-            DeadCanUse = deadCanUse;
-
-            MaxCooldown = cooldown;
-            Cooldown = MaxCooldown;
-
-            _buttonSprite = image;
+            HasEffect = effectDuration != 0 && onEffectEnd != null;
 
             Text = text;
             TextOffset = textOffset;
@@ -228,20 +190,16 @@ namespace PeasAPI.CustomButtons
             if (MeetingHud.Instance != null) 
                 return false;
             
-            if (_useRole)
+            var flag = Usability switch
             {
-                _canUse = PlayerControl.LocalPlayer.IsRole(_role) &&
-                          (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
-            }
-            else if (_impostorButton)
-            {
-                _canUse = PlayerControl.LocalPlayer.Data.Role.IsImpostor &&
-                          (DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead);
-            }
-            else
-            {
-                _canUse = DeadCanUse || !PlayerControl.LocalPlayer.Data.IsDead;
-            }
+                ButtonUsability.Alive => !PlayerControl.LocalPlayer.Data.IsDead,
+                ButtonUsability.Dead => PlayerControl.LocalPlayer.Data.IsDead,
+                ButtonUsability.AliveAndDead => true,
+                _ => true
+            };
+
+            _canUse = _useRole ? PlayerControl.LocalPlayer.IsRole(_role) && flag :
+                _impostorButton ? PlayerControl.LocalPlayer.Data.Role.IsImpostor && flag : flag;
 
             return true;
         }
@@ -312,5 +270,12 @@ namespace PeasAPI.CustomButtons
                 HudActive = isActive;
             }
         }
+    }
+
+    public enum ButtonUsability
+    {
+        Alive,
+        Dead,
+        AliveAndDead
     }
 }
