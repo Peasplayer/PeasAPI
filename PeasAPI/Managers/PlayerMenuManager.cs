@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Newtonsoft.Json.Utilities;
 using Reactor;
 using TMPro;
 using UnityEngine;
@@ -13,19 +14,20 @@ namespace PeasAPI.Managers
 {
     public static class PlayerMenuManager
     {
-        public static bool IsMenuOpen = false;
+        internal static bool IsMenuOpen = false;
+        internal static MeetingHud Instance;
         
-        public static void OpenPlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen)
+        public static void OpenPlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen, Action onMenuClosed)
         {
             if (MeetingHud.Instance != null)
                 return;
             if (AmongUsClient.Instance.IsGameOver)
                 return;
             
-            Coroutines.Start(CoCreatePlayerMenu(players, onPlayerWasChosen));
+            Coroutines.Start(CoCreatePlayerMenu(players, onPlayerWasChosen, onMenuClosed));
         }
 
-        private static IEnumerator CoCreatePlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen)
+        private static IEnumerator CoCreatePlayerMenu(List<byte> players, Action<PlayerControl> onPlayerWasChosen, Action onMenuClosed)
         {
             IsMenuOpen = true;
 
@@ -34,7 +36,7 @@ namespace PeasAPI.Managers
             if (Minigame.Instance)
                 Minigame.Instance.ForceClose();
 
-            var instance = MeetingHud.Instance = Object.Instantiate(HudManager.Instance.MeetingPrefab, DestroyableSingleton<HudManager>.Instance.transform, true);
+            var instance = Instance = Object.Instantiate(HudManager.Instance.MeetingPrefab, DestroyableSingleton<HudManager>.Instance.transform, true);
             
             instance.playerStates = new PlayerVoteArea[GameData.Instance.PlayerCount];
             foreach (var playerId in players)
@@ -48,9 +50,9 @@ namespace PeasAPI.Managers
 
                 var playerButton = playerVoteArea.gameObject.GetComponentInChildren<PassiveButton>();
                 playerButton.OnClick.RemoveAllListeners();
-                playerButton.OnClick.AddListener((UnityAction) listener);
+                playerButton.OnClick.AddListener((UnityAction) ChooseListener);
 
-                void listener()
+                void ChooseListener()
                 {
                     try
                     {
@@ -70,7 +72,20 @@ namespace PeasAPI.Managers
 
             var skipButton = instance.gameObject.GetComponentInChildren<PassiveButton>();
             skipButton.OnClick.RemoveAllListeners();
-            skipButton.OnClick.AddListener((UnityAction) CloseMenu);
+            skipButton.OnClick.AddListener((UnityAction) CloseListener);
+            void CloseListener()
+            {
+                try
+                {
+                    onMenuClosed.Invoke();
+                }
+                catch (Exception err)
+                {
+                    PeasAPI.Logger.LogError("There was an error while executing the player menu: " + err);
+                }
+
+                CloseMenu();
+            }
 
             instance.SortButtons();
 
@@ -83,8 +98,8 @@ namespace PeasAPI.Managers
             HudManager.Instance.SetHudActive(false);
             instance.transform.FindChild("Background").gameObject.SetActive(false);
             instance.MeetingIntro.gameObject.SetActive(false);
-            ControllerManager.Instance.OpenOverlayMenu(MeetingHud.Instance.name, null,
-                MeetingHud.Instance.DefaultButtonSelected, MeetingHud.Instance.ControllerSelectable, false);
+            ControllerManager.Instance.OpenOverlayMenu(Instance.name, null,
+                Instance.DefaultButtonSelected, Instance.ControllerSelectable, false);
             yield break;
         }
 
@@ -93,21 +108,31 @@ namespace PeasAPI.Managers
             HudManager.Instance.Chat.SetPosition(null);
             HudManager.Instance.Chat.SetVisible(PlayerControl.LocalPlayer.Data.IsDead);
             HudManager.Instance.Chat.BanButton.Hide();
-            MeetingHud.Instance.DespawnOnDestroy = false;
+            Instance.DespawnOnDestroy = false;
             ConsoleJoystick.SetMode_Task();
             Camera.main.GetComponent<FollowerCamera>().Locked = false;
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             ControllerManager.Instance.ResetAll();
-            Object.Destroy(MeetingHud.Instance.gameObject);
+            Object.Destroy(Instance.gameObject);
             IsMenuOpen = false;
         }
         
         [HarmonyPatch]
-        public static class Patches
+        internal static class Patches
         {
+            [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+            [HarmonyPrefix]
+            public static void OnMeetingStartPatch(PlayerControl __instance)
+            {
+                if (IsMenuOpen)
+                {
+                    Instance.gameObject.GetComponentInChildren<PassiveButton>().OnClick.Invoke();
+                }
+            }
+            
             [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
             [HarmonyPostfix]
-            public static void MeetingHudStartPatch(MeetingHud __instance)
+            public static void MeetingHudOnStartPatch(MeetingHud __instance)
             {
                 if (IsMenuOpen)
                 {
@@ -115,6 +140,38 @@ namespace PeasAPI.Managers
                     HudManager.Instance.Chat.SetVisible(false);
                     __instance.discussionTimer = 20;
                 }
+            }
+            
+            [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+            [HarmonyPrefix]
+            public static bool MeetingHudStartPatch(MeetingHud __instance)
+            {
+                if (IsMenuOpen)
+                {
+                    foreach (SpriteRenderer playerMaterialColors in __instance.PlayerColoredParts)
+                    {
+                        PlayerControl.LocalPlayer.SetPlayerMaterialColors(playerMaterialColors);
+                    }
+                    DestroyableSingleton<HudManager>.Instance.StopOxyFlash();
+                    DestroyableSingleton<HudManager>.Instance.StopReactorFlash();
+                    __instance.SkipVoteButton.SetTargetPlayerId(253);
+                    __instance.SkipVoteButton.Parent = __instance;
+                    Camera.main.GetComponent<FollowerCamera>().Locked = true;
+                    if (PlayerControl.LocalPlayer.Data.IsDead)
+                    {
+                        __instance.SetForegroundForDead();
+                    }
+                    if (!AmongUsClient.Instance.DisconnectHandlers.Contains(__instance.Cast<IDisconnectHandler>()))
+                        AmongUsClient.Instance.DisconnectHandlers.Add(__instance.Cast<IDisconnectHandler>());
+                    foreach (PlayerVoteArea playerVoteArea in __instance.playerStates)
+                    {
+                        __instance.ControllerSelectable.Add(playerVoteArea.PlayerButton);
+                    }
+                    DestroyableSingleton<AchievementManager>.Instance.OnMeetingCalled();
+                    return false;
+                }
+
+                return true;
             }
             
             [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]

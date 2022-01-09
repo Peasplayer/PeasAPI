@@ -25,14 +25,6 @@ namespace PeasAPI.CustomRpc
 
                 EndReasonManager.Reset();
 
-                foreach (var player in PlayerControl.AllPlayerControls)
-                {
-                    if (player.Data.Role.IsImpostor)
-                        Roles.RoleManager.Impostors.Add(player.PlayerId);
-                    else
-                        Roles.RoleManager.Crewmates.Add(player.PlayerId);
-                }
-
                 if (AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
                 {
                     foreach (var role in Roles.RoleManager.Roles)
@@ -49,7 +41,7 @@ namespace PeasAPI.CustomRpc
                         {
                             var nonRoleImpostors = Roles.RoleManager.Impostors.Where(id =>
                                 id.GetPlayer().Data.Role.IsSimpleRole &&
-                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
+                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role) && id.GetPlayer().GetRole() == null).ToArray();
                             if (nonRoleImpostors.Length == 0)
                                 continue;
                             
@@ -65,14 +57,13 @@ namespace PeasAPI.CustomRpc
                                 var member =
                                     nonRoleImpostors[PeasAPI.Random.Next(0, nonRoleImpostors.Length)];
                                 member.GetPlayer().RpcSetRole(role);
-                                Roles.RoleManager.Impostors.Remove(member);
                             }
                         }
                         else if (role.Team != Team.Impostor)
                         {
                             var nonRoleCrewmates = Roles.RoleManager.Crewmates.Where(id =>
                                 id.GetPlayer().Data.Role.IsSimpleRole &&
-                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role)).ToArray();
+                                !RoleManager.IsGhostRole(id.GetPlayerInfo().Role.Role) && id.GetPlayer().GetRole() == null).ToArray();
                             if (nonRoleCrewmates.Length == 0)
                                 continue;
                             
@@ -88,7 +79,6 @@ namespace PeasAPI.CustomRpc
                                 var member =
                                     nonRoleCrewmates[PeasAPI.Random.Next(0, nonRoleCrewmates.Length)];
                                 member.GetPlayer().RpcSetRole(role);
-                                Roles.RoleManager.Crewmates.Remove(member);
                             }
                         }
                     }
@@ -96,27 +86,10 @@ namespace PeasAPI.CustomRpc
             }
             else
             {
-                Roles.RoleManager.Crewmates.Clear();
-                Roles.RoleManager.Impostors.Clear();
-                
                 EndReasonManager.Reset();
-
-                foreach (var player in PlayerControl.AllPlayerControls)
-                {
-                    if (player.Data.Role.IsImpostor)
-                    {
-                        if (player.GetRole() == null)
-                            Roles.RoleManager.Impostors.Add(player.PlayerId);
-                    }
-                    else
-                    {
-                        if (player.GetRole() == null)
-                            Roles.RoleManager.Crewmates.Add(player.PlayerId);
-                    }
-                }
             }
             
-            Roles.RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnGameStart());
+            Roles.RoleManager.Roles.Do(r => r.OnGameStart());
         }
     }
 }

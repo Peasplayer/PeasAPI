@@ -223,6 +223,10 @@ namespace PeasAPI.Roles
         {
         }
 
+        public virtual void OnMeetingStart(MeetingHud meeting)
+        {
+        }
+
         public virtual bool PreKill(PlayerControl killer, PlayerControl victim)
         {
             return true;

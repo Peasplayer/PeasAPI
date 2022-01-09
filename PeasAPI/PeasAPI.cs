@@ -85,9 +85,10 @@ namespace PeasAPI
 
             RegisterCustomRoleAttribute.Load();
             RegisterCustomGameModeAttribute.Load();
-            GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
-            ShowRolesOfDead = ShowRolesOfDead =
+            
+            ShowRolesOfDead =
                 new CustomToggleOption("ShowRolesOfDead", "Show the roles of dead player", false);
+            GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
 
             Harmony.PatchAll();
         }
@@ -96,7 +97,7 @@ namespace PeasAPI
         [HarmonyPrefix]
         public static void PatchToTestSomeStuff(KeyboardJoystick __instance)
         {
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.F))
             {
             }
         }

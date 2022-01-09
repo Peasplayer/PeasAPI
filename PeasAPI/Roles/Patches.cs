@@ -18,7 +18,7 @@ namespace PeasAPI.Roles
         [HarmonyPrefix]
         public static void OnGameEndPatch(AmongUsClient __instance)
         {
-            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnGameStop());
+            RoleManager.Roles.Do(r => r.OnGameStop());
         }
         
         [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
@@ -159,7 +159,7 @@ namespace PeasAPI.Roles
             {
                 if (PeasAPI.GameStarted)
                 {
-                    RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnUpdate());
+                    RoleManager.Roles.Do(r => r._OnUpdate());
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(MeetingHud __instance)
             {
-                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r._OnMeetingUpdate(__instance));
+                RoleManager.Roles.Do(r => r._OnMeetingUpdate(__instance));
             }
         }
 
@@ -310,7 +310,7 @@ namespace PeasAPI.Roles
         {
             public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
             {
-                RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnKill(__instance, target));
+                RoleManager.Roles.Do(r => r.OnKill(__instance, target));
             }
         }
 
@@ -318,9 +318,16 @@ namespace PeasAPI.Roles
         [HarmonyPostfix]
         public static void OnPlayerExiledPatch(PlayerControl __instance)
         {
-            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnExiled(__instance));
+            RoleManager.Roles.Do(r => r.OnExiled(__instance));
         }
 
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+        [HarmonyPrefix]
+        public static void OnMeetingStart(MeetingHud __instance)
+        {
+            RoleManager.Roles.Do(r => r.OnMeetingStart(__instance));
+        }
+        
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FindClosestTarget))]
         public static class PlayerControlFindClosestTargetPatch
         {
@@ -465,14 +472,14 @@ namespace PeasAPI.Roles
         private static void OnTaskCompletePatch(PlayerControl __instance, [HarmonyArgument(0)] uint idx)
         {
             PlayerTask playerTask = __instance.myTasks.ToArray().ToList().Find(p => p.Id == idx);
-            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnTaskComplete(__instance, playerTask));
+            RoleManager.Roles.Do(r => r.OnTaskComplete(__instance, playerTask));
         }
         
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
         [HarmonyPrefix]
         private static void OnRevivePatch(PlayerControl __instance)
         {
-            RoleManager.Roles.Where(r => r.Members.Count != 0).Do(r => r.OnRevive(__instance));
+            RoleManager.Roles.Do(r => r.OnRevive(__instance));
         }
         
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]

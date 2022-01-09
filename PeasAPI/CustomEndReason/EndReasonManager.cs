@@ -31,7 +31,7 @@ namespace PeasAPI.CustomEndReason
         }
 
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
-        private class EndGameManager_SetEverythingUp
+        private class SetEverythingUpPatch
         {
             private static readonly Color GhostColor = new(1f, 1f, 1f, 0.5f);
 
@@ -106,7 +106,7 @@ namespace PeasAPI.CustomEndReason
         }
 
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.Start))]
-        private class EndGameManagerStartPatch
+        private class AdjustEndScreenPatch
         {
             public static void Prefix(EndGameManager __instance)
             {

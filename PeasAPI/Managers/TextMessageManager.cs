@@ -14,17 +14,17 @@ namespace PeasAPI.Managers
     {
         private static Transform _textOverlay;
         
-        public static void ShowMessage(string message)
+        public static void ShowMessage(string message, float duration)
         {
-            Reactor.Coroutines.Start(CoShowText(message));
+            Reactor.Coroutines.Start(CoShowText(message, duration));
         }
         
-        public static void RpcShowMessage(string message, List<PlayerControl> targets)
+        public static void RpcShowMessage(string message, float duration, List<PlayerControl> targets)
         {
-            targets.Do(player => Rpc<RpcShowMessage>.Instance.SendTo(player.PlayerId, new RpcShowMessage.Data(message, targets.ConvertAll(player => player.PlayerId))));
+            targets.Do(player => Rpc<RpcShowMessage>.Instance.SendTo(player.PlayerId, new RpcShowMessage.Data(message, duration, targets.ConvertAll(player => player.PlayerId))));
         }
         
-        private static IEnumerator CoShowText(string text)
+        private static IEnumerator CoShowText(string text, float duration)
         {
             var hudManager = HudManager.Instance;
             if (hudManager == null)

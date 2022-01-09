@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Hazel;
 using PeasAPI.CustomRpc;
 using Reactor.Networking;
@@ -7,9 +8,9 @@ namespace PeasAPI.Roles
 {
     public static class RoleManager
     {
-        public static List<byte> Crewmates = new List<byte>();
-        
-        public static List<byte> Impostors = new List<byte>();
+        public static List<byte> Crewmates => Utility.GetAllPlayers().Where(p => !p.Data.Role.IsImpostor).ToList().ConvertAll(p => p.PlayerId);
+
+        public static List<byte> Impostors => Utility.GetAllPlayers().Where(p => p.Data.Role.IsImpostor).ToList().ConvertAll(p => p.PlayerId);
 
         public static List<BaseRole> Roles = new List<BaseRole>();
 
@@ -19,9 +20,6 @@ namespace PeasAPI.Roles
         
         public static void ResetRoles()
         {
-            Crewmates.Clear();
-            Impostors.Clear();
-            
             foreach (var _role in RoleManager.Roles)
             {
                 _role.Members.Clear();
