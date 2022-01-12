@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using PeasAPI.Roles;
 using UnityEngine;
 using Action = System.Action;
 using Object = UnityEngine.Object;
@@ -12,15 +11,11 @@ namespace PeasAPI.CustomButtons
     public class CustomButton
     {
         public static List<CustomButton> Buttons = new List<CustomButton>();
-        public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible && button._canUse).ToList();
+        public static List<CustomButton> VisibleButtons => Buttons.Where(button => button.Visible && button.CouldBeUsed()).ToList();
         public static bool HudActive = true;
         
         private Color _startColorText = new Color(255, 255, 255);
         private Sprite _buttonSprite;
-        private bool _canUse;
-        private BaseRole _role;
-        private bool _useRole = false;
-        private bool _impostorButton = false;
         
         public KillButton KillButtonManager;
         public Vector2 PositionOffset;
@@ -28,37 +23,28 @@ namespace PeasAPI.CustomButtons
         public float MaxCooldown;
         public float Cooldown;
         public float EffectDuration;
-        public bool HasEffect;
         public bool IsEffectActive;
         public bool Enabled = true;
         public bool Usable = true;
         public bool Visible = true;
+        public Predicate<PlayerControl> _CouldBeUsed;
+        public Predicate<PlayerControl> _CanBeUsed;
         public string Text;
+        public Action OnClick;
+        public Action OnEffectEnd;
         public bool UseText => !string.IsNullOrEmpty(Text);
-        
-        public readonly Action OnClick;
-        public readonly Action OnEffectEnd;
-        public readonly ButtonUsability Usability;
+        public bool HasEffect => EffectDuration != 0 && OnEffectEnd != null;
 
-        public static CustomButton AddImpostorButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset = new Vector2(), ButtonUsability usability = ButtonUsability.Alive,
+        public static CustomButton AddButton(Action onClick, float cooldown, Sprite image, Predicate<PlayerControl> couldBeUsed, Predicate<PlayerControl> canBeUsed, Vector2 positionOffset = new Vector2(),
             float effectDuration = 0, Action onEffectEnd = null, string text = "",
             Vector2 textOffset = new Vector2())
         {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, usability, effectDuration,
-                onEffectEnd, text, textOffset) {_impostorButton = true};
+            var button = new CustomButton(onClick, cooldown, image, positionOffset, couldBeUsed, canBeUsed, effectDuration,
+                onEffectEnd, text, textOffset);
             return button;
         }
         
-        public static CustomButton AddRoleButton(Action onClick, float cooldown, Sprite image, BaseRole role, Vector2 positionOffset = new Vector2(), ButtonUsability usability = ButtonUsability.Alive,
-            float effectDuration = 0, Action onEffectEnd = null, string text = "",
-            Vector2 textOffset = new Vector2())
-        {
-            var button = new CustomButton(onClick, cooldown, image, positionOffset, usability, effectDuration,
-                onEffectEnd, text, textOffset) {_useRole = true, _role = role};
-            return button;
-        }
-        
-        private CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, ButtonUsability usability,
+        private CustomButton(Action onClick, float cooldown, Sprite image, Vector2 positionOffset, Predicate<PlayerControl> couldBeUsed, Predicate<PlayerControl> canBeUsed,
             float effectDuration, Action onEffectEnd, string text = "",
             Vector2 textOffset = new Vector2())
         {
@@ -66,7 +52,8 @@ namespace PeasAPI.CustomButtons
 
             PositionOffset = positionOffset;
 
-            Usability = usability;
+            _CanBeUsed = canBeUsed;
+            _CouldBeUsed = couldBeUsed;
 
             MaxCooldown = cooldown;
             Cooldown = MaxCooldown;
@@ -75,7 +62,6 @@ namespace PeasAPI.CustomButtons
 
             OnEffectEnd = onEffectEnd;
             EffectDuration = effectDuration;
-            HasEffect = effectDuration != 0 && onEffectEnd != null;
 
             Text = text;
             TextOffset = textOffset;
@@ -115,7 +101,7 @@ namespace PeasAPI.CustomButtons
 
             void listener()
             {
-                if (IsUsable() && _canUse && Enabled && KillButtonManager.gameObject.active &&
+                if (CanBeUsed() && CouldBeUsed() && Enabled && KillButtonManager.gameObject.active &&
                     PlayerControl.LocalPlayer.moveable)
                 {
                     KillButtonManager.buttonLabelText.material.color = KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
@@ -146,7 +132,7 @@ namespace PeasAPI.CustomButtons
 
             if (Cooldown < 0f && Enabled && PlayerControl.LocalPlayer.moveable)
             {
-                KillButtonManager.buttonLabelText.color = KillButtonManager.graphic.color = IsUsable() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
+                KillButtonManager.buttonLabelText.color = KillButtonManager.graphic.color = CanBeUsed() ? new Color(1f, 1f, 1f, 1f) : new Color(1f, 1f, 1f, 0.3f);
                 
                 if (IsEffectActive)
                 {
@@ -159,7 +145,7 @@ namespace PeasAPI.CustomButtons
             }
             else
             {
-                if (_canUse && Enabled)
+                if (CouldBeUsed() && Enabled)
                     Cooldown -= Time.deltaTime;
                 
                 KillButtonManager.buttonLabelText.color = KillButtonManager.graphic.color = new Color(1f, 1f, 1f, 0.3f);
@@ -168,10 +154,10 @@ namespace PeasAPI.CustomButtons
             KillButtonManager.buttonLabelText.enabled = UseText;
             KillButtonManager.buttonLabelText.text = Text;
             
-            KillButtonManager.gameObject.SetActive(_canUse);
-            KillButtonManager.graphic.enabled = _canUse;
+            KillButtonManager.gameObject.SetActive(CouldBeUsed());
+            KillButtonManager.graphic.enabled = CouldBeUsed();
             
-            if (_canUse)
+            if (CouldBeUsed())
             {
                 KillButtonManager.graphic.material.SetFloat("_Desat", 0f);
                 KillButtonManager.buttonLabelText.material.SetFloat("_Desat", 0f);
@@ -179,7 +165,7 @@ namespace PeasAPI.CustomButtons
             }
         }
 
-        public bool CanUse()
+        public bool CouldBeUsed()
         {
             if (PlayerControl.LocalPlayer == null) 
                 return false;
@@ -189,19 +175,13 @@ namespace PeasAPI.CustomButtons
             
             if (MeetingHud.Instance != null) 
                 return false;
-            
-            var flag = Usability switch
-            {
-                ButtonUsability.Alive => !PlayerControl.LocalPlayer.Data.IsDead,
-                ButtonUsability.Dead => PlayerControl.LocalPlayer.Data.IsDead,
-                ButtonUsability.AliveAndDead => true,
-                _ => true
-            };
 
-            _canUse = _useRole ? PlayerControl.LocalPlayer.IsRole(_role) && flag :
-                _impostorButton ? PlayerControl.LocalPlayer.Data.Role.IsImpostor && flag : flag;
+            return _CouldBeUsed.Invoke(PlayerControl.LocalPlayer);
+        }
 
-            return true;
+        public bool CanBeUsed()
+        {
+            return _CanBeUsed.Invoke(PlayerControl.LocalPlayer) && Usable && Cooldown < 0f && HudActive;
         }
         
         public void SetImage(Sprite image)
@@ -216,29 +196,14 @@ namespace PeasAPI.CustomButtons
                 MaxCooldown = maxCooldown.Value;
             KillButtonManager.SetCoolDown(Cooldown, MaxCooldown);
         }
-
-        public bool IsImpostorButton()
-        {
-            return _impostorButton;
-        }
-        
-        public bool IsRoleButton()
-        {
-            return _useRole;
-        }
         
         public bool IsCoolingDown()
         {
             return KillButtonManager.isCoolingDown;
         }
-
-        public bool IsUsable()
-        {
-            return Usable && Cooldown < 0f && HudActive;
-        }
         
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-        public static class HudManagerUpdatePatch
+        internal static class HudManagerUpdatePatch
         {
             public static void Prefix(HudManager __instance)
             {
@@ -247,7 +212,7 @@ namespace PeasAPI.CustomButtons
                 {
                     var button = Buttons[i];
                     var killButton = button.KillButtonManager;
-                    var canUse = button.CanUse();
+                    var canUse = button.CouldBeUsed();
                 
                     Buttons[i].KillButtonManager.graphic.sprite = button._buttonSprite;
                 
@@ -263,19 +228,12 @@ namespace PeasAPI.CustomButtons
         }
         
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-        public static class HudManagerSetHudActivePatch
+        internal static class HudManagerSetHudActivePatch
         {
             public static void Prefix(HudManager __instance, [HarmonyArgument(0)] bool isActive)
             {
                 HudActive = isActive;
             }
         }
-    }
-
-    public enum ButtonUsability
-    {
-        Alive,
-        Dead,
-        AliveAndDead
     }
 }
