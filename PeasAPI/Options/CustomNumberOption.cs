@@ -105,6 +105,7 @@ namespace PeasAPI.Options
             MaxValue = maxValue;
             Increment = increment;
             SuffixType = suffixType;
+            HudFormat = "{0}: {1}{2}";
             
             OptionManager.CustomOptions.Add(this);
         }

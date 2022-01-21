@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx.IL2CPP;
-using JetBrains.Annotations;
 using PeasAPI.Managers;
+using PeasAPI.Options;
 using UnityEngine;
 
 namespace PeasAPI.Roles
@@ -13,6 +14,8 @@ namespace PeasAPI.Roles
 
         public List<byte> Members = new List<byte>();
 
+        public RoleBehaviour RoleBehaviour;
+
         /// <summary>
         /// The name of the Role. Will displayed at the intro, ejection and task list
         /// </summary>
@@ -22,6 +25,10 @@ namespace PeasAPI.Roles
         /// The description of the Role. Will displayed at the intro
         /// </summary>
         public abstract string Description { get; }
+        
+        public abstract string LongDescription { get; }
+
+        public virtual Sprite Icon { get; } = Utility.CreateSprite("PeasAPI.Placeholder.png");
         
         /// <summary>
         /// The description of the Role at the task list
@@ -51,7 +58,19 @@ namespace PeasAPI.Roles
         /// <summary>
         /// How many player should get the Role
         /// </summary>
-        public virtual int Limit { get; set; } = 0;
+        public virtual int Count { get; set; } = 0;
+        
+        public virtual int MaxCount { get; set; } = 15;
+        
+        public virtual int Chance { get; set; } = 100;
+
+        public virtual bool CreateRoleOption { get; set; } = true;
+
+        public CustomRoleOption Option;
+        
+        public virtual Dictionary<string, CustomOption> AdvancedOptions { get; set; } = new Dictionary<string, CustomOption>();
+
+        public virtual string AdvancedOptionsPrefix { get; set; } = "└ ";
 
         public virtual Type[] GameModeWhitelist { get; } = Array.Empty<Type>();
 
@@ -253,9 +272,22 @@ namespace PeasAPI.Roles
         {
         }
 
+        public int GetCount()
+        {
+            return Option?.Count ?? Count;
+        }
+        
+        public int GetChance()
+        {
+            return Option?.Chance ?? Chance;
+        }
+        
         public BaseRole(BasePlugin plugin)
         {
             Id = RoleManager.GetRoleId();
+            RoleBehaviour = RoleManager.ToRoleBehaviour(this);
+            if (CreateRoleOption)
+                Option = new CustomRoleOption(this, AdvancedOptionsPrefix, AdvancedOptions.Values.ToArray());
             RoleManager.RegisterRole(this);
         }
     }

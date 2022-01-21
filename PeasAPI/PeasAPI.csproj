@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <VersionPrefix>1.7.5</VersionPrefix>
+        <VersionPrefix>1.8.0</VersionPrefix>
         <VersionSuffix>release</VersionSuffix> 
         <Description>API for making Among Us mods </Description>
         <Authors>Peasplayer</Authors>
@@ -23,14 +23,16 @@
     <ItemGroup>
         <PackageReference Include="Reactor" Version="1.1.0" />
         <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="1.0.1" PrivateAssets="all" />
-        <PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-be.521" />
+        <PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-be.538" />
         <PackageReference Include="AmongUs.GameLibs.$(GamePlatform)" Version="$(GameVersion)" PrivateAssets="all" />
-        
+
+        <PackageReference Include="System.Text.Json" Version="5.0.2" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         
         <None Include="PeasAPI-Icon.png" Pack="true" PackagePath="" />
         
-        <PackageReference Include="System.Text.Json" Version="5.0.2" />
+        <EmbeddedResource Include="PeasAPI-Icon.png" />
+        <EmbeddedResource Include="Placeholder.png" />
     </ItemGroup>
     
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

@@ -21,7 +21,7 @@ namespace PeasAPI
     public class PeasAPI : BasePlugin
     {
         public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.7.5";
+        public const string Version = "1.8.0";
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
@@ -87,9 +87,9 @@ namespace PeasAPI
             RegisterCustomGameModeAttribute.Load();
             
             ShowRolesOfDead =
-                new CustomToggleOption("ShowRolesOfDead", "Show the roles of dead player", false);
-            GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None");
-
+                new CustomToggleOption("ShowRolesOfDead", "Show the roles of dead player", false) {IsFromPeasAPI = true};
+            GameModeManager.GameModeOption = new CustomStringOption("gamemode", "GameMode", "None") {IsFromPeasAPI = true};
+            
             Harmony.PatchAll();
         }
 

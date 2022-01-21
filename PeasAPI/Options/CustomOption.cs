@@ -10,6 +10,12 @@
         
         public bool MenuVisible { get; set; } = true;
         
+        public bool AdvancedRoleOption { get; set; }
+
+        public string HudFormat { get; set; } = "{0}";
+
+        internal bool IsFromPeasAPI { get; set; } = false;
+        
         public OptionBehaviour Option { get; internal set; }
 
         public CustomOption(string title)

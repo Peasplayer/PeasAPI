@@ -26,6 +26,7 @@ namespace PeasAPI.Options
             if (background) background.Destroy();
 
             Option = header;
+            HudFormat = "{0}";
             
             return header;
         }

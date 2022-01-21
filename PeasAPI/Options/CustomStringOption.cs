@@ -110,7 +110,8 @@ namespace PeasAPI.Options
             Values = new List<StringNames>();
             foreach (var value in values)
                 Values.Add((StringNames)CustomStringName.Register(value));
-            
+            HudFormat = "{0}: {1}";
+
             OptionManager.CustomOptions.Add(this);
         }
     }

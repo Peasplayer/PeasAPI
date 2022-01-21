@@ -131,7 +131,7 @@ namespace PeasAPI.Roles
             }
         }
 
-        [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames),
+        /*[HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames),
             typeof(Il2CppReferenceArray<Object>))]
         public class TranslationControllerPatch
         {
@@ -143,14 +143,28 @@ namespace PeasAPI.Roles
                     if (role != null)
                     {
                         var article = role.Members.Count > 1 ? "a" : "the";
-                        __result = $"{ExileController.Instance.exiled.PlayerName} was ${article} {role.Name}.";
+                        __result = $"{ExileController.Instance.exiled.PlayerName} was {article} {role.Name}.";
                         return false;
                     }
                 }
 
                 return true;
             }
-        }
+        }*/
+        [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+        [HarmonyPostfix]
+        public static void ChangeExileTextPatch(ExileController __instance, [HarmonyArgument(0)] GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
+        {
+            if (tie || exiled == null)
+                return;
+            
+            var role = exiled.Object.GetRole();
+            if (role != null)
+            {
+                var article = role.Members.Count > 1 ? "a" : "the";
+                __instance.completeString = $"{ExileController.Instance.exiled.PlayerName} was {article} {role.Name}.";
+            }
+        } 
 
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
         public static class HudManagerUpdatePatch

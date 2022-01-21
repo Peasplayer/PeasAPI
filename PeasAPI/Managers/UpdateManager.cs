@@ -96,30 +96,29 @@ namespace PeasAPI.Managers
 
         private static GenericPopup PopUp(string option1, string option2, Action action)
         {
-            var discordPopup = DiscordManager.Instance.discordPopup;
-            discordPopup.transform.localScale = Vector3.one * 2f;
+            var popup = Object.Instantiate(DiscordManager.Instance.discordPopup, DiscordManager.Instance.discordPopup.transform.parent);
+            popup.transform.localScale = Vector3.one * 2f;
             
-            var transform = CreateButton("yesButton", option1, new Vector3(-0.85f, -0.75f));
-            var transform2 = CreateButton("noButton", option2, new Vector3(0.85f, -0.75f));
+            var transform = CreateButton(popup, "yesButton", option1, new Vector3(-0.85f, -0.75f));
+            var transform2 = CreateButton(popup, "noButton", option2, new Vector3(0.85f, -0.75f));
             
             var component = transform.GetComponent<PassiveButton>();
             component.OnClick.RemoveAllListeners();
             component.OnClick.AddListener(action);
             
-            return discordPopup;
+            return popup;
         }
 
-        private static Transform CreateButton(string name, string text, Vector3 offset)
+        private static Transform CreateButton(GenericPopup popup, string name, string text, Vector3 offset)
         {
-            var discordPopup = DestroyableSingleton<DiscordManager>.Instance.discordPopup;
-            var find = discordPopup.transform.FindChild(name);
+            var find = popup.transform.FindChild(name);
             if (find) return find;
             
-            var template = discordPopup.transform.FindChild("ExitGame");
+            var template = popup.transform.FindChild("ExitGame");
             template.GetComponentInChildren<TextTranslatorTMP>().Destroy();
             template.gameObject.SetActive(false);
             
-            var button = Object.Instantiate(template, discordPopup.transform).DontDestroy();
+            var button = Object.Instantiate(template, popup.transform).DontDestroy();
             var transform = button.transform;
             
             button.gameObject.name = name;

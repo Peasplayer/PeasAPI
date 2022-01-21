@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using HarmonyLib;
 using PeasAPI.CustomRpc;
 using PeasAPI.Options;
 using PeasAPI.Roles;
@@ -57,8 +58,7 @@ namespace PeasAPI
 
         public static string GetTranslation(this StringNames stringName)
         {
-            return DestroyableSingleton<TranslationController>.Instance.GetString(stringName,
-                new Il2CppReferenceArray<Object>(0));
+            return TranslationController.Instance.GetString(stringName);
         }
 
         #region Roles
@@ -268,6 +268,12 @@ namespace PeasAPI
                 if (customOption.Option == option)
                     return true;
             }
+            
+            foreach (var customOption in OptionManager.CustomRoleOptions)
+            {
+                if (customOption.Option == option)
+                    return true;
+            }
 
             return false;
         }
@@ -275,6 +281,12 @@ namespace PeasAPI
         public static CustomOption? GetCustom(this OptionBehaviour option)
         {
             foreach (var customOption in OptionManager.CustomOptions)
+            {
+                if (customOption.Option == option)
+                    return customOption;
+            }
+            
+            foreach (var customOption in OptionManager.CustomRoleOptions)
             {
                 if (customOption.Option == option)
                     return customOption;

@@ -69,7 +69,7 @@ namespace PeasAPI.Options
             }
         }
         
-        public void ValueChanged(bool newValue, bool oldValue)
+        internal void ValueChanged(bool newValue, bool oldValue)
         {
             var args = new CustomToggleOptionValueChangedArgs(this, oldValue, newValue);
             OnValueChanged?.Invoke(args);
@@ -133,6 +133,7 @@ namespace PeasAPI.Options
             }
             
             Value = _configEntry?.Value ?? defaultValue;
+            HudFormat = "{0}: {1}";
             
             OptionManager.CustomOptions.Add(this);
         }
