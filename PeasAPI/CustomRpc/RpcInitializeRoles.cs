@@ -5,6 +5,7 @@ using PeasAPI.CustomEndReason;
 using PeasAPI.GameModes;
 using PeasAPI.Roles;
 using Reactor;
+using Reactor.Extensions;
 using Reactor.Networking;
 
 namespace PeasAPI.CustomRpc
@@ -30,7 +31,7 @@ namespace PeasAPI.CustomRpc
                 {
                     var rolesForPlayers = new List<BaseRole>();
 
-                    var roles = Roles.RoleManager.Roles.Where(role => role.GetChance() == 100);
+                    var roles = Roles.RoleManager.Roles.Where(role => role.GetChance() == 100).ToList();
                     foreach (var role in roles)
                     {
                         for (int i = 0; i < role.GetCount(); i++)
@@ -39,21 +40,27 @@ namespace PeasAPI.CustomRpc
                         }
                     }
 
-                    roles = from role in Roles.RoleManager.Roles
+                    var roles2 = (from role in Roles.RoleManager.Roles
                         where role.GetCount() > 0 && role.GetChance() > 0 && role.GetChance() < 100
-                        select role;
-                    foreach (var role in roles)
+                        select role).ToList();
+                    foreach (var role in roles2)
                     {
                         for (int i = 0; i < role.GetCount(); i++)
                         {
                             rolesForPlayers.Add(role);
                         }
                     }
-
-                    foreach (var role in rolesForPlayers)
+                    
+                    for (int i = 0; i < roles2.Count;)
                     {
-                        AssignRole(role);
+                        var role = roles2.Random();
+                        rolesForPlayers.Add(role);
+                        var temp = roles2.ToList();
+                        temp.Remove(role);
+                        roles2 = temp;
                     }
+                    
+                    rolesForPlayers.Do(AssignRole);
                 }
             }
             else
