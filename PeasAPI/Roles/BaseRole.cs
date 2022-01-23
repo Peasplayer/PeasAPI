@@ -139,7 +139,7 @@ namespace PeasAPI.Roles
             Vector2 truePosition = from.GetTruePosition();
             foreach (var playerInfo in GameData.Instance.AllPlayers)
             {
-                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (playerInfo.Role.CanBeKilled || from.GetRole().CanKill(playerInfo.Object) || protecting) && !playerInfo.Object.inVent)
+                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (from.GetRole().CanKill(playerInfo.Object) || protecting) && !playerInfo.Object.inVent)
                 {
                     PlayerControl @object = playerInfo.Object;
                     if (@object && @object.Collider.enabled)

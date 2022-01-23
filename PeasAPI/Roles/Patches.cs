@@ -242,27 +242,34 @@ namespace PeasAPI.Roles
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
-        public static class PlayerControlCheckMurderPatch
+        [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]
+        [HarmonyPrefix]
+        public static bool RemoveCheckMurder(KillButton __instance)
         {
-            public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+            var target = __instance.currentTarget;
+            var killer = PlayerControl.LocalPlayer;
+            if (__instance.isActiveAndEnabled && target && !__instance.isCoolingDown && !killer.Data.IsDead && killer.CanMove)
             {
                 if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
-                    return false;
-                if (!target || __instance.Data == null || __instance.Data.IsDead || !__instance.Data.Role.IsImpostor && __instance.GetRole() == null || !__instance.Data.Role.IsImpostor && !__instance.GetRole().CanKill() || __instance.Data.Disconnected)
                 {
-                    int num = target ? target.PlayerId : -1;
-                    Debug.LogWarning(string.Format("Bad kill from {0} to {1}", __instance.PlayerId, num));
                     return false;
                 }
-                if (target.Data == null || target.Data.IsDead || target.inVent)
+                if (!target || killer.Data.IsDead || killer.Data.Disconnected)
+                {
+                    int num = target ? ((int)target.PlayerId) : -1;
+                    Debug.LogWarning(string.Format("Bad kill from {0} to {1}", killer.PlayerId, num));
+                    return false;
+                }
+                GameData.PlayerInfo data = target.Data;
+                if (data == null || data.IsDead || target.inVent)
                 {
                     Debug.LogWarning("Invalid target data for kill");
                     return false;
                 }
-                __instance.RpcMurderPlayer(target);
-                return false;
+                PlayerControl.LocalPlayer.RpcMurderPlayer(__instance.currentTarget);
+                __instance.SetTarget(null);
             }
+            return false;
         }
 
         [HarmonyPatch(typeof(KillButton), nameof(KillButton.SetTarget))]
