@@ -33,6 +33,8 @@ namespace PeasAPI.Managers
 
             CustomServer.Add(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
                 .Cast<IRegionInfo>());
+            ServerManager.Instance.AddOrUpdateRegion(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
+                .Cast<IRegionInfo>());
         }
         
         //Skidded from https://github.com/edqx/Edward.SkipAuth

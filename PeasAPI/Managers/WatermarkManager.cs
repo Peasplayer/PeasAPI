@@ -83,7 +83,7 @@ namespace PeasAPI.Managers
                                 Object.Destroy(gameObject);
                     }
                 }
-
+                
                 if (PeasAPI.ShamelessPlug)
                 {
                     __instance.transform.position += PeasApiWatermark.VersionTextOffset;
@@ -103,6 +103,9 @@ namespace PeasAPI.Managers
                                 Object.Destroy(gameObject);
                     }
                 }
+                
+                if (!UseReactorVersion)
+                    __instance.transform.position = new Vector3(-5.2333f, 2.85f, 0f) - new Vector3(0f, 0.2875f / 2 * (__instance.text.text.Split('\n').Length - 1));
             }
         }
         
