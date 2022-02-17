@@ -295,20 +295,6 @@ namespace PeasAPI.Roles
                 return false;
             }
         }
-        
-        [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]
-        public static class KillButtonManagerDoClickPatch
-        {
-            public static bool Prefix(KillButton __instance)
-            {
-                if (__instance.isActiveAndEnabled && __instance.currentTarget && !__instance.isCoolingDown && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.CanMove)
-                {
-                    PlayerControl.LocalPlayer.CmdCheckMurder(__instance.currentTarget);
-                    __instance.SetTarget(null);
-                }
-                return false;
-            }
-        }
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
         public static class PlayerControlSetKillTimerPatch
@@ -389,10 +375,13 @@ namespace PeasAPI.Roles
                 if (role.TaskText == null)
                     return;
 
-                var fakeTasks = new GameObject("FakeTasks").AddComponent<ImportantTextTask>();
-                fakeTasks.transform.SetParent(player.transform, false);
-                fakeTasks.Text = $"</color>{role.Color.GetTextColor()}Fake Tasks:</color>";
-                player.myTasks.Insert(0, fakeTasks);
+                if (!player.Data.Role.IsImpostor && !role.HasToDoTasks && role.AssignTasks)
+                {
+                    var fakeTasks = new GameObject("FakeTasks").AddComponent<ImportantTextTask>();
+                    fakeTasks.transform.SetParent(player.transform, false);
+                    fakeTasks.Text = $"</color>{role.Color.GetTextColor()}Fake Tasks:</color>";
+                    player.myTasks.Insert(0, fakeTasks);
+                }
                 
                 var roleTask = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
                 roleTask.transform.SetParent(player.transform, false);

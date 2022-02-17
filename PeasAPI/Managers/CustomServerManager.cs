@@ -78,8 +78,10 @@ namespace PeasAPI.Managers
 
             public static void Postfix(MainMenuManager __instance)
             {
-                if (!_initialized && ServerManager.Instance.CurrentRegion != CustomServer[0]) 
+                if (!_initialized && ServerManager.Instance.CurrentRegion.Name != CustomServer[0].Name)
+                {
                     ServerManager.Instance.SetRegion(CustomServer[0]);
+                }
                 _initialized = true;
             }
         }
