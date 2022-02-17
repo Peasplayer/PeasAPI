@@ -383,16 +383,21 @@ namespace PeasAPI.Roles
                 if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId)
                     return;
 
-                if (!role.HasToDoTasks)
+                if (!role.AssignTasks)
                     player.ClearTasks();
 
                 if (role.TaskText == null)
                     return;
 
-                var task = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
-                task.transform.SetParent(player.transform, false);
-                task.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText}</color>";
-                player.myTasks.Insert(0, task);
+                var fakeTasks = new GameObject("FakeTasks").AddComponent<ImportantTextTask>();
+                fakeTasks.transform.SetParent(player.transform, false);
+                fakeTasks.Text = $"</color>{role.Color.GetTextColor()}Fake Tasks:</color>";
+                player.myTasks.Insert(0, fakeTasks);
+                
+                var roleTask = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
+                roleTask.transform.SetParent(player.transform, false);
+                roleTask.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText}</color>";
+                player.myTasks.Insert(0, roleTask);
             }
         }
 
@@ -515,6 +520,46 @@ namespace PeasAPI.Roles
         private static bool PreKillPatch(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {
             return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.PreKill(__instance, target)) == 0;
+        }
+        
+        [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
+        [HarmonyPrefix]
+        private static bool DoTasksCountPatch(GameData __instance)
+        {
+
+            __instance.TotalTasks = 0;
+            __instance.CompletedTasks = 0;
+            foreach (var playerInfo in __instance.AllPlayers)
+            {
+                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (PlayerControl.GameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress && (playerInfo.GetRole() == null || playerInfo.GetRole().HasToDoTasks))
+                {
+                    foreach (var task in playerInfo.Tasks)
+                    {
+                        __instance.TotalTasks++;
+                        if (task.Complete)
+                        {
+                            __instance.CompletedTasks++;
+                        }
+                    }
+                }
+            }
+            /*for (int i = 0; i < __instance.AllPlayers.Count; i++)
+            {
+                GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
+                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (PlayerControl.GameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress)
+                {
+                    for (int j = 0; j < playerInfo.Tasks.Count; j++)
+                    {
+                        __instance.TotalTasks++;
+                        if (playerInfo.Tasks.ToArray()[j].Complete)
+                        {
+                            __instance.CompletedTasks++;
+                        }
+                    }
+                }
+            }*/
+
+            return false;
         }
     }
 }

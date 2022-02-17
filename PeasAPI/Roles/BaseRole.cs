@@ -53,6 +53,8 @@ namespace PeasAPI.Roles
         /// <summary>
         /// Whether the player should get tasks
         /// </summary>
+        public virtual bool AssignTasks { get; set; } = true;
+        
         public abstract bool HasToDoTasks { get; }
 
         /// <summary>

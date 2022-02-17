@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Hazel;
+using HarmonyLib;
 using PeasAPI.CustomRpc;
 using Reactor;
 using Reactor.Extensions;
@@ -54,8 +53,13 @@ namespace PeasAPI.Roles
                 _ => RoleTeamTypes.Crewmate
             };
             role.MaxCount = baseRole.MaxCount;
+            role.TasksCountTowardProgress = baseRole.HasToDoTasks;
+            role.CanVent = baseRole.CanVent;
+            role.CanUseKillButton = baseRole.CanKill();
             
             PlayerControl.GameOptions.RoleOptions.SetRoleRate(role.Role, 0, 0);
+
+            global::RoleManager.Instance.AllRoles.AddItem(role);
             
             return role;
         }
