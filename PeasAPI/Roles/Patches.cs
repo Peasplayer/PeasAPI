@@ -250,13 +250,13 @@ namespace PeasAPI.Roles
             var killer = PlayerControl.LocalPlayer;
             if (__instance.isActiveAndEnabled && target && !__instance.isCoolingDown && !killer.Data.IsDead && killer.CanMove)
             {
-                if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+                if (AmongUsClient.Instance.IsGameOver)
                 {
                     return false;
                 }
                 if (!target || killer.Data.IsDead || killer.Data.Disconnected)
                 {
-                    int num = target ? ((int)target.PlayerId) : -1;
+                    int num = target ? target.PlayerId : -1;
                     Debug.LogWarning(string.Format("Bad kill from {0} to {1}", killer.PlayerId, num));
                     return false;
                 }
