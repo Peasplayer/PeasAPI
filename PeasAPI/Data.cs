@@ -58,7 +58,7 @@ namespace PeasAPI
                 FloorImage = floorImage;
             }
             
-            public HatBehaviour CreateHat()
+            public HatData CreateHat()
             {
                 try
                 {
@@ -67,8 +67,8 @@ namespace PeasAPI
                     byte[] data = myStream.ReadFully();
                     ImageConversion.LoadImage(tex, data, false);
 
-                    var newHat = ScriptableObject.CreateInstance<HatBehaviour>();
-                    newHat.MainImage = newHat.LeftMainImage = Sprite.Create(
+                    var newHat = ScriptableObject.CreateInstance<HatData>();
+                    newHat.hatViewData.viewData.MainImage = newHat.hatViewData.viewData.LeftMainImage = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
                         new Vector2(0.53f, 0.575f),
@@ -76,7 +76,7 @@ namespace PeasAPI
                     );
                     
                     newHat.ProductId = $"+{Name}";
-                    newHat.Order += 100;
+                    newHat.displayOrder += 100;
                     newHat.Free = true;
                     newHat.StoreName = Name;
                     newHat.name = Name;
@@ -84,9 +84,9 @@ namespace PeasAPI
                     newHat.InFront = InFront;
                     newHat.NoBounce = NoBounce;
                     newHat.ChipOffset = ChipOffset;
-                    newHat.BackImage = newHat.LeftBackImage = BackImage;
-                    newHat.ClimbImage = newHat.LeftClimbImage = BackImage;
-                    newHat.FloorImage = newHat.LeftFloorImage = FloorImage;
+                    newHat.hatViewData.viewData.BackImage = newHat.hatViewData.viewData.LeftBackImage = BackImage;
+                    newHat.hatViewData.viewData.ClimbImage = newHat.hatViewData.viewData.LeftClimbImage = BackImage;
+                    newHat.hatViewData.viewData.FloorImage = newHat.hatViewData.viewData.LeftFloorImage = FloorImage;
                     
                     return newHat;
                 }
@@ -128,7 +128,7 @@ namespace PeasAPI
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newVisor = ScriptableObject.CreateInstance<VisorData>();
-                    newVisor.IdleFrame = newVisor.LeftIdleFrame = Sprite.Create(
+                    newVisor.viewData.viewData.IdleFrame = newVisor.viewData.viewData.LeftIdleFrame = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
                         new Vector2(0.53f, 0.575f),
@@ -136,13 +136,13 @@ namespace PeasAPI
                     );
                     
                     newVisor.ProductId = $"+{Name}";
-                    newVisor.Order += 100;
+                    newVisor.displayOrder += 100;
                     newVisor.Free = true;
                     newVisor.name = Name;
                     
                     newVisor.ChipOffset = ChipOffset;
-                    newVisor.ClimbFrame = ClimbImage;
-                    newVisor.FloorFrame = FloorImage;
+                    newVisor.viewData.viewData.ClimbFrame = ClimbImage;
+                    newVisor.viewData.viewData.FloorFrame = FloorImage;
                     
                     return newVisor;
                 }

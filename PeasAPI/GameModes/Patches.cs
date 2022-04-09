@@ -183,10 +183,10 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__102), nameof(PlayerControl._CoSetTasks_d__102.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._ClientInitialize_d__97), nameof(PlayerControl._ClientInitialize_d__97.MoveNext))]
         public static class PlayerControlSetTasks
         {
-            public static void Postfix(PlayerControl._CoSetTasks_d__102 __instance)
+            public static void Postfix(PlayerControl._ClientInitialize_d__97 __instance)
             {
                 if (__instance == null)
                     return;
@@ -212,7 +212,7 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowTeam))]
         [HarmonyPostfix]
         public static void RoleTextPatch(IntroCutscene __instance)
         {

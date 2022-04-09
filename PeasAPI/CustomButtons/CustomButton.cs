@@ -146,13 +146,13 @@ namespace PeasAPI.CustomButtons
 
                 if (PlayerTarget != target && PlayerTarget != null)
                 {
-                    PlayerTarget.myRend.material.SetFloat("_Outline", 0f);
+                    PlayerTarget.MyRend.material.SetFloat("_Outline", 0f);
                 }
 
                 if (target != null)
                 {
-                    target.myRend.material.SetFloat("_Outline", 1f);
-                    target.myRend.material.SetColor("_OutlineColor", TargetColor ?? Palette.CrewmateBlue);
+                    target.MyRend.material.SetFloat("_Outline", 1f);
+                    target.MyRend.material.SetColor("_OutlineColor", TargetColor ?? Palette.CrewmateBlue);
                 }
 
                 PlayerTarget = target;

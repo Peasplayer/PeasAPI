@@ -82,17 +82,17 @@ namespace PeasAPI.CustomEndReason
                     transform.localScale = scaleVec;
                     if (winner.IsDead)
                     {
-                        player.Body.sprite = __instance.GhostSprite;
+                        player.BodySprites[0].BodySprite.sprite = __instance.GhostSprite;
                         player.SetDeadFlipX(i % 2 == 1);
                         player.HatSlot.color = GhostColor;
                     }
                     else
                     {
                         player.SetFlipX(i % 2 == 0);
-                        DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, winner.SkinId);
+                        player.SetSkin(winner.SkinId, winner.ColorId);
                     }
 
-                    PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.Body);
+                    PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.CurrentBodySprite.BodySprite);
                     player.HatSlot.SetHat(winner.HatId, winner.ColorId);
                     PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.PetSlot);
                     player.NameText.text = winner.PlayerName;
