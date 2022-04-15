@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using BepInEx;
 using HarmonyLib;
+using Reactor;
 using UnhollowerRuntimeLib;
 using UnityEngine;
 
@@ -49,7 +51,7 @@ namespace PeasAPI.Managers
         /// </summary>
         public static bool UseReactorVersion { get; set; } = false;
 
-        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasAPI.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor-Framework", 
+        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasAPI.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor v{ReactorPlugin.Version}\nBepInEx v{Paths.BepInExVersion}", 
             "\n<color=#ff0000ff>PeasAPI", new Vector2(), new Vector2());
 
         public static void AddWatermark(string versionText, string pingText,

@@ -40,6 +40,21 @@ namespace PeasAPI
             return new Color(original.r, original.g, original.b, alpha);
         }
 
+        public static Vector3 SetX(this Vector3 original, float x)
+        {
+            return new Vector3(x, original.y, original.z);
+        }
+        
+        public static Vector3 SetY(this Vector3 original, float y)
+        {
+            return new Vector3(original.x, y, original.z);
+        }
+        
+        public static Vector3 SetZ(this Vector3 original, float z)
+        {
+            return new Vector3(original.x, original.y, z);
+        }
+        
         /// <summary>
         /// Gets the text color from a <see cref="Color"/>
         /// </summary>

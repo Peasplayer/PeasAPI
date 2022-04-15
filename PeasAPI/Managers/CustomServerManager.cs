@@ -33,7 +33,7 @@ namespace PeasAPI.Managers
 
             CustomServer.Add(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
                 .Cast<IRegionInfo>());
-            ServerManager.Instance.AddOrUpdateRegion(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
+            ServerManager.Instance.AddOrUpdateRegion(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port, false)
                 .Cast<IRegionInfo>());
         }
         
@@ -78,7 +78,7 @@ namespace PeasAPI.Managers
 
             public static void Postfix(MainMenuManager __instance)
             {
-                if (!_initialized && ServerManager.Instance.CurrentRegion.Name != CustomServer[0].Name)
+                if (!_initialized && CustomServer.Count != 0 && ServerManager.Instance.CurrentRegion.Name != CustomServer[0].Name)
                 {
                     ServerManager.Instance.SetRegion(CustomServer[0]);
                 }

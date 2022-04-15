@@ -56,16 +56,6 @@ namespace PeasAPI
         /// </summary>
         public static bool ShamelessPlug = true;
 
-        /// <summary>
-        /// How much the account tab should be lowered
-        /// </summary>
-        public static Vector3 AccountTabOffset { get; set; } = new(0f, 0f, 0f);
-
-        /// <summary>
-        /// Whether the function of the account tab should be replaced with just the ability to change your name or not
-        /// </summary>
-        public static bool AccountTabOnlyChangesName { get; set; } = false;
-
         public static CustomToggleOption ShowRolesOfDead;
 
         public override void Load()

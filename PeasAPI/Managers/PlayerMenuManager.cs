@@ -105,6 +105,7 @@ namespace PeasAPI.Managers
 
         private static void CloseMenu()
         {
+            MeetingHud.Instance = null;
             HudManager.Instance.Chat.SetPosition(null);
             HudManager.Instance.Chat.SetVisible(PlayerControl.LocalPlayer.Data.IsDead);
             HudManager.Instance.Chat.BanButton.Hide();
@@ -157,10 +158,6 @@ namespace PeasAPI.Managers
                     __instance.SkipVoteButton.SetTargetPlayerId(253);
                     __instance.SkipVoteButton.Parent = __instance;
                     Camera.main.GetComponent<FollowerCamera>().Locked = true;
-                    if (PlayerControl.LocalPlayer.Data.IsDead)
-                    {
-                        __instance.SetForegroundForDead();
-                    }
                     if (!AmongUsClient.Instance.DisconnectHandlers.Contains(__instance.Cast<IDisconnectHandler>()))
                         AmongUsClient.Instance.DisconnectHandlers.Add(__instance.Cast<IDisconnectHandler>());
                     foreach (PlayerVoteArea playerVoteArea in __instance.playerStates)
@@ -172,6 +169,42 @@ namespace PeasAPI.Managers
                 }
 
                 return true;
+            }
+            
+            [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.SetForegroundForDead))]
+            [HarmonyPrefix]
+            public static bool DisableDeadOverlayPatch(MeetingHud __instance)
+            {
+                if (IsMenuOpen)
+                    return false;
+
+                return true;
+            }
+            
+            [HarmonyPatch(typeof(DummyBehaviour), nameof(DummyBehaviour.Update))]
+            [HarmonyPrefix]
+            public static bool DummyDontVotePatch(DummyBehaviour __instance)
+            {
+                GameData.PlayerInfo data = __instance.myPlayer.Data;
+                if (data == null || data.IsDead)
+                {
+                    return false;
+                }
+                if (MeetingHud.Instance && !IsMenuOpen)
+                {
+                    Logger<PeasAPI>.Info("IsMenuOpen: " + IsMenuOpen);
+                    if (!__instance.voted)
+                    {
+                        __instance.voted = true;
+                        __instance.StartCoroutine(__instance.DoVote());
+                        return false;
+                    }
+                }
+                else
+                {
+                    __instance.voted = false;
+                }
+                return false;
             }
             
             [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]

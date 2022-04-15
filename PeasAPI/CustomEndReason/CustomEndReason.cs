@@ -133,8 +133,6 @@ namespace PeasAPI.CustomEndReason
                 EndReasonManager.DefeatText = $"{role.Name} wins";
                 EndReasonManager.Stinger = stinger;
             }
-
-            ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
         }
     }
 }
