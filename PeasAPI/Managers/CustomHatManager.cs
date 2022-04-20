@@ -47,13 +47,13 @@ namespace PeasAPI.Managers
             modded = true;
 
             foreach (var hat in CustomHatManager.CustomHats)
-                __instance.AllHats.Add(hat.CreateHat());
+                __instance.allHats.Add(hat.CreateHat());
             foreach (var visor in CustomHatManager.CustomVisors)
-                __instance.AllVisors.Add(visor.CreateVisor());
+                __instance.allVisors.Add(visor.CreateVisor());
             
-            __instance.AllHats.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
+            __instance.allHats.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
             
-            __instance.AllVisors.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
+            __instance.allVisors.ToArray().ToList().Sort((h1, h2) => String.Compare(h2.ProductId, h1.ProductId, StringComparison.Ordinal));
         }
     }
 }
