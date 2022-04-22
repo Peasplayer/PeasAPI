@@ -31,7 +31,7 @@ namespace PeasAPI.Managers
                 }
             }
 
-            CustomServer.Add(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
+            CustomServer.Add(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port, false)
                 .Cast<IRegionInfo>());
             ServerManager.Instance.AddOrUpdateRegion(new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port, false)
                 .Cast<IRegionInfo>());
