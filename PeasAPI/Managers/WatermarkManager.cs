@@ -46,11 +46,6 @@ namespace PeasAPI.Managers
         public static readonly Vector2 defaultVersionTextOffset = new (0f, -0.2f);
         public static readonly Vector2 defaultPingTextOffset = new Vector2(0f, 0f);
 
-        /// <summary>
-        /// Whether the reactor version text should be destroyed or not
-        /// </summary>
-        public static bool UseReactorVersion { get; set; } = false;
-
         public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasAPI.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor v{ReactorPlugin.Version}\nBepInEx v{Paths.BepInExVersion}", 
             "\n<color=#ff0000ff>PeasAPI", new Vector2(), new Vector2());
 
@@ -69,45 +64,28 @@ namespace PeasAPI.Managers
                 foreach (var watermark in Watermarks)
                 {
                     __instance.transform.position += watermark.VersionTextOffset;
-
-                    if (UseReactorVersion)
-                    {
-                        if (watermark.VersionText != null)
-                            Reactor.Patches.ReactorVersionShower.TextUpdated += text => text.text = watermark.VersionText;
-                    }
-                    else
-                    {
-                        if (watermark.VersionText != null)
-                            __instance.text.text += watermark.VersionText;
                     
-                        foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
-                            if (gameObject.name.Contains("ReactorVersion"))
-                                Object.Destroy(gameObject);
-                    }
+                    if (watermark.VersionText != null)
+                        __instance.text.text += watermark.VersionText;
+                    
+                    foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
+                        if (gameObject.name.Contains("ReactorVersion"))
+                            Object.Destroy(gameObject);
                 }
                 
                 if (PeasAPI.ShamelessPlug)
                 {
                     __instance.transform.position += PeasApiWatermark.VersionTextOffset;
 
-                    if (UseReactorVersion)
-                    {
-                        if (PeasApiWatermark.VersionText != null)
-                            Reactor.Patches.ReactorVersionShower.TextUpdated += text => text.text = PeasApiWatermark.VersionText;
-                    }
-                    else
-                    {
-                        if (PeasApiWatermark.VersionText != null)
-                            __instance.text.text += PeasApiWatermark.VersionText;
+                    if (PeasApiWatermark.VersionText != null)
+                        __instance.text.text += PeasApiWatermark.VersionText;
                     
-                        foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
-                            if (gameObject.name.Contains("ReactorVersion"))
-                                Object.Destroy(gameObject);
-                    }
+                    foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
+                        if (gameObject.name.Contains("ReactorVersion"))
+                            Object.Destroy(gameObject);
                 }
                 
-                if (!UseReactorVersion)
-                    __instance.transform.position = new Vector3(-5.2333f, 2.85f, 0f) - new Vector3(0f, 0.2875f / 2 * (__instance.text.text.Split('\n').Length - 1));
+                __instance.transform.position = new Vector3(-5.2333f, 2.85f, 0f) - new Vector3(0f, 0.2875f / 2 * (__instance.text.text.Split('\n').Length - 1));
             }
         }
         

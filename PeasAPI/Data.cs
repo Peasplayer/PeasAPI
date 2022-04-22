@@ -68,6 +68,7 @@ namespace PeasAPI
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newHat = ScriptableObject.CreateInstance<HatData>();
+                    newHat.hatViewData.viewData = ScriptableObject.CreateInstance<HatViewData>();
                     newHat.hatViewData.viewData.MainImage = newHat.hatViewData.viewData.LeftMainImage = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
@@ -92,7 +93,7 @@ namespace PeasAPI
                 }
                 catch (Exception e)
                 {
-                    PeasAPI.Logger.LogError($"Error while creating a hat: {e.StackTrace}");
+                    PeasAPI.Logger.LogError($"Error while creating a hat: {e}");
                 }
 
                 return null;
@@ -128,6 +129,7 @@ namespace PeasAPI
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newVisor = ScriptableObject.CreateInstance<VisorData>();
+                    newVisor.viewData.viewData = ScriptableObject.CreateInstance<VisorViewData>();
                     newVisor.viewData.viewData.IdleFrame = newVisor.viewData.viewData.LeftIdleFrame = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),

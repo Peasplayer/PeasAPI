@@ -82,7 +82,7 @@ namespace PeasAPI.CustomEndReason
                     transform.localScale = scaleVec;
                     if (winner.IsDead)
                     {
-                        player.BodySprites[0].BodySprite.sprite = __instance.GhostSprite;
+                        player.BodySprites.ToArray()[0].BodySprite.sprite = __instance.GhostSprite;
                         player.SetDeadFlipX(i % 2 == 1);
                         player.HatSlot.color = GhostColor;
                     }
