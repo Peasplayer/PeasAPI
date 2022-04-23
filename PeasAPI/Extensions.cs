@@ -35,6 +35,18 @@ namespace PeasAPI
             return player.PlayerId == PlayerControl.LocalPlayer.PlayerId;
         }
 
+        public static void ToggleOutline(this PlayerControl player, bool active, Color color = default)
+        {
+            if (active)
+            {
+                player.MyRend.material.SetFloat("_Outline", 1f);
+                player.MyRend.material.SetColor("_OutlineColor", color);
+                return;
+            }
+            
+            player.MyRend.material.SetFloat("_Outline", 0f);
+        }
+        
         public static Color SetAlpha(this Color original, float alpha)
         {
             return new Color(original.r, original.g, original.b, alpha);
