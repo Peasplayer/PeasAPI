@@ -4,6 +4,7 @@ using HarmonyLib;
 using PeasAPI.Roles;
 using Reactor;
 using Reactor.Extensions;
+using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -129,9 +130,9 @@ namespace PeasAPI.Options
                     new Vector3(-1.25f, 0.06f - AdvancedOptions.ToList().IndexOf(advancedOption) * 0.56f, 0f);
             }
             
-            var roleName = tab.transform.FindChild("Role Name").GetComponent<TextTranslatorTMP>();
-            roleName.TargetText = CustomStringName.Register(Role.Name);
-            roleName.ResetText();
+            var roleName = tab.transform.FindChild("Role Name");
+            roleName.GetComponent<TextTranslatorTMP>().Destroy();
+            roleName.GetComponent<TextMeshPro>().text = Role.Name;
             
             var advancedOptions = new AdvancedRoleSettingsButton
             {
