@@ -41,7 +41,7 @@ namespace PeasAPI.Managers
             _textOverlay.gameObject.SetActive(true);
 
             yield return new ManagedIl2CppEnumerator(Effects.Slide2D(_textOverlay, new Vector2(0f, -8f), Vector2.zero, 0.25f));
-            for (float time = 0f; time < 0.75f; time += Time.deltaTime)
+            for (float time = 0f; time < duration; time += Time.deltaTime)
             {
                 yield return null;
             }

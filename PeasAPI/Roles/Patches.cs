@@ -59,14 +59,14 @@ namespace PeasAPI.Roles
             return false;
         }
 
-        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowTeam))]
+        [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__24), nameof(IntroCutscene._ShowRole_d__24.MoveNext))]
         [HarmonyPostfix]
-        public static void RoleTextPatch(IntroCutscene __instance)
+        public static void RoleTextPatch(IntroCutscene._ShowRole_d__24 __instance)
         {
             if (PlayerControl.LocalPlayer.GetRole() != null)
             {
                 var role = PlayerControl.LocalPlayer.GetRole();
-                var scene = __instance;
+                var scene = __instance.__4__this;
 
                 scene.RoleText.text = role.Name;
                 scene.RoleBlurbText.text = role.Description;
@@ -352,10 +352,10 @@ namespace PeasAPI.Roles
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControl._ClientInitialize_d__97), nameof(PlayerControl._ClientInitialize_d__97.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__112), nameof(PlayerControl._CoSetTasks_d__112.MoveNext))]
         public static class PlayerControlSetTasks
         {
-            public static void Postfix(PlayerControl._ClientInitialize_d__97 __instance)
+            public static void Postfix(PlayerControl._CoSetTasks_d__112 __instance)
             {
                 if (__instance == null)
                     return;
