@@ -4,7 +4,7 @@ Reactivited for __**2023.6.13__**
 
 ## Note : I don't know if work or not just try creating role 
 
-if there  any issue make sure [report](https://github.com/AmongUsDev/PeasAPI-R/issue);
+if there  any issue make sure [report](https://github.com/AmongUsDev/PeasAPI-R/issues);
 
 if you wante change something please open an [pull-request](https://github.com/AmongUsDev/PeasAPI-R/pulls)
 
