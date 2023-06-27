@@ -1,5 +1,5 @@
-﻿using Reactor;
-using Reactor.Extensions;
+﻿using Reactor.Localization.Utilities;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace PeasAPI.Options
@@ -17,7 +17,7 @@ namespace PeasAPI.Options
                 Object.Instantiate(toggleOptionPrefab, toggleOptionPrefab.transform.parent);
                     
             header.TitleText.text = Title;
-            header.Title = CustomStringName.Register(Title);
+            header.Title = CustomStringName.CreateAndRegister(Title);
                     
             var checkBox = header.transform.FindChild("CheckBox")?.gameObject;
             if (checkBox) checkBox.Destroy();

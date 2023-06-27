@@ -1,18 +1,16 @@
 ﻿using System.Linq;
-using HarmonyLib;
 using PeasAPI.CustomRpc;
 using PeasAPI.Options;
 using PeasAPI.Roles;
-using Reactor.Extensions;
-using Reactor.Networking;
-using Reactor.Networking.MethodRpc;
-using UnhollowerBaseLib;
+using Reactor.Utilities.Extensions;
+using Reactor.Networking.Extensions;
+using Reactor.Networking.Rpc;
 using UnityEngine;
-using Object = Il2CppSystem.Object;
+using AmongUs.GameOptions;
 
 namespace PeasAPI
 {
-    public static class Extensions
+    public static class Extension
     {
         /// <summary>
         /// Gets a <see cref="PlayerControl"/> from it's id
@@ -39,12 +37,12 @@ namespace PeasAPI
         {
             if (active)
             {
-                player.MyRend.material.SetFloat("_Outline", 1f);
-                player.MyRend.material.SetColor("_OutlineColor", color);
+                player.myRend().material.SetFloat("_Outline", 1f);
+                player.myRend().material.SetColor("_OutlineColor", color);
                 return;
             }
             
-            player.MyRend.material.SetFloat("_Outline", 0f);
+            player.myRend().material.SetFloat("_Outline", 0f);
         }
         
         public static Color SetAlpha(this Color original, float alpha)
@@ -160,8 +158,8 @@ namespace PeasAPI
                 HudManager.Instance.KillButton.gameObject.SetActive(isImpostor && !isDead);
                 HudManager.Instance.ImpostorVentButton.gameObject.SetActive(isImpostor && !isDead);
                 
-                player.nameText.color = isImpostor ? Palette.ImpostorRed : Color.white;
-                player.nameText.text = player.name;
+                player.nameText().color = isImpostor ? Palette.ImpostorRed : Color.white;
+                player.nameText().text = player.name;
             }
         }
         
@@ -177,7 +175,7 @@ namespace PeasAPI
             HudManager.Instance.MapButton.gameObject.SetActive(true);
             HudManager.Instance.ReportButton.gameObject.SetActive(true);
             HudManager.Instance.UseButton.gameObject.SetActive(true);
-            PlayerControl.LocalPlayer.RemainingEmergencies = PlayerControl.GameOptions.NumEmergencyMeetings;
+            PlayerControl.LocalPlayer.RemainingEmergencies = GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings;
             RoleManager.Instance.SetRole(player, role);
             player.Data.Role.SpawnTaskHeader(player);
             if (!DestroyableSingleton<TutorialManager>.InstanceExists)
@@ -188,11 +186,11 @@ namespace PeasAPI
                     {
                         if (pc.Data.Role.TeamType == PlayerControl.LocalPlayer.Data.Role.TeamType)
                         {
-                            pc.nameText.color = pc.Data.Role.NameColor;
+                            pc.nameText().color = pc.Data.Role.NameColor;
                         }
                         else
                         {
-                            pc.nameText.color = Palette.White;
+                            pc.nameText().color = Palette.White;
                         }
                     });
                 }
@@ -348,6 +346,12 @@ namespace PeasAPI
             transform.position = vector;
             return vector;
         }
+
+        public static TMPro.TextMeshPro nameText(this PlayerControl p) => p.cosmetics.nameText;
+
+        public static TMPro.TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
+
+        public static UnityEngine.SpriteRenderer myRend(this PlayerControl p) => p.cosmetics.currentBodySprite.BodySprite;
         #endregion
     }
 }

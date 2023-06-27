@@ -1,5 +1,5 @@
 ﻿using System;
-using Reactor;
+using Reactor.Localization.Utilities;
 using Object = UnityEngine.Object;
 
 namespace PeasAPI.Options
@@ -72,7 +72,7 @@ namespace PeasAPI.Options
                 Option = toggleOption;
 
                 toggleOption.TitleText.text = Title;
-                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.Title = CustomStringName.CreateAndRegister(Title);
                 toggleOption.CheckMark.enabled = false;
                 toggleOption.transform.FindChild("CheckBox").gameObject.SetActive(false);
 
@@ -91,7 +91,7 @@ namespace PeasAPI.Options
                 Option = toggleOption;
 
                 toggleOption.TitleText.text = Title;
-                toggleOption.Title = CustomStringName.Register(Title);
+                toggleOption.Title = CustomStringName.CreateAndRegister(Title);
                 toggleOption.Value = 0;
                 toggleOption.transform.FindChild("Value_TMP").gameObject.SetActive(false);
 

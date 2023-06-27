@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using PeasAPI.GameModes;
 using Reactor;
@@ -38,10 +38,7 @@ namespace PeasAPI.Components
 
         public static void Load()
         {
-            ChainloaderHooks.PluginLoad += plugin =>
-            {
-                Register(plugin.GetType().Assembly, plugin);
-            };
+           IL2CPPChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
         }
     }
 }

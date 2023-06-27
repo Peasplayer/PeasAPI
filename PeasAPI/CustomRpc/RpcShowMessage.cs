@@ -2,8 +2,8 @@
 using HarmonyLib;
 using Hazel;
 using PeasAPI.Managers;
-using Reactor;
-using Reactor.Networking;
+using Reactor.Networking.Rpc;
+using Reactor.Networking.Attributes;
 
 namespace PeasAPI.CustomRpc
 {

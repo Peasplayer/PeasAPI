@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using Newtonsoft.Json.Utilities;
-using Reactor;
+using System.Text.Json;
+using Reactor.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -112,7 +112,7 @@ namespace PeasAPI.Managers
             Instance.DespawnOnDestroy = false;
             ConsoleJoystick.SetMode_Task();
             Camera.main.GetComponent<FollowerCamera>().Locked = false;
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+          // DestroyableSingleton<HudManager>.Instance.SetHudActive(false);
             ControllerManager.Instance.ResetAll();
             Object.Destroy(Instance.gameObject);
             IsMenuOpen = false;
@@ -121,7 +121,7 @@ namespace PeasAPI.Managers
         [HarmonyPatch]
         internal static class Patches
         {
-            [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+            [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
             [HarmonyPrefix]
             public static void OnMeetingStartPatch(PlayerControl __instance)
             {
@@ -139,7 +139,7 @@ namespace PeasAPI.Managers
                 {
                     HudManager.Instance.Chat.SetPosition(null);
                     HudManager.Instance.Chat.SetVisible(false);
-                    __instance.discussionTimer = 20;
+                    __instance.discussionTimer = 21;
                 }
             }
             

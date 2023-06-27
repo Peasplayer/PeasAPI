@@ -4,9 +4,9 @@ using HarmonyLib;
 using PeasAPI.CustomEndReason;
 using PeasAPI.GameModes;
 using PeasAPI.Roles;
-using Reactor;
-using Reactor.Extensions;
-using Reactor.Networking;
+using Reactor.Networking.Rpc;
+using Reactor.Networking.Attributes;
+using Reactor.Utilities.Extensions;
 
 namespace PeasAPI.CustomRpc
 {
@@ -27,7 +27,7 @@ namespace PeasAPI.CustomRpc
 
                 EndReasonManager.Reset();
 
-                if (AmongUsClient.Instance.GameMode != global::GameModes.FreePlay)
+                if (AmongUsClient.Instance.NetworkMode != global::NetworkModes.FreePlay)
                 {
                     var rolesForPlayers = new List<BaseRole>();
 

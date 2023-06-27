@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
+using PeasAPI.Extensions;
 
 namespace PeasAPI
 {
@@ -34,6 +35,9 @@ namespace PeasAPI
                 RoleColor = roleColor.GetValueOrDefault();
             }
         }
+
+        
+        /*
         
         public readonly struct Hat
         {
@@ -58,7 +62,8 @@ namespace PeasAPI
                 FloorImage = floorImage;
             }
             
-            public HatData CreateHat()
+           // very hard so  maybe waiting TOU to update and get the code
+            public HatData CreateHat(HatParent __instance)
             {
                 try
                 {
@@ -68,8 +73,9 @@ namespace PeasAPI
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newHat = ScriptableObject.CreateInstance<HatData>();
-                    newHat.hatViewData.viewData = ScriptableObject.CreateInstance<HatViewData>();
-                    newHat.hatViewData.viewData.MainImage = newHat.hatViewData.viewData.LeftMainImage = Sprite.Create(
+                    var b = __instance.GetViewData();
+                    b.GetViewData() = ScriptableObject.CreateInstance<HatViewData>();
+                    newHat.CreateAddressableAsset().GetAsset().MainImage = newHat.CreateAddressableAsset().GetAsset().LeftMainImage = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
                         new Vector2(0.53f, 0.575f),
@@ -96,6 +102,7 @@ namespace PeasAPI
                     PeasAPI.Logger.LogError($"Error while creating a hat: {e}");
                 }
 
+
                 return null;
             }
         }
@@ -118,6 +125,7 @@ namespace PeasAPI
                 ClimbImage = climbImage;
                 FloorImage = floorImage;
             }
+
             
             public VisorData CreateVisor()
             {
@@ -129,7 +137,7 @@ namespace PeasAPI
                     ImageConversion.LoadImage(tex, data, false);
 
                     var newVisor = ScriptableObject.CreateInstance<VisorData>();
-                    newVisor.viewData.viewData = ScriptableObject.CreateInstance<VisorViewData>();
+                    newVisor.CreateAddressableAsset().GetAsset(). = ScriptableObject.CreateInstance<VisorViewData>();
                     newVisor.viewData.viewData.IdleFrame = newVisor.viewData.viewData.LeftIdleFrame = Sprite.Create(
                         tex,
                         new Rect(0, 0, tex.width, tex.height),
@@ -156,5 +164,6 @@ namespace PeasAPI
                 return null;
             }
         }
+        */
     }
 }

@@ -5,6 +5,7 @@ using HarmonyLib;
 using UnityEngine;
 using Action = System.Action;
 using Object = UnityEngine.Object;
+using AmongUs.GameOptions;
 
 namespace PeasAPI.CustomButtons
 {
@@ -319,7 +320,7 @@ namespace PeasAPI.CustomButtons
         {
             var from = PlayerControl.LocalPlayer;
             PlayerControl result = null;
-            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            float num = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
             if (!ShipStatus.Instance)
             {
                 return null;
@@ -355,8 +356,8 @@ namespace PeasAPI.CustomButtons
             var from = PlayerControl.LocalPlayer;
             GameObject result1 = null;
             GameObject result2 = null;
-            float num1 = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
-            float num2 = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            float num1 = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+            float num2 = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
             if (!ShipStatus.Instance)
             {
                 return null;
@@ -430,15 +431,6 @@ namespace PeasAPI.CustomButtons
             }
         }
         
-        [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-        internal static class HudManagerSetHudActivePatch
-        {
-            public static void Prefix(HudManager __instance, [HarmonyArgument(0)] bool isActive)
-            {
-                HudActive = isActive;
-            }
-        }
-
         public enum TargetType
         {
             None,

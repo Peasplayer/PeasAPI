@@ -2,7 +2,7 @@
 using Hazel;
 using PeasAPI.CustomRpc;
 using PeasAPI.Roles;
-using Reactor.Networking;
+using Reactor.Networking.Rpc;
 using UnityEngine;
 
 namespace PeasAPI.CustomEndReason
@@ -12,7 +12,7 @@ namespace PeasAPI.CustomEndReason
         /// <summary>
         /// Ends the game with the specified values
         /// </summary>
-        public CustomEndReason(Color color, string victoryText, string defeatText, string stinger, List<GameData.PlayerInfo> winners)
+        internal CustomEndReason(Color color, string victoryText, string defeatText, string stinger, List<GameData.PlayerInfo> winners)
         {
             Rpc<RpcCustomEndReason>.Instance.Send(new RpcCustomEndReason.Data(color, victoryText, defeatText, stinger, winners));
         }

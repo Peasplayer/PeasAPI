@@ -2,8 +2,8 @@
 using System.Linq;
 using Hazel;
 using PeasAPI.CustomEndReason;
-using Reactor;
-using Reactor.Networking;
+using Reactor.Networking.Rpc;
+using Reactor.Networking.Attributes;
 using UnityEngine;
 
 namespace PeasAPI.CustomRpc
@@ -88,7 +88,7 @@ namespace PeasAPI.CustomRpc
             EndReasonManager.Stinger = data.Stinger;
             
             if (AmongUsClient.Instance.AmHost)
-                ShipStatus.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
+                GameManager.Instance.RpcEndGame(EndReasonManager.CustomGameOverReason, false);
         }
     }
 }
