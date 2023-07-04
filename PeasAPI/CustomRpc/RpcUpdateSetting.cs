@@ -1,7 +1,7 @@
 ﻿using Hazel;
 using PeasAPI.Options;
-using Reactor;
-using Reactor.Networking;
+using Reactor.Networking.Rpc;
+using Reactor.Networking.Attributes;
 
 namespace PeasAPI.CustomRpc
 {

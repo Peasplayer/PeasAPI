@@ -2,16 +2,18 @@
 using System.Linq;
 using HarmonyLib;
 using PeasAPI.Roles;
-using Reactor;
-using Reactor.Extensions;
+using Reactor.Localization.Utilities;
+using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using AmongUs.GameOptions;
 
 namespace PeasAPI.Options
 {
     public class CustomRoleOption : CustomOption
     {
+        public static RoleOptionsData optionsData;
         public BaseRole Role;
         
         public int Count;
@@ -72,12 +74,12 @@ namespace PeasAPI.Options
             var newSetting = Object.Instantiate(roleOptionPrefab, roleOptionPrefab.transform.parent);
             newSetting.name = Role.Name;
             newSetting.Role = Role.RoleBehaviour;
-            newSetting.SetRole(PlayerControl.GameOptions.RoleOptions);
+            newSetting.SetRole(GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions);
             
-            if (!PlayerControl.GameOptions.RoleOptions.roleRates.ContainsKey(Role.RoleBehaviour.Role))
-                PlayerControl.GameOptions.RoleOptions.roleRates[Role.RoleBehaviour.Role] =
-                    new RoleOptionsData.RoleRate();
-            var rates = PlayerControl.GameOptions.RoleOptions.roleRates[Role.RoleBehaviour.Role];
+            if (!optionsData.roleRates.ContainsKey(Role.RoleBehaviour.Role))
+                optionsData.roleRates[Role.RoleBehaviour.Role] =
+                    new AmongUs.GameOptions.RoleRate();
+            var rates = optionsData.roleRates[Role.RoleBehaviour.Role];
             Count = rates.MaxCount;
             Chance = rates.Chance;
             
@@ -120,7 +122,7 @@ namespace PeasAPI.Options
                         break;
                 }
 
-                optionBehaviour.Title = CustomStringName.Register(advancedOption.Title);
+                optionBehaviour.Title = CustomStringName.CreateAndRegister(advancedOption.Title);
                 optionBehaviour.name = advancedOption.Title;
 
                 var optionTransform = optionBehaviour.transform;

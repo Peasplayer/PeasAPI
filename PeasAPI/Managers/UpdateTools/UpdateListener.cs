@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using PeasAPI.Enums;
 using Reactor;
 using UnityEngine;
@@ -68,11 +68,14 @@ namespace PeasAPI.Managers.UpdateTools
                     return;
                 var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 FromJsonElement(JsonDocument.Parse(result).RootElement);
-            }
-            catch (Exception ex)
+            } catch (Exception e)
             {
-                PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex.Message}");
+                
             }
+           // catch (Exception ex)
+           // {
+              //  PeasAPI.Logger.LogError($"An error occured while initializing {Name}: \n{ex.Message}");
+           // }
         }
 
         public abstract void FromJsonElement(JsonElement json);

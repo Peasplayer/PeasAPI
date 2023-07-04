@@ -2,8 +2,8 @@
 using System.Reflection;
 using BepInEx.Configuration;
 using PeasAPI.CustomRpc;
-using Reactor;
-using Reactor.Networking;
+using Reactor.Localization.Utilities;
+using Reactor.Networking.Rpc;
 using Object = UnityEngine.Object;
 
 namespace PeasAPI.Options
@@ -72,7 +72,7 @@ namespace PeasAPI.Options
                 Object.Instantiate(numberOptionPrefab, numberOptionPrefab.transform.parent);
                     
             numberOption.TitleText.text = Title;
-            numberOption.Title = CustomStringName.Register(Title);
+            numberOption.Title = CustomStringName.CreateAndRegister(Title);
             numberOption.Value = Value;
             numberOption.ValidRange = new FloatRange(MinValue, MaxValue);
             numberOption.Increment = Increment;

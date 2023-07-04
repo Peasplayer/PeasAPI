@@ -2,14 +2,17 @@
 using System.Linq;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
-using Reactor;
+using AmongUs.GameOptions;
 using UnityEngine;
+using Reactor.Localization.Utilities;
 
 namespace PeasAPI.GameModes
 {
     [HarmonyPatch]
     public static class Patches
     {
+       public static MapBehaviour map;
+
         [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
         class ShipStatusStartPatch
         {
@@ -23,10 +26,10 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcEndGame))]
+        [HarmonyPatch(typeof(GameManager), nameof(GameManager.RpcEndGame))]
         class ShipStatusRpcEndGamePatch
         {
-            public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] GameOverReason reason)
+            public static bool Prefix(GameManager __instance, [HarmonyArgument(0)] GameOverReason reason)
             {
                 foreach (var mode in GameModeManager.Modes)
                 {
@@ -125,22 +128,19 @@ namespace PeasAPI.GameModes
                     {
                         if (mode.Enabled)
                         {
-                            HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
-                            {
                                 foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray())
                                 {
                                     mapRoom.gameObject.SetActive(mode.AllowSabotage(mapRoom.room));
                                 }
 
                                 map.ShowSabotageMap();
-                            }));
+                        };
 
-                            return false;
                         }
+                        return false;
                     }
+                    return true;
                 }
-
-                return true;
             }
         }
         
@@ -155,13 +155,12 @@ namespace PeasAPI.GameModes
                     {
                         if (mode.Enabled)
                         {
-                            HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
                             {
-                                foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray())
+                                foreach (MapRoom mapRoom in __instance.infectedOverlay.rooms.ToArray())
                                 {
                                     mapRoom.gameObject.SetActive(mode.AllowSabotage(mapRoom.room));
                                 }
-                            }));
+                            };
                         }
                     }
                 }
@@ -183,10 +182,10 @@ namespace PeasAPI.GameModes
             }
         }
         
-        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__112), nameof(PlayerControl._CoSetTasks_d__112.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__114), nameof(PlayerControl._CoSetTasks_d__114.MoveNext))]
         public static class PlayerControlSetTasks
         {
-            public static void Postfix(PlayerControl._CoSetTasks_d__112 __instance)
+            public static void Postfix(PlayerControl._CoSetTasks_d__114 __instance)
             {
                 if (__instance == null)
                     return;
@@ -210,7 +209,6 @@ namespace PeasAPI.GameModes
                     }
                 }
             }
-        }
         
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowTeam))]
         [HarmonyPostfix]
@@ -292,7 +290,7 @@ namespace PeasAPI.GameModes
         [HarmonyPostfix]
         static void SetupGameModeSetting(AmongUsClient __instance)
         {
-            GameModeManager.GameModeOption.Values = GameModeManager.Modes.ConvertAll(mode => mode.Name).Prepend("None").ToList().ConvertAll(mode => (StringNames) CustomStringName.Register(mode));
+            GameModeManager.GameModeOption.Values = GameModeManager.Modes.ConvertAll(mode => mode.Name).Prepend("None").ToList().ConvertAll(mode => (StringNames) CustomStringName.CreateAndRegister(mode));
         }
     }
 }

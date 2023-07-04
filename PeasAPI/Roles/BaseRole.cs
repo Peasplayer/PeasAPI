@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using PeasAPI.Managers;
 using PeasAPI.Options;
 using UnityEngine;
+using AmongUs.GameOptions;
 
 namespace PeasAPI.Roles
 {
@@ -28,7 +29,7 @@ namespace PeasAPI.Roles
         
         public abstract string LongDescription { get; }
 
-        public virtual Sprite Icon { get; } = Utility.CreateSprite("PeasAPI.Placeholder.png");
+        public virtual Sprite Icon { get; } = Utility.LoadSprite("PeasAPI.Placeholder.png", 90f);
         
         /// <summary>
         /// The description of the Role at the task list
@@ -76,7 +77,7 @@ namespace PeasAPI.Roles
 
         public virtual Type[] GameModeWhitelist { get; } = Array.Empty<Type>();
 
-        public virtual float KillDistance { get; set; } = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+        public virtual float KillDistance { get; set; } = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
 
         /// <summary>
         /// If a member of the role should be able to kill that player / in general
@@ -126,13 +127,15 @@ namespace PeasAPI.Roles
                 default: throw new NotImplementedException("Unknown Visibility");
             }
         }
-        
+
+        /*
+              // Disable this feature because i very hard ):
         /// <summary>
         /// This method calculates the nearest player to kill for a member of this role
         /// </summary>
-        public virtual PlayerControl FindClosestTarget(PlayerControl from, bool protecting)
+        public virtual RoleBehaviour FindClosestTarget(PlayerControl from)
         {
-            PlayerControl result = null;
+            RoleBehaviour result = null;
             float num = KillDistance;
             if (!ShipStatus.Instance)
             {
@@ -141,9 +144,11 @@ namespace PeasAPI.Roles
             Vector2 truePosition = from.GetTruePosition();
             foreach (var playerInfo in GameData.Instance.AllPlayers)
             {
-                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (from.GetRole().CanKill(playerInfo.Object) || protecting) && !playerInfo.Object.inVent)
+                if (!playerInfo.Disconnected && playerInfo.PlayerId != from.PlayerId && !playerInfo.IsDead && (from.GetRole().CanKill(playerInfo.Object)) && !playerInfo.Object.inVent)
                 {
-                    PlayerControl @object = playerInfo.Object;
+                    foreach (var playerInfo1 in GameData.Instance.AllPlayers)
+                    {
+                    RoleBehaviour @object = playerInfo1.Object;
                     if (@object && @object.Collider.enabled)
                     {
                         Vector2 vector = @object.GetTruePosition() - truePosition;
@@ -156,8 +161,10 @@ namespace PeasAPI.Roles
                     }
                 }
             }
+            }
             return result;
         }
+    */
 
         public virtual bool ShouldGameEnd(GameOverReason reason) => true;
         
@@ -186,8 +193,8 @@ namespace PeasAPI.Roles
                     continue;
                 if (playerControl.IsRole(this) && _IsRoleVisible(playerControl, PlayerControl.LocalPlayer))
                 {
-                    playerControl.nameText.color = this.Color;
-                    playerControl.nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                    playerControl.nameText().color = this.Color;
+                    playerControl.nameText().text = $"{player.GetPlayer().name}\n{Name}";
                 }
             }
 
@@ -215,8 +222,8 @@ namespace PeasAPI.Roles
                     continue;
                 if (playerControl.IsRole(this) && _IsRoleVisible(playerControl, PlayerControl.LocalPlayer))
                 {
-                    playerControl.nameText.color = this.Color;
-                    playerControl.nameText.text = $"{player.GetPlayer().name}\n{Name}";
+                    playerControl.nameText().color = this.Color;
+                    playerControl.nameText().text = $"{player.GetPlayer().name}\n{Name}";
                 }
             }
 

@@ -33,6 +33,7 @@ namespace PeasAPI.CustomEndReason
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
         private class SetEverythingUpPatch
         {
+            public static PlayerControl player1;
             private static readonly Color GhostColor = new(1f, 1f, 1f, 0.5f);
 
             public static bool Prefix(EndGameManager __instance)
@@ -82,9 +83,9 @@ namespace PeasAPI.CustomEndReason
                     transform.localScale = scaleVec;
                     if (winner.IsDead)
                     {
-                        player.BodySprites.ToArray()[0].BodySprite.sprite = __instance.GhostSprite;
-                        player.SetDeadFlipX(i % 2 == 1);
-                        player.HatSlot.color = GhostColor;
+                        player.cosmetics.currentBodySprite.BodySprite.sprite = __instance.GhostSprite;
+                        player.SetDeadFlipX(i % 2 == 0);
+                        player.cosmetics.SetHatColor(GhostColor);
                     }
                     else
                     {
@@ -92,11 +93,11 @@ namespace PeasAPI.CustomEndReason
                         player.SetSkin(winner.SkinId, winner.ColorId);
                     }
 
-                    PlayerControl.SetPlayerMaterialColors(winner.ColorId, player.CurrentBodySprite.BodySprite);
-                    player.HatSlot.SetHat(winner.HatId, winner.ColorId);
-                    PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.PetSlot);
-                    player.NameText.text = winner.PlayerName;
-                    player.NameText.transform.SetLocalZ(-15f);
+                    PlayerMaterial.SetColors(winner.ColorId, player.cosmetics.currentBodySprite.BodySprite);
+                    player.cosmetics.SetHat(winner.HatId, winner.ColorId);
+                   // PlayerControl.SetPetImage(winner.PetId, winner.ColorId, player.cosmetics.CurrentPet);
+                    player.NameText().text = winner.PlayerName;
+                    player.NameText().transform.SetLocalZ(-15f);
                 }
                 
                 SoundManager.Instance.PlaySound(__instance.DisconnectStinger, false, 1f);
@@ -104,6 +105,7 @@ namespace PeasAPI.CustomEndReason
                 return false;
             }
         }
+
 
         [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.Start))]
         private class AdjustEndScreenPatch

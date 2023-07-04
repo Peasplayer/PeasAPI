@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using BepInEx;
 using HarmonyLib;
-using Reactor;
-using UnhollowerRuntimeLib;
 using UnityEngine;
+using Il2CppInterop.Runtime;
 
 namespace PeasAPI.Managers
 {
@@ -46,8 +44,8 @@ namespace PeasAPI.Managers
         public static readonly Vector2 defaultVersionTextOffset = new (0f, -0.2f);
         public static readonly Vector2 defaultPingTextOffset = new Vector2(0f, 0f);
 
-        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI {PeasAPI.Version} <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=#ffffffff>Reactor v{ReactorPlugin.Version}\nBepInEx v{Paths.BepInExVersion}", 
-            "\n<color=#ff0000ff>PeasAPI", new Vector2(), new Vector2());
+        public static Watermark PeasApiWatermark = new Watermark($"\n<color=#ff0000ff>PeasAPI-R v 1.8.4-dev1 <color=#ffffffff> by <color=#ff0000ff>Peasplayer\n<color=ff0000>Continued by JeanAU",
+            "\n<color=#ff0000ff>PeasAPI-R", new Vector2(), new Vector2());
 
         public static void AddWatermark(string versionText, string pingText,
             Vector2 versionTextOffset = new Vector2(), Vector2 pingTextOffset = new Vector2())
@@ -60,18 +58,7 @@ namespace PeasAPI.Managers
         public static class VersionShowerStartPatch
         {
             static void Postfix(VersionShower __instance)
-            {
-                foreach (var watermark in Watermarks)
-                {
-                    __instance.transform.position += watermark.VersionTextOffset;
-                    
-                    if (watermark.VersionText != null)
-                        __instance.text.text += watermark.VersionText;
-                    
-                    foreach (var gameObject in Object.FindObjectsOfTypeAll(Il2CppType.Of<GameObject>()))
-                        if (gameObject.name.Contains("ReactorVersion"))
-                            Object.Destroy(gameObject);
-                }
+            {  
                 
                 if (PeasAPI.ShamelessPlug)
                 {
@@ -85,7 +72,7 @@ namespace PeasAPI.Managers
                             Object.Destroy(gameObject);
                 }
                 
-                __instance.transform.position = new Vector3(-5.2333f, 2.85f, 0f) - new Vector3(0f, 0.2875f / 2 * (__instance.text.text.Split('\n').Length - 1));
+                __instance.transform.position = new Vector3(-1.2287f * + 10.9f, -0.57f, 4.5f) - new Vector3(0f, 0.2875f / 2 * (__instance.text.text.Split('\n').Length - 1));
             }
         }
         

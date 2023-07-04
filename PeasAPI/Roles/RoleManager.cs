@@ -2,10 +2,12 @@
 using System.Linq;
 using HarmonyLib;
 using PeasAPI.CustomRpc;
-using Reactor;
-using Reactor.Extensions;
-using Reactor.Networking;
+using Reactor.Localization.Utilities;
+using Reactor.Utilities.Extensions;
+using Reactor.Networking.Rpc;
+using AmongUs.GameOptions;
 using UnityEngine;
+
 
 namespace PeasAPI.Roles
 {
@@ -18,6 +20,7 @@ namespace PeasAPI.Roles
         public static List<BaseRole> Roles = new List<BaseRole>();
 
         public static int GetRoleId() => Roles.Count;
+        
 
         public static void RegisterRole(BaseRole role) => Roles.Add(role);
 
@@ -33,15 +36,15 @@ namespace PeasAPI.Roles
             
             
             var role = roleObject.AddComponent<RoleBehaviour>();
-            role.StringName = CustomStringName.Register(baseRole.Name);
-            role.BlurbName = CustomStringName.Register(baseRole.Description);
-            role.BlurbNameLong = CustomStringName.Register(baseRole.LongDescription);
-            role.BlurbNameMed = CustomStringName.Register(baseRole.Name);
+            role.StringName = CustomStringName.CreateAndRegister(baseRole.Name);
+            role.BlurbName = CustomStringName.CreateAndRegister(baseRole.Description);
+            role.BlurbNameLong = CustomStringName.CreateAndRegister(baseRole.LongDescription);
+            role.BlurbNameMed = CustomStringName.CreateAndRegister(baseRole.Name);
             role.Role = (RoleTypes) (6 + baseRole.Id);
             
             var abilityButtonSettings = ScriptableObject.CreateInstance<AbilityButtonSettings>();
             abilityButtonSettings.Image = baseRole.Icon;
-            abilityButtonSettings.Text = CustomStringName.Register(baseRole.Name);
+            abilityButtonSettings.Text = CustomStringName.CreateAndRegister(baseRole.Name);
             role.Ability = abilityButtonSettings;
             
             role.TeamType = baseRole.Team switch
@@ -57,7 +60,7 @@ namespace PeasAPI.Roles
             role.CanVent = baseRole.CanVent;
             role.CanUseKillButton = baseRole.CanKill();
             
-            PlayerControl.GameOptions.RoleOptions.SetRoleRate(role.Role, 0, 0);
+            GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions.SetRoleRate(role.Role, 0, 0);
 
             global::RoleManager.Instance.AllRoles.AddItem(role);
             

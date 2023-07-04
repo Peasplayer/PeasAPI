@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using BepInEx.IL2CPP.Utils.Collections;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using PeasAPI.CustomRpc;
-using Reactor.Extensions;
-using Reactor.Networking;
+using Reactor.Utilities.Extensions;
+using Reactor.Utilities;
+using Reactor.Networking.Rpc;
 using TMPro;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace PeasAPI.Managers
         
         public static void ShowMessage(string message, float duration)
         {
-            Reactor.Coroutines.Start(CoShowText(message, duration));
+            Coroutines.Start(CoShowText(message, duration));
         }
         
         public static void RpcShowMessage(string message, float duration, List<PlayerControl> targets)

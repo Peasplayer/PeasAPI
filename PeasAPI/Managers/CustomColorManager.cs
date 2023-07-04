@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,12 +6,13 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using InnerNet;
 using PeasAPI.CustomRpc;
-using Reactor;
-using Reactor.Extensions;
-using Reactor.Networking;
-using UnhollowerBaseLib;
+using Reactor.Utilities;
+using Reactor.Utilities.Extensions;
+using Reactor.Localization.Utilities;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using AmongUs.Data.Legacy;
 
 namespace PeasAPI.Managers
 {
@@ -61,7 +63,7 @@ namespace PeasAPI.Managers
             {
                 Body = body;
                 Shadow = shadow;
-                Name = CustomStringName.Register(name);
+                Name = CustomStringName.CreateAndRegister(name);
             }
         }
         
@@ -138,7 +140,7 @@ namespace PeasAPI.Managers
                 [HarmonyPatch(nameof(PlayerTab.SelectColor))]
                 private static void SelectColor(PlayerTab __instance, int colorId)
                 {
-                    __instance.PlayerPreview.HatSlot.SetHat(SaveManager.LastHat, colorId);
+                    __instance.PlayerPreview.SetHat(LegacySaveManager.LastHat, colorId);
                 }
             }
 
@@ -169,7 +171,7 @@ namespace PeasAPI.Managers
                     
                     Rpc<RpcSetColor>.Instance.Send(new RpcSetColor.Data(__instance, bodyColor));
                     return false;
-                }*/
+                }
                 
                 // It does the same as the original one
                 // But needed because it sends vanilla RPC for some reason
@@ -197,12 +199,12 @@ namespace PeasAPI.Managers
             }
             
             // Prevent custom color from being saved inside SaveManager
-            [HarmonyPatch(typeof(SaveManager), nameof(SaveManager.BodyColor))]
-            private static class SaveManagerPatch
+            [HarmonyPatch(typeof(LegacySaveManager), nameof(LegacySaveManager.BodyColor))]
+            private static class LegacySaveManagerPatch
             {
                 private const byte MAXColor = 17;
                 private static ConfigEntry<byte> Data => PeasAPI.ConfigFile
-                    .Bind("CustomSaveManager", "Player Color ID", (byte) SaveManager.colorConfig);
+                    .Bind("CustomSaveManager", "Player Color ID", (byte) LegacySaveManager.colorConfig);
                 
                 [HarmonyPrefix]
                 [HarmonyPatch(MethodType.Getter)]
@@ -233,3 +235,4 @@ namespace PeasAPI.Managers
         }
     }
 }
+*/

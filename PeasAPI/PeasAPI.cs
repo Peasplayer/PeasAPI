@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
 using InnerNet;
@@ -14,14 +14,11 @@ using Random = System.Random;
 
 namespace PeasAPI
 {
-    [HarmonyPatch]
-    [BepInPlugin(Id, "PeasAPI", Version)]
+    [BepInAutoPlugin]
     [BepInProcess("Among Us.exe")]
     [BepInDependency(ReactorPlugin.Id)]
-    public class PeasAPI : BasePlugin
+    public partial class PeasAPI : BasePlugin
     {
-        public const string Id = "tk.peasplayer.amongus.api";
-        public const string Version = "1.8.3";
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
@@ -47,14 +44,15 @@ namespace PeasAPI
             {
                 return GameData.Instance && ShipStatus.Instance && AmongUsClient.Instance &&
                        (AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started ||
-                        AmongUsClient.Instance.GameMode == global::GameModes.FreePlay);
+                        AmongUsClient.Instance.NetworkMode == global::NetworkModes.FreePlay  &&
+                        AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame);
             }
         }
 
         /// <summary>
         /// If you set this to false please provide credit! I mean this stuff is free and open-source so a little credit would be nice :)
         /// </summary>
-        public static bool ShamelessPlug = true;
+        public static bool ShamelessPlug = false;
 
         public static CustomToggleOption ShowRolesOfDead;
 
@@ -67,11 +65,11 @@ namespace PeasAPI
             if (useCustomServer.Value)
             {
                 CustomServerManager.RegisterServer(ConfigFile.Bind("CustomServer", "Name", "CustomServer").Value,
-                    ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "au.peasplayer.tk").Value,
+                    ConfigFile.Bind("CustomServer", "Ipv4 or Hostname", "127.0.0.1").Value,
                     ConfigFile.Bind("CustomServer", "Port", (ushort)22023).Value);
             }
 
-            UpdateManager.RegisterGitHubUpdateListener("Peasplayer", "PeasAPI");
+            UpdateManager.RegisterGitHubUpdateListener("AmongUsDev", "PeasAPI-R");
 
             RegisterCustomRoleAttribute.Load();
             RegisterCustomGameModeAttribute.Load();
@@ -89,6 +87,7 @@ namespace PeasAPI
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
+                Debug.Log("Something is coming in the future");
             }
         }
     }

@@ -4,16 +4,21 @@ using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
 using PeasAPI.CustomButtons;
 using PeasAPI.CustomRpc;
-using Reactor.Networking;
-using UnhollowerBaseLib;
+using Reactor.Networking.Rpc;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
+using AmongUs.GameOptions;
 
 namespace PeasAPI.Roles
 {
+
     [HarmonyPatch]
     public static class Patches
     {
+        public static RoleBehaviour roleBehaviour;
+        public static MapBehaviour map;
+
         [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
         [HarmonyPrefix]
         public static void OnGameEndPatch(AmongUsClient __instance)
@@ -37,31 +42,9 @@ namespace PeasAPI.Roles
             Rpc<RpcInitializeRoles>.Instance.Send();
         }
 
-        [HarmonyPatch(typeof(global::RoleManager), nameof(global::RoleManager.AssignRolesFromList))]
-        [HarmonyPrefix]
-        public static bool ChangeImpostors(global::RoleManager __instance,
-            [HarmonyArgument(0)] List<GameData.PlayerInfo> players, [HarmonyArgument(1)] int teamMax,
-            [HarmonyArgument(2)] List<RoleTypes> roleList, [HarmonyArgument(3)] ref int rolesAssigned)
-        {
-            while (roleList.Count > 0 && players.Count > 0 && rolesAssigned < teamMax)
-            {
-                int index = HashRandom.FastNext(roleList.Count);
-                RoleTypes roleType = roleList.ToArray()[index];
-                roleList.RemoveAt(index);
-                int index2 = global::RoleManager.IsImpostorRole(roleType) && RoleManager.HostMod.IsImpostor
-                    ? 0
-                    : HashRandom.FastNext(players.Count);
-                players.ToArray()[index2].Object.RpcSetRole(roleType);
-                players.RemoveAt(index2);
-                rolesAssigned++;
-            }
-
-            return false;
-        }
-
-        [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__24), nameof(IntroCutscene._ShowRole_d__24.MoveNext))]
+        [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__39), nameof(IntroCutscene._ShowRole_d__39.MoveNext))]
         [HarmonyPostfix]
-        public static void RoleTextPatch(IntroCutscene._ShowRole_d__24 __instance)
+        public static void RoleTextPatch(IntroCutscene._ShowRole_d__39 __instance)
         {
             if (PlayerControl.LocalPlayer.GetRole() != null)
             {
@@ -205,7 +188,7 @@ namespace PeasAPI.Roles
                         {
                             if (!__instance.Data.Role.IsImpostor)
                                 __instance.SetKillTimer(__instance.killTimer - Time.fixedDeltaTime);
-                            PlayerControl target = __instance.FindClosestTarget(false);
+                            PlayerControl target = roleBehaviour.FindClosestTarget();
                             HudManager.Instance.KillButton.SetTarget(target);
                         }
                         else
@@ -303,10 +286,10 @@ namespace PeasAPI.Roles
             {
                 if (__instance.GetRole() != null && __instance.GetRole().CanKill() || __instance.Data.Role.CanUseKillButton)
                 {
-                    if (PlayerControl.GameOptions.KillCooldown <= 0f)
+                    if (GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown <= 0f)
                         return false;
-                    __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown);
-                    DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown);
+                    __instance.killTimer = Mathf.Clamp(time, 0f, GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
+                    DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
                 }
                 return false;
             }
@@ -328,22 +311,24 @@ namespace PeasAPI.Roles
             RoleManager.Roles.Do(r => r.OnExiled(__instance));
         }
 
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
         [HarmonyPrefix]
         public static void OnMeetingStart(MeetingHud __instance)
         {
             RoleManager.Roles.Do(r => r.OnMeetingStart(__instance));
         }
         
-        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FindClosestTarget))]
-        public static class PlayerControlFindClosestTargetPatch
+      //  very hard to fix this issue idk why 
+      /*  [HarmonyPatch(typeof(RoleBehaviour), nameof(RoleBehaviour.FindClosestTarget))]
+        public static class RoleBehaviourFindClosestTargetPatch
         {
-            public static bool Prefix(PlayerControl __instance, out PlayerControl __result,
+            public static bool Prefix(RoleBehaviour __instance, out RoleBehaviour __result,
                 [HarmonyArgument(0)] bool protecting)
             {
-                if (__instance.GetRole() != null)
+                var player = PlayerControl.LocalPlayer;
+                if (player.GetRole() != null)
                 {
-                    __result = __instance.GetRole().FindClosestTarget(__instance, protecting);
+                    __result = player.GetRole().RoleBehaviour.FindClosestTarget();
                     return false;
                 }
 
@@ -351,11 +336,12 @@ namespace PeasAPI.Roles
                 return true;
             }
         }
+    */
 
-        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__112), nameof(PlayerControl._CoSetTasks_d__112.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__114), nameof(PlayerControl._CoSetTasks_d__114.MoveNext))]
         public static class PlayerControlSetTasks
         {
-            public static void Postfix(PlayerControl._CoSetTasks_d__112 __instance)
+            public static void Postfix(PlayerControl._CoSetTasks_d__114 __instance)
             {
                 if (__instance == null)
                     return;
@@ -390,6 +376,8 @@ namespace PeasAPI.Roles
             }
         }
 
+        
+
         [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
         public static class UseButtonManagerDoClickPatch
         {
@@ -401,9 +389,8 @@ namespace PeasAPI.Roles
 
                     if (role == null)
                         return true;
-
-                    HudManager.Instance.ShowMap((Action<MapBehaviour>)(map =>
-                    {
+                       
+                   
                         foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray()
                             .Where(room => !role.CanSabotage(room.room)))
                         {
@@ -411,12 +398,11 @@ namespace PeasAPI.Roles
                         }
 
                         map.ShowSabotageMap();
-                    }));
+                    };
 
                     return false;
                 }
 
-                return true;
             }
         }
         
@@ -428,23 +414,21 @@ namespace PeasAPI.Roles
                 if (PeasAPI.GameStarted)
                 {
                     var role = PlayerControl.LocalPlayer.GetRole();
+                    var map = new MapBehaviour();
 
                     if (role == null)
                         return true;
-                    
-                    HudManager.Instance.ShowMap((Action<MapBehaviour>) (map =>
-                    {
+                      
                         foreach (MapRoom mapRoom in map.infectedOverlay.rooms.ToArray())
                         {
                             mapRoom.gameObject.SetActive(role.CanSabotage(mapRoom.room));
                         }
-                    }));
+                    
                     
                     //return false;
                 }
-
-                return true;
-            }
+              return false;
+           } 
         }
 
         [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
@@ -473,11 +457,10 @@ namespace PeasAPI.Roles
                                    Constants.ShipOnlyMask, false));
                 }
             }
-        }
 
-        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcEndGame))]
+        [HarmonyPatch(typeof(GameManager), nameof(GameManager.Instance.RpcEndGame))]
         [HarmonyPrefix]
-        private static bool ShouldGameEndPatch(ShipStatus __instance, [HarmonyArgument(0)] GameOverReason endReason)
+        private static bool ShouldGameEndPatch(GameManager __instance, [HarmonyArgument(0)] GameOverReason endReason)
         {
             return RoleManager.Roles.Count(r => r.Members.Count != 0 && !r.ShouldGameEnd(endReason)) == 0;
         }
@@ -520,7 +503,7 @@ namespace PeasAPI.Roles
             __instance.CompletedTasks = 0;
             foreach (var playerInfo in __instance.AllPlayers)
             {
-                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (PlayerControl.GameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress && (playerInfo.GetRole() == null || playerInfo.GetRole().HasToDoTasks))
+                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (GameOptionsManager.Instance.currentNormalGameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress && (playerInfo.GetRole() == null || playerInfo.GetRole().HasToDoTasks))
                 {
                     foreach (var task in playerInfo.Tasks)
                     {
@@ -535,7 +518,7 @@ namespace PeasAPI.Roles
             /*for (int i = 0; i < __instance.AllPlayers.Count; i++)
             {
                 GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
-                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (PlayerControl.GameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress)
+                if (!playerInfo.Disconnected && playerInfo.Tasks != null && playerInfo.Object && (GameOptionsManager.Instance.currentNormalGameOptions.GhostsDoTasks || !playerInfo.IsDead) && playerInfo.Role && playerInfo.Role.TasksCountTowardProgress)
                 {
                     for (int j = 0; j < playerInfo.Tasks.Count; j++)
                     {

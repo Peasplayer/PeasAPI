@@ -4,22 +4,27 @@ using HarmonyLib;
 using Il2CppSystem.Text;
 using InnerNet;
 using PeasAPI.CustomRpc;
-using Reactor.Extensions;
-using Reactor.Networking;
+using Reactor.Utilities.Extensions;
+using Reactor.Networking.Rpc;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using AmongUs.GameOptions;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace PeasAPI.Options
 {
     [HarmonyPatch]
     public static class Patches
     {
+
         private static float AllOptionSize = 6.73f;
         private static float LowestOption = -7.85f;
         private static float OptionSize = 0.5f;
         private static float HudTextSize = 1.4f;
 
         private static Scroller OptionsScroller;
+        private static RoleOptionsData optionsData;
 
         [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
         [HarmonyPostfix]
@@ -132,7 +137,7 @@ namespace PeasAPI.Options
                 switch (custom)
                 {
                     case CustomRoleOption option:
-                        var rates = PlayerControl.GameOptions.RoleOptions.roleRates[option.Role.RoleBehaviour.Role];
+                        var rates = optionsData.roleRates[option.Role.RoleBehaviour.Role];
                         option.SetValue(rates.MaxCount, rates.Chance);
                         break;
                     case CustomNumberOption option:
@@ -203,52 +208,8 @@ namespace PeasAPI.Options
             if (Input.GetKeyDown(KeyCode.RightShift))
                 OnModdedPage = !OnModdedPage;
         }
-        
-        [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToHudString))]
-        [HarmonyPrefix]
-        private static bool AddInformationPatch(GameOptionsData __instance)
-        {
-            if (OnModdedPage)
-            {
-                __instance.settings.Length = 0;
-                __instance.settings.AppendLine("Press <b>RightShift</b> to switch to the vanilla settings");
-                __instance.settings.AppendLine();
-                
-                __instance.settings.AppendLine("<u>Roles:</u>");
-                foreach (var option in OptionManager.CustomRoleOptions)
-                {
-                    __instance.settings.AppendLine(String.Format(option.HudFormat, $"{option.Role.Color.ToTextColor()}{option.Role.Name}{Utility.StringColor.Reset}",
-                        __instance.RoleOptions.GetNumPerGame(option.Role.RoleBehaviour.Role),
-                        __instance.RoleOptions.GetChancePerGame(option.Role.RoleBehaviour.Role)));
-                    option.AdvancedOptions.Where(_option => _option.HudVisible).Do(_option => RenderOption(_option, __instance.settings, option.AdvancedOptionPrefix) );
-                }
-            
-                OptionManager.HudVisibleOptions.Where(option => !option.IsFromPeasAPI && !option.AdvancedRoleOption).Do(option => RenderOption(option, __instance.settings) );
-                
-                return false;
-            }
-            return true;
-        }
-        
-        [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToHudString))]
-        [HarmonyPostfix]
-        private static void GameOptionsDataToHudStringPatch(GameOptionsData __instance, ref string __result)
-        {
-            if (!OnModdedPage)
-            {
-                var text = __instance.settings.ToString();
-                __instance.settings.Clear();
-                __instance.settings.AppendLine("Press <b>RightShift</b> to switch to the modded settings");
-                __instance.settings.AppendLine();
-                __instance.settings.AppendLine(text);
-                
-                OptionManager.HudVisibleOptions.Where(option => option.IsFromPeasAPI).Do(option => RenderOption(option, __instance.settings) );
-            }
 
-            __result = __instance.settings.ToString();
-        }
-
-        internal static void RenderOption(CustomOption option, StringBuilder builder, string prefix = "")
+         internal static void RenderOption(CustomOption option, StringBuilder builder, string prefix = "")
         {
             switch (option)
             {
@@ -270,13 +231,84 @@ namespace PeasAPI.Options
                 case CustomOptionHeader _option:
                     builder.AppendLine(prefix + String.Format(_option.HudFormat, _option.Title) + Utility.StringColor.Reset);
                     break;
+            
             }
+            }
+        
+        [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.ToHudString))]
+        private static class GameOptionsDataPatch
+        {
+            public static IEnumerable<MethodBase> TargetMethods()
+            {
+                return typeof(GameOptionsData).GetMethods(typeof(string), typeof(int));
+            }
+        private static bool AddInformationPatch(GameOptionsData __instance)
+        {
+            if (OnModdedPage)
+            {
+                var builder = new StringBuilder();
+                 builder.Length = 0;
+                 builder.AppendLine("Press <b>RightShift</b> to switch to the vanilla settings");
+                 builder.AppendLine();
+
+                
+                 builder.AppendLine("<u>Roles:</u>");
+                foreach (var option in OptionManager.CustomRoleOptions)
+                {
+                    builder.AppendLine(String.Format(option.HudFormat, $"{option.Role.Color.ToTextColor()}{option.Role.Name}{Utility.StringColor.Reset}",
+                        __instance.RoleOptions.GetNumPerGame(option.Role.RoleBehaviour.Role),
+                        __instance.RoleOptions.GetChancePerGame(option.Role.RoleBehaviour.Role)));
+                    option.AdvancedOptions.Where(_option => _option.HudVisible).Do(_option => RenderOption(_option, builder, option.AdvancedOptionPrefix) );
+                }
+            
+                OptionManager.HudVisibleOptions.Where(option => !option.IsFromPeasAPI && !option.AdvancedRoleOption).Do(option => RenderOption(option, builder) );
+                
+                return false;
+            }
+            return true;
         }
+        
+        [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.ToHudString))]
+        private static class GameOptionsDataPatch1
+        {
+            public static IEnumerable<MethodBase> TargetMethods()
+            {
+                return typeof(GameOptionsData).GetMethods(typeof(string), typeof(int));
+            }
+        private static void GameOptionsDataToHudStringPatch(GameOptionsData __instance, ref string __result)
+        {
+            if (!OnModdedPage)
+            {
+
+                var builder = new StringBuilder();
+                var text = builder.ToString();
+                builder.Clear();
+                builder.AppendLine("Press <b>RightShift</b> to switch to the modded settings");
+                builder.AppendLine();
+                builder.AppendLine(text);
+                
+                OptionManager.HudVisibleOptions.Where(option => option.IsFromPeasAPI).Do(option => RenderOption(option, builder) );
+            }
+            
+            var builder1 = new StringBuilder();
+            __result = builder1.ToString();
+        }
+
+       
+
+         private static Scroller Scroller;
+
+         
+            private const float
+                MinX = -5.233334F /*-5.3F*/,
+                OriginalY = 2.9F,
+                MinY = 3F; // Differs to cause excess options to appear cut off to encourage scrolling
 
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
         [HarmonyPostfix]
         private static void HudManagerUpdatePatch(HudManager __instance)
         {
+
             if (__instance.GameSettings == null)
                 return;
             
@@ -288,29 +320,30 @@ namespace PeasAPI.Options
 
             var bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0)) - Camera.main.transform.localPosition;
             
-            OptionsScroller.ContentYBounds = new FloatRange(-bottomLeft.y, Mathf.Max(-bottomLeft.y, __instance.GameSettings.renderedHeight - -bottomLeft.y + 0.02F));
+            Scroller.ContentYBounds = new FloatRange(-bottomLeft.y, Mathf.Max(-bottomLeft.y, __instance.GameSettings.renderedHeight - -bottomLeft.y + 0.02F));
         }
 
-        //THIS BIT IS SKIDDED FROM ESSENTIALS: https://github.com/DorCoMaNdO/Reactor-Essentials
-        private static void CreateScroller(HudManager hudManager)
-        {
-            if (OptionsScroller != null) return;
+        //THIS BIT IS SKIDDED FROM TOU: https://github.com/eDonners124/TownOfUsR
+         private static void CreateScroller(HudManager __instance)
+            {
+                if (Scroller != null) return;
 
-            OptionsScroller = new GameObject("OptionsScroller").AddComponent<Scroller>();
-            OptionsScroller.transform.SetParent(hudManager.GameSettings.transform.parent);
-            OptionsScroller.gameObject.layer = 5;
+                Scroller = new GameObject("SettingsScroller").AddComponent<Scroller>();
+                Scroller.transform.SetParent(__instance.GameSettings.transform.parent);
+                Scroller.gameObject.layer = 5;
 
-            OptionsScroller.transform.localScale = Vector3.one;
-            OptionsScroller.allowX = false;
-            OptionsScroller.allowY = true;
-            OptionsScroller.active = true;
-            OptionsScroller.velocity = new Vector2(0, 0);
-            OptionsScroller.ContentYBounds = new FloatRange(0, 0);
-            OptionsScroller.enabled = true;
+                Scroller.transform.localScale = Vector3.one;
+                Scroller.allowX = false;
+                Scroller.allowY = true;
+                Scroller.active = true;
+                Scroller.velocity = new Vector2(0, 0);
+                Scroller.ScrollbarYBounds = new FloatRange(0, 0);
+                Scroller.ContentXBounds = new FloatRange(MinX, MinX);
+                Scroller.enabled = true;
 
-            OptionsScroller.Inner = hudManager.GameSettings.transform;
-            hudManager.GameSettings.transform.SetParent(OptionsScroller.transform);
-        }
+                Scroller.Inner = __instance.GameSettings.transform;
+                __instance.GameSettings.transform.SetParent(Scroller.transform);
+            }
 
         [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
         [HarmonyPostfix]
@@ -321,10 +354,10 @@ namespace PeasAPI.Options
             
             foreach (var option in OptionManager.CustomRoleOptions)
             {
-                if (!PlayerControl.GameOptions.RoleOptions.roleRates.ContainsKey(option.Role.RoleBehaviour.Role))
-                    PlayerControl.GameOptions.RoleOptions.roleRates[option.Role.RoleBehaviour.Role] =
-                        new RoleOptionsData.RoleRate();
-                var rates = PlayerControl.GameOptions.RoleOptions.roleRates[option.Role.RoleBehaviour.Role];
+                if (!optionsData.roleRates.ContainsKey(option.Role.RoleBehaviour.Role))
+                    optionsData.roleRates[option.Role.RoleBehaviour.Role] =
+                        new AmongUs.GameOptions.RoleRate();
+                var rates = optionsData.roleRates[option.Role.RoleBehaviour.Role];
                 option.Count = rates.MaxCount;
                 option.Chance = rates.Chance;
             }
@@ -354,5 +387,7 @@ namespace PeasAPI.Options
                 }
             }
         }
+    }
+}
     }
 }
